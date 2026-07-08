@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpartanH2 — Motorcycle Content</title>
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="card">
+        <div class="avatar-wrap">
+            <img src="SpartanH2.jpg" alt="SpartanH2" class="avatar">
+        </div>
+
+        <h1 class="name">SPARTAN<span class="accent">H2</span></h1>
+        <p class="tagline">Suit up. Helmet on. Ride hard.</p>
+
+        <section class="links">
+            <h2 class="section-title">Support</h2>
+            <div class="link-grid" style="grid-template-columns: 1fr;">
+                <a class="link-btn support" href="https://sh2.store" target="_blank" rel="noopener" aria-label="SH2 Merch Store — sh2.store" title="Merch">
+                    <span class="icon" aria-hidden="true">🛒</span><span class="label">Merch</span>
+                </a>
+            </div>
+            <div class="link-grid" style="grid-template-columns: 1fr 1fr;">
+                <a class="link-btn support" href="https://www.patreon.com/SpartanH2" target="_blank" rel="noopener" aria-label="Patreon — SpartanH2" title="Patreon">
+                    <span class="icon" aria-hidden="true">★</span><span class="label">Patreon</span>
+                </a>
+                <a class="link-btn support" href="direct.html" rel="noopener" aria-label="Direct crypto support" title="Direct">
+                    <span class="icon" aria-hidden="true">₿</span><span class="label">Direct</span>
+                </a>
+            </div>
+
+            <h2 class="section-title">Watch</h2>
+            <div class="link-grid">
+                <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube — SpartanH2 channel" title="YouTube">
+                    <span class="icon" aria-hidden="true">▶</span><span class="label">YouTube</span>
+                </a>
+                <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram — @SpartanH2" title="Instagram">
+                    <span class="icon" aria-hidden="true">◉</span><span class="label">Instagram</span>
+                </a>
+                <a class="link-btn" href="https://www.tiktok.com/@spartan.h2" target="_blank" rel="noopener" aria-label="TikTok — @spartan.h2" title="TikTok">
+                    <span class="icon" aria-hidden="true">♪</span><span class="label">TikTok</span>
+                </a>
+                <a class="link-btn" href="https://rumble.com/user/SpartanH2" target="_blank" rel="noopener" aria-label="Rumble — SpartanH2" title="Rumble">
+                    <span class="icon" aria-hidden="true">R</span><span class="label">Rumble</span>
+                </a>
+            </div>
+
+            <h2 class="section-title">Connect</h2>
+            <div class="link-grid">
+                <a class="link-btn" href="https://discord.gg/fz67hjDnPW" target="_blank" rel="noopener" aria-label="Discord server invite" title="Discord">
+                    <span class="icon" aria-hidden="true">✦</span><span class="label">Discord</span>
+                </a>
+                <a class="link-btn" href="https://x.com/Spartan_H2" target="_blank" rel="noopener" aria-label="X (Twitter) — @Spartan_H2" title="X / Twitter">
+                    <span class="icon" aria-hidden="true">𝕏</span><span class="label">X / Twitter</span>
+                </a>
+                <a class="link-btn" href="https://www.snapchat.com/add/Spartan_H2" target="_blank" rel="noopener" aria-label="Snapchat — Spartan_H2" title="Snapchat">
+                    <span class="icon" aria-hidden="true">👻</span><span class="label">Snapchat</span>
+                </a>
+                <a class="link-btn" href="https://www.facebook.com/profile.php?id=61591693924495" target="_blank" rel="noopener" aria-label="Facebook — SpartanH2 profile" title="Facebook">
+                    <span class="icon" aria-hidden="true">f</span><span class="label">Facebook</span>
+                </a>
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            <a href="https://SpartanH2.com">SpartanH2.com</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

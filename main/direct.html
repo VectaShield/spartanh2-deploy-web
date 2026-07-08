@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Support — SpartanH2</title>
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="card">
+        <a href="index.html" class="back-link" aria-label="Back to home">← Back</a>
+
+        <h1 class="name">DIRECT<span class="accent"> SUPPORT</span></h1>
+        <p class="tagline">Fuel the ride</p>
+
+        <section class="links">
+            <h2 class="section-title">Crypto Wallets</h2>
+
+            <article class="crypto-card" data-symbol="BTC">
+                <header class="crypto-head">
+                    <span class="crypto-mark btc" aria-hidden="true">₿</span>
+                    <div class="crypto-meta">
+                        <h3>Bitcoin</h3>
+                        <span class="crypto-net">BTC · Bitcoin network</span>
+                    </div>
+                </header>
+                <div class="addr-row">
+                    <code class="addr" id="addr-btc">Coming soon</code>
+                    <button type="button" class="copy-btn" data-copy="addr-btc" aria-label="Copy Bitcoin address">Copy</button>
+                </div>
+                <a class="qr-link" href="#" data-qr="addr-btc" aria-label="Show Bitcoin QR code">Show QR</a>
+                <div class="qr-slot" id="qr-btc" hidden></div>
+            </article>
+
+            <article class="crypto-card" data-symbol="XMR">
+                <header class="crypto-head">
+                    <span class="crypto-mark xmr" aria-hidden="true">ɱ</span>
+                    <div class="crypto-meta">
+                        <h3>Monero</h3>
+                        <span class="crypto-net">XMR · Private &amp; untraceable</span>
+                    </div>
+                </header>
+                <div class="addr-row">
+                    <code class="addr" id="addr-xmr">Coming soon</code>
+                    <button type="button" class="copy-btn" data-copy="addr-xmr" aria-label="Copy Monero address">Copy</button>
+                </div>
+                <a class="qr-link" href="#" data-qr="addr-xmr" aria-label="Show Monero QR code">Show QR</a>
+                <div class="qr-slot" id="qr-xmr" hidden></div>
+            </article>
+
+            <article class="crypto-card" data-symbol="DOGE">
+                <header class="crypto-head">
+                    <span class="crypto-mark doge" aria-hidden="true">Ð</span>
+                    <div class="crypto-meta">
+                        <h3>Dogecoin</h3>
+                        <span class="crypto-net">DOGE · Dogecoin network</span>
+                    </div>
+                </header>
+                <div class="addr-row">
+                    <code class="addr" id="addr-doge">Coming soon</code>
+                    <button type="button" class="copy-btn" data-copy="addr-doge" aria-label="Copy Dogecoin address">Copy</button>
+                </div>
+                <a class="qr-link" href="#" data-qr="addr-doge" aria-label="Show Dogecoin QR code">Show QR</a>
+                <div class="qr-slot" id="qr-doge" hidden></div>
+            </article>
+
+            <p class="fine-print">Always double-check the network before sending. Coins sent to the wrong network (e.g. DOGE to a BTC address) will be permanently lost.</p>
+        </section>
+
+        <footer class="footer">
+            <a href="index.html">← SpartanH2 Home</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const target = document.getElementById(btn.dataset.copy);
+                const text = target.textContent.trim();
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const orig = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+                } catch (e) {
+                    const range = document.createRange();
+                    range.selectNode(target);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            });
+        });
+
+        document.querySelectorAll('.qr-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const addrEl = document.getElementById(link.dataset.qr);
+                const slotId = 'qr-' + link.dataset.qr.replace('addr-', '');
+                const slot = document.getElementById(slotId);
+                const addr = addrEl.textContent.trim();
+                if (slot.hasAttribute('hidden')) {
+                    slot.innerHTML = '<img alt="Wallet QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=0a1020&color=e8c76a&margin=8&data=' + encodeURIComponent(addr) + '">';
+                    slot.removeAttribute('hidden');
+                    link.textContent = 'Hide QR';
+                } else {
+                    slot.setAttribute('hidden', '');
+                    slot.innerHTML = '';
+                    link.textContent = 'Show QR';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
