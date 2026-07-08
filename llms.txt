@@ -1,0 +1,29 @@
+# SpartanH2
+
+> Motorcycle content creator. Personal landing page linking to social channels, merch, Patreon, and direct crypto support.
+
+## About
+SpartanH2 makes motorcycle content — riding, gear, and community. This site is the central hub connecting fans to all channels and support options.
+
+## Pages
+- [Home](https://spartanh2.com/): main landing page with all social and support links
+- [Direct Support](https://spartanh2.com/direct): send crypto (BTC, XMR, DOGE) directly to the creator
+- [Merch (Coming Soon)](https://spartanh2.com/coming-soon): merch store placeholder while sh2.store is in build
+
+## Social channels
+- YouTube: https://www.youtube.com/@SpartanH2
+- Instagram: https://www.instagram.com/SpartanH2/
+- TikTok: https://www.tiktok.com/@spartan.h2
+- X (Twitter): https://x.com/Spartan_H2
+- Discord server: https://discord.gg/fz67hjDnPW
+- Snapchat: https://www.snapchat.com/add/Spartan_H2
+- Facebook: https://www.facebook.com/profile.php?id=61591693924495
+- Rumble: https://rumble.com/user/SpartanH2
+
+## Support
+- Patreon: https://www.patreon.com/SpartanH2
+- Merch store (in build): https://sh2.store
+- Direct crypto (BTC / XMR / DOGE): https://spartanh2.com/direct
+
+## Contact
+- Website: https://spartanh2.com

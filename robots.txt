@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spartanh2.com/sitemap.xml
