@@ -132,6 +132,10 @@ body {
     z-index: 1;
 }
 
+.link-grid + .link-grid {
+    margin-top: 10px;
+}
+
 .link-btn {
     display: flex;
     align-items: center;
