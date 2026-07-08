@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon — SpartanH2</title>
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="card">
+        <a href="index.html" class="back-link" aria-label="Back to home">← Back</a>
+
+        <h1 class="name">COMING<span class="accent"> SOON</span></h1>
+        <p class="tagline">The garage isn't open yet</p>
+
+        <section class="links">
+            <p class="fine-print">The SpartanH2 merch store is still in build. Helmets, patches, and rider gear are on the way — check back here or follow along on the socials for the drop.</p>
+
+            <h2 class="section-title">Get Notified</h2>
+            <div class="link-grid" style="grid-template-columns: 1fr 1fr;">
+                <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube — SpartanH2 channel" title="YouTube">
+                    <span class="icon" aria-hidden="true">▶</span><span class="label">YouTube</span>
+                </a>
+                <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram — @SpartanH2" title="Instagram">
+                    <span class="icon" aria-hidden="true">◉</span><span class="label">Instagram</span>
+                </a>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <a href="index.html">← SpartanH2 Home</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
