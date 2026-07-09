@@ -10,7 +10,7 @@
     <meta name="description" content="Send crypto support to SpartanH2. Accepts Bitcoin (BTC), Monero (XMR), and Dogecoin (DOGE).">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://spartanh2.com/direct.html">
-    <link rel="stylesheet" href="styles.css?v=20260709041057">
+    <link rel="stylesheet" href="styles.css?v=20260709045331">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,53 +27,7 @@
         <section class="links">
             <h2 class="section-title">Crypto Wallets</h2>
 
-            <article class="crypto-card" data-symbol="BTC">
-                <header class="crypto-head">
-                    <span class="crypto-mark btc" aria-hidden="true">₿</span>
-                    <div class="crypto-meta">
-                        <h3>Bitcoin</h3>
-                        <span class="crypto-net">BTC · Bitcoin network</span>
-                    </div>
-                </header>
-                <div class="addr-row">
-                    <code class="addr" id="addr-btc">bc1q8czhpnymkc8xj4afa3nalrfsfmer74wk6tfmh5</code>
-                    <button type="button" class="copy-btn" data-copy="addr-btc" aria-label="Copy Bitcoin address">Copy</button>
-                </div>
-                <a class="qr-link" href="#" data-qr="addr-btc" aria-label="Show Bitcoin QR code">Show QR</a>
-                <div class="qr-slot" id="qr-btc" hidden></div>
-            </article>
-
-            <article class="crypto-card" data-symbol="XMR">
-                <header class="crypto-head">
-                    <span class="crypto-mark xmr" aria-hidden="true">ɱ</span>
-                    <div class="crypto-meta">
-                        <h3>Monero</h3>
-                        <span class="crypto-net">XMR · Private &amp; untraceable</span>
-                    </div>
-                </header>
-                <div class="addr-row">
-                    <code class="addr" id="addr-xmr">43xiTDi62zH4sNCfHCYQ3KMQtGEN6nKubeGPEh4VixyQN9fQ2jroKsNSVoH4k9evoj5g3dUoxqtT4KPeQ9iHs5daQSENPeM</code>
-                    <button type="button" class="copy-btn" data-copy="addr-xmr" aria-label="Copy Monero address">Copy</button>
-                </div>
-                <a class="qr-link" href="#" data-qr="addr-xmr" aria-label="Show Monero QR code">Show QR</a>
-                <div class="qr-slot" id="qr-xmr" hidden></div>
-            </article>
-
-            <article class="crypto-card" data-symbol="DOGE">
-                <header class="crypto-head">
-                    <span class="crypto-mark doge" aria-hidden="true">Ð</span>
-                    <div class="crypto-meta">
-                        <h3>Dogecoin</h3>
-                        <span class="crypto-net">DOGE · Dogecoin network</span>
-                    </div>
-                </header>
-                <div class="addr-row">
-                    <code class="addr" id="addr-doge">D5S3JcyQdEuCwsHt98AWUr1VWdfDqYJnCi</code>
-                    <button type="button" class="copy-btn" data-copy="addr-doge" aria-label="Copy Dogecoin address">Copy</button>
-                </div>
-                <a class="qr-link" href="#" data-qr="addr-doge" aria-label="Show Dogecoin QR code">Show QR</a>
-                <div class="qr-slot" id="qr-doge" hidden></div>
-            </article>
+            <div id="wallets"></div>
 
             <p class="fine-print">Always double-check the network before sending. Coins sent to the wrong network (e.g. DOGE to a BTC address) will be permanently lost.</p>
         </section>
@@ -85,35 +39,85 @@
     </main>
 
     <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  WALLET CONFIG — single source of truth. Edit here, only here.
+        //  To add a coin: append an object. To change an address: edit `address`.
+        // ═══════════════════════════════════════════════════════════════
+        const WALLETS = [
+            {
+                symbol: 'BTC',
+                name: 'Bitcoin',
+                mark: '₿',
+                network: 'BTC · Bitcoin network',
+                address: 'bc1q8czhpnymkc8xj4afa3nalrfsfmer74wk6tfmh5',
+            },
+            {
+                symbol: 'XMR',
+                name: 'Monero',
+                mark: 'ɱ',
+                network: 'XMR · Private & untraceable',
+                address: '43xiTDi62zH4sNCfHCYQ3KMQtGEN6nKubeGPEh4VixyQN9fQ2jroKsNSVoH4k9evoj5g3dUoxqtT4KPeQ9iHs5daQSENPeM',
+            },
+            {
+                symbol: 'DOGE',
+                name: 'Dogecoin',
+                mark: 'Ð',
+                network: 'DOGE · Dogecoin network',
+                address: 'D5S3JcyQdEuCwsHt98AWUr1VWdfDqYJnCi',
+            },
+        ];
+        // ═══════════════════════════════════════════════════════════════
+
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        document.querySelectorAll('.copy-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const target = document.getElementById(btn.dataset.copy);
-                const text = target.textContent.trim();
+        function renderWallets() {
+            const container = document.getElementById('wallets');
+            container.innerHTML = WALLETS.map(w => {
+                const cls = w.symbol.toLowerCase();
+                return `
+                    <article class="crypto-card" data-symbol="${w.symbol}">
+                        <header class="crypto-head">
+                            <span class="crypto-mark ${cls}" aria-hidden="true">${w.mark}</span>
+                            <div class="crypto-meta">
+                                <h3>${w.name}</h3>
+                                <span class="crypto-net">${w.network}</span>
+                            </div>
+                        </header>
+                        <div class="addr-row">
+                            <code class="addr" data-address="${w.address}">${w.address}</code>
+                            <button type="button" class="copy-btn" aria-label="Copy ${w.name} address">Copy</button>
+                        </div>
+                        <a class="qr-link" href="#" aria-label="Show ${w.name} QR code">Show QR</a>
+                        <div class="qr-slot" hidden></div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function wireCard(card) {
+            const addr = card.querySelector('.addr').dataset.address;
+            const copyBtn = card.querySelector('.copy-btn');
+            const qrLink = card.querySelector('.qr-link');
+            const slot = card.querySelector('.qr-slot');
+
+            copyBtn.addEventListener('click', async () => {
                 try {
-                    await navigator.clipboard.writeText(text);
-                    const orig = btn.textContent;
-                    btn.textContent = 'Copied!';
-                    btn.classList.add('copied');
-                    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+                    await navigator.clipboard.writeText(addr);
+                    const orig = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1600);
                 } catch (e) {
                     const range = document.createRange();
-                    range.selectNode(target);
+                    range.selectNode(card.querySelector('.addr'));
                     const sel = window.getSelection();
                     sel.removeAllRanges();
                     sel.addRange(range);
                 }
             });
-        });
 
-        document.querySelectorAll('.qr-link').forEach(link => {
-            link.addEventListener('click', (e) => {
+            qrLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                const addrEl = document.getElementById(link.dataset.qr);
-                const slotId = 'qr-' + link.dataset.qr.replace('addr-', '');
-                const slot = document.getElementById(slotId);
-                const addr = addrEl.textContent.trim();
                 if (slot.hasAttribute('hidden')) {
                     slot.innerHTML = '';
                     new QRCode(slot, {
@@ -125,14 +129,17 @@
                         correctLevel: QRCode.CorrectLevel.H
                     });
                     slot.removeAttribute('hidden');
-                    link.textContent = 'Hide QR';
+                    qrLink.textContent = 'Hide QR';
                 } else {
                     slot.setAttribute('hidden', '');
                     slot.innerHTML = '';
-                    link.textContent = 'Show QR';
+                    qrLink.textContent = 'Show QR';
                 }
             });
-        });
+        }
+
+        renderWallets();
+        document.querySelectorAll('.crypto-card').forEach(wireCard);
     </script>
 </body>
 </html>
