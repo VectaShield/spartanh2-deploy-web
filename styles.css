@@ -523,10 +523,24 @@ body {
 
 @media (max-width: 480px) {
     .supporter-row {
-        grid-template-columns: 70px 1fr auto;
-        font-size: 0.9rem;
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        gap: 8px;
+        padding: 10px 12px;
+        font-size: 0.88rem;
     }
-    .supporter-ig { grid-column: 2 / 4; justify-self: end; }
+    .supporter-tier {
+        font-size: 0.6rem;
+        padding: 3px 7px;
+        letter-spacing: 0.08em;
+    }
+    .supporter-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .supporter-months { font-size: 0.75rem; }
+    .supporter-ig { font-size: 0.95rem; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
