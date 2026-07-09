@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Supporters — SpartanH2</title>
+    <meta name="description" content="Thank you to the SpartanH2 supporters keeping the content going.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://spartanh2.com/supporters.html">
+    <link rel="stylesheet" href="styles.css?v=20260709210953">
+    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="card">
+        <a href="index.html" class="back-link" aria-label="Back to home">← Back</a>
+
+        <h1 class="name name-solid">SUPPORTERS</h1>
+        <p class="tagline">The riders keeping the lights on</p>
+
+        <section class="links">
+            <h2 class="section-title">Public Thank-You</h2>
+
+            <div id="supporters-list"></div>
+
+            <p class="supporters-tail" id="supporters-tail"></p>
+
+            <p class="fine-print">Want your name here? Any active Patreon tier (or a supporter role via Direct) gets you on the list. Prefer to stay anonymous? Just say so — we count you silently in the tail below.</p>
+        </section>
+
+        <footer class="footer">
+            <a href="index.html">← SpartanH2 Home</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  Supporters are loaded from supporters.json — edit that file to
+        //  add / remove / update entries. This script only renders.
+        //
+        //  Fields in supporters.json:
+        //    name       — display name (required)
+        //    tier       — "Rider" | "Legend" | custom string (required)
+        //    since      — YYYY-MM-DD start date (required; months computed live)
+        //    instagram  — IG handle without @ (optional)
+        //  Plus top-level anonymousCount for opt-out tail.
+        // ═══════════════════════════════════════════════════════════════
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const esc = (s) => String(s ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        function monthsSince(sinceStr) {
+            const [y, m, d] = sinceStr.split('-').map(Number);
+            const start = new Date(y, m - 1, d);
+            const now = new Date();
+            let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+            if (now.getDate() < start.getDate()) months--;
+            return Math.max(0, months);
+        }
+
+        function formatDuration(months) {
+            if (months < 1) return 'New';
+            if (months < 12) return `${months} mo`;
+            const y = Math.floor(months / 12);
+            const m = months % 12;
+            if (m === 0) return `${y} yr`;
+            return `${y} yr ${m} mo`;
+        }
+
+        function milestoneClass(months) {
+            if (months >= 36) return 'milestone-3y';
+            if (months >= 24) return 'milestone-2y';
+            if (months >= 12) return 'milestone-1y';
+            return '';
+        }
+
+        function renderSupporters(supporters, anonymousCount) {
+            const list = document.getElementById('supporters-list');
+            const enriched = supporters.map(s => ({ ...s, _months: monthsSince(s.since) }));
+            const sorted = enriched.sort((a, b) => b._months - a._months);
+
+            list.innerHTML = sorted.map(s => {
+                const ms = milestoneClass(s._months);
+                const tier = s.tier || 'Rider';
+                const tierClass = tier.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+                const igHandle = s.instagram ? encodeURIComponent(s.instagram) : '';
+                const igLink = igHandle
+                    ? `<a class="supporter-ig" href="https://www.instagram.com/${igHandle}/" target="_blank" rel="noopener" aria-label="${esc(s.name)} on Instagram" title="@${esc(s.instagram)}">◉</a>`
+                    : '';
+                return `
+                    <div class="supporter-row ${ms}">
+                        <span class="supporter-tier tier-${tierClass}">${esc(tier)}</span>
+                        <span class="supporter-name">${esc(s.name)}</span>
+                        <span class="supporter-months" title="Supporting since ${esc(s.since)}">${formatDuration(s._months)}</span>
+                        ${igLink}
+                    </div>
+                `;
+            }).join('');
+
+            const tail = document.getElementById('supporters-tail');
+            if (anonymousCount > 0) {
+                tail.textContent = `+ ${anonymousCount} more rider${anonymousCount === 1 ? '' : 's'} supporting anonymously`;
+            } else {
+                tail.style.display = 'none';
+            }
+        }
+
+        (async () => {
+            try {
+                const res = await fetch('supporters.json', { cache: 'no-store' });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                renderSupporters(data.supporters || [], data.anonymousCount || 0);
+            } catch (err) {
+                document.getElementById('supporters-list').innerHTML =
+                    `<p class="fine-print">Could not load supporters list. (${err.message})</p>`;
+            }
+        })();
+    </script>
+</body>
+</html>

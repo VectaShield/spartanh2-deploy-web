@@ -10,7 +10,7 @@
     <meta name="description" content="Send crypto support to SpartanH2. Accepts Bitcoin (BTC), Monero (XMR), and Dogecoin (DOGE).">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://spartanh2.com/direct.html">
-    <link rel="stylesheet" href="styles.css?v=20260709045331">
+    <link rel="stylesheet" href="styles.css?v=20260709210953">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -101,18 +101,36 @@
             const slot = card.querySelector('.qr-slot');
 
             copyBtn.addEventListener('click', async () => {
+                const orig = copyBtn.textContent;
+                const flash = (label, ok = true) => {
+                    copyBtn.textContent = label;
+                    if (ok) copyBtn.classList.add('copied');
+                    setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1600);
+                };
                 try {
                     await navigator.clipboard.writeText(addr);
-                    const orig = copyBtn.textContent;
-                    copyBtn.textContent = 'Copied!';
-                    copyBtn.classList.add('copied');
-                    setTimeout(() => { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 1600);
+                    flash('Copied!');
                 } catch (e) {
-                    const range = document.createRange();
-                    range.selectNode(card.querySelector('.addr'));
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    // Clipboard API failed (insecure context or permission) — try execCommand fallback
+                    try {
+                        const ta = document.createElement('textarea');
+                        ta.value = addr;
+                        ta.style.position = 'fixed';
+                        ta.style.opacity = '0';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        const ok = document.execCommand('copy');
+                        document.body.removeChild(ta);
+                        flash(ok ? 'Copied!' : 'Press Ctrl+C', ok);
+                    } catch (_) {
+                        // Last resort: select the address so the user can Ctrl+C manually
+                        const range = document.createRange();
+                        range.selectNode(card.querySelector('.addr'));
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        flash('Press Ctrl+C', false);
+                    }
                 }
             });
 

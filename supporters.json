@@ -1,0 +1,8 @@
+{
+  "_comment": "Supporters data. Edit this file to add/remove/update. Format: name (required), tier (Rider|Legend|custom), since (YYYY-MM-DD — date they became a supporter), instagram (optional handle without @). anonymousCount = supporters who opted out of public listing (shown as '+ N more' tail).",
+  "anonymousCount": 0,
+  "supporters": [
+    { "name": "Detroit Ninja", "tier": "Legend", "since": "2026-07-08", "instagram": "officialdetroitninja" },
+    { "name": "zh.who",        "tier": "Legend", "since": "2026-07-08", "instagram": "zh.who" }
+  ]
+}

@@ -8,6 +8,9 @@ SpartanH2 makes motorcycle content — riding, gear, and community. This site is
 ## Pages
 - [Home](https://spartanh2.com/): main landing page with all social and support links
 - [Direct Support](https://spartanh2.com/direct.html): send crypto (BTC, XMR, DOGE) directly to the creator
+- [Supporters](https://spartanh2.com/supporters.html): public thank-you list for active supporters
+- [Partners](https://spartanh2.com/partners.html): partnered creators and brands
+- [Contact](https://spartanh2.com/contact.html): business, brand, and partnership inquiries
 - [Merch (Coming Soon)](https://spartanh2.com/coming-soon.html): merch store placeholder while sh2.store is in build
 
 ## Social channels

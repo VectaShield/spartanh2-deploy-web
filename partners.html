@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Partners — SpartanH2</title>
+    <meta name="description" content="Partnered creators and brands riding with SpartanH2.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://spartanh2.com/partners.html">
+    <link rel="stylesheet" href="styles.css?v=20260709210953">
+    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="card card-wide">
+        <a href="index.html" class="back-link" aria-label="Back to home">← Back</a>
+
+        <h1 class="name name-solid">PARTNERS</h1>
+        <p class="tagline">Who we ride with</p>
+
+        <section class="links">
+            <div id="partners-grid" class="partners-grid"></div>
+            <p class="fine-print">Interested in partnering? <a href="contact.html">Reach out here</a>.</p>
+        </section>
+
+        <footer class="footer">
+            <a href="index.html">← SpartanH2 Home</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        //  PARTNERS CONFIG — single source of truth. Edit here, only here.
+        //  Fields per entry (all optional except name):
+        //    name          — display name (required)
+        //    brandColor    — hex used for the name text + top accent stripe
+        //    avatar        — image path/URL, OR omit to use SVG initials fallback
+        //    tagline       — short one-liner
+        //    since         — year they became a partner (number or string)
+        //    region        — 2-letter ISO country code ('US', 'JP', 'GB' — rendered as a small text badge; emoji flags don't render on Windows) or omit
+        //    disciplines   — array: e.g. ['Street','Track']
+        //    categories    — array: e.g. ['Creator'] or ['Brand','Apparel']
+        //    socials       — array of {label, url, icon} — icon is a single glyph/emoji
+        //    cta           — { label, url } primary call-to-action button, or omit
+        //    kind          — 'creator' | 'brand' (for future filtering; unused visually)
+        // ═══════════════════════════════════════════════════════════════
+        const PARTNERS = [
+            {
+                name: 'zh.who',
+                brandColor: '#c9a24b', // placeholder — confirm real brand color (photo has red + teal hoodie print)
+                avatar: 'zh-who.jpg',
+                tagline: 'Detroit biketok, street & strip.',
+                since: 2024,
+                region: 'US',
+                disciplines: ['Street', 'Drag'],
+                categories: ['Creator'],
+                socials: [
+                    { label: 'TikTok', url: 'https://www.tiktok.com/@zh.who', icon: '♪' },
+                    // Instagram (zh.who) returns 200 but ownership unverified; add manually once confirmed
+                ],
+                cta: { label: 'Follow', url: 'https://www.tiktok.com/@zh.who' },
+                kind: 'creator',
+            },
+        ];
+        // ═══════════════════════════════════════════════════════════════
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Build an SVG "initials on brand color" avatar as a data URI — no external calls.
+        function initialsAvatar(name, color) {
+            const initials = name
+                .split(/[\s.]+/)
+                .filter(Boolean)
+                .map(w => w[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220">
+                    <defs>
+                        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="${color}"/>
+                            <stop offset="1" stop-color="#0a1020"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="220" height="220" fill="url(#g)"/>
+                    <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle"
+                          font-family="Cinzel, serif" font-weight="800" font-size="96"
+                          fill="#f4e4b8" letter-spacing="4">${initials}</text>
+                </svg>`;
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        }
+
+        // Escape HTML — turns user-content into safe text for innerHTML interpolation
+        const esc = (s) => String(s ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        // Validate URLs — only http(s), mailto, or same-page fragment allowed in href
+        const safeUrl = (u) => {
+            const s = String(u ?? '');
+            return /^(https?:|mailto:|#|\/|\.\/|\.\.\/|[a-z0-9_\-.]+\.html)/i.test(s) ? s : '#';
+        };
+        // Validate brand color — only 3/6/8-digit hex allowed in inline style
+        const safeColor = (c) => /^#[0-9a-f]{3,8}$/i.test(String(c ?? '')) ? c : '#e8c76a';
+
+        function renderPartners() {
+            const container = document.getElementById('partners-grid');
+            container.innerHTML = PARTNERS.map(p => {
+                const color = safeColor(p.brandColor);
+                const avatar = p.avatar ? esc(p.avatar) : initialsAvatar(p.name || '?', color);
+
+                const disciplineChips = (p.disciplines || []).map(d =>
+                    `<span class="chip chip-discipline">${esc(d)}</span>`
+                ).join('');
+                const categoryChips = (p.categories || []).map(c =>
+                    `<span class="chip chip-category">${esc(c)}</span>`
+                ).join('');
+                const chipsRow = (disciplineChips || categoryChips)
+                    ? `<div class="partner-chips">${categoryChips}${disciplineChips}</div>`
+                    : '';
+
+                const buttons = (p.socials || []).map(s =>
+                    `<a class="partner-btn" href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.name)} on ${esc(s.label)}">${esc(s.label)}</a>`
+                ).join('');
+                const buttonsBlock = buttons ? `<div class="partner-buttons">${buttons}</div>` : '';
+
+                const cta = p.cta
+                    ? `<a class="partner-cta" href="${esc(safeUrl(p.cta.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.name)} — ${esc(p.cta.label)}">${esc(p.cta.label)} →</a>`
+                    : '';
+
+                const sinceBadge = p.since ? `<span class="partner-since">Since ${esc(p.since)}</span>` : '';
+                const region = p.region ? `<span class="partner-region">${esc(p.region)}</span>` : '';
+                const metaLine = (sinceBadge || region)
+                    ? `<div class="partner-meta">${region}${sinceBadge}</div>`
+                    : '';
+
+                return `
+                    <article class="partner-poster" style="--brand:${color};">
+                        <div class="partner-glow" aria-hidden="true"></div>
+                        <div class="partner-avatar-ring">
+                            <img class="partner-avatar" src="${avatar}" alt="${esc(p.name)}" loading="lazy">
+                        </div>
+                        <h3 class="partner-name" style="color:${color};">${esc(p.name)}</h3>
+                        ${metaLine}
+                        <p class="partner-tagline">${esc(p.tagline || '')}</p>
+                        ${chipsRow}
+                        ${buttonsBlock}
+                        ${cta}
+                    </article>
+                `;
+            }).join('');
+        }
+
+        renderPartners();
+    </script>
+</body>
+</html>
