@@ -10,11 +10,12 @@
     <meta name="description" content="Send crypto support to SpartanH2. Accepts Bitcoin (BTC), Monero (XMR), and Dogecoin (DOGE).">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://spartanh2.com/direct.html">
-    <link rel="stylesheet" href="styles.css?v=20260708223547">
+    <link rel="stylesheet" href="styles.css?v=20260709041057">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="qrcode.min.js" defer></script>
 </head>
 <body>
     <main class="card">
@@ -35,7 +36,7 @@
                     </div>
                 </header>
                 <div class="addr-row">
-                    <code class="addr" id="addr-btc">Coming soon</code>
+                    <code class="addr" id="addr-btc">bc1q8czhpnymkc8xj4afa3nalrfsfmer74wk6tfmh5</code>
                     <button type="button" class="copy-btn" data-copy="addr-btc" aria-label="Copy Bitcoin address">Copy</button>
                 </div>
                 <a class="qr-link" href="#" data-qr="addr-btc" aria-label="Show Bitcoin QR code">Show QR</a>
@@ -51,7 +52,7 @@
                     </div>
                 </header>
                 <div class="addr-row">
-                    <code class="addr" id="addr-xmr">Coming soon</code>
+                    <code class="addr" id="addr-xmr">43xiTDi62zH4sNCfHCYQ3KMQtGEN6nKubeGPEh4VixyQN9fQ2jroKsNSVoH4k9evoj5g3dUoxqtT4KPeQ9iHs5daQSENPeM</code>
                     <button type="button" class="copy-btn" data-copy="addr-xmr" aria-label="Copy Monero address">Copy</button>
                 </div>
                 <a class="qr-link" href="#" data-qr="addr-xmr" aria-label="Show Monero QR code">Show QR</a>
@@ -67,7 +68,7 @@
                     </div>
                 </header>
                 <div class="addr-row">
-                    <code class="addr" id="addr-doge">Coming soon</code>
+                    <code class="addr" id="addr-doge">D5S3JcyQdEuCwsHt98AWUr1VWdfDqYJnCi</code>
                     <button type="button" class="copy-btn" data-copy="addr-doge" aria-label="Copy Dogecoin address">Copy</button>
                 </div>
                 <a class="qr-link" href="#" data-qr="addr-doge" aria-label="Show Dogecoin QR code">Show QR</a>
@@ -114,7 +115,15 @@
                 const slot = document.getElementById(slotId);
                 const addr = addrEl.textContent.trim();
                 if (slot.hasAttribute('hidden')) {
-                    slot.innerHTML = '<img alt="Wallet QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=0a1020&color=e8c76a&margin=8&data=' + encodeURIComponent(addr) + '">';
+                    slot.innerHTML = '';
+                    new QRCode(slot, {
+                        text: addr,
+                        width: 200,
+                        height: 200,
+                        colorDark: '#e8c76a',
+                        colorLight: '#0a1020',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
                     slot.removeAttribute('hidden');
                     link.textContent = 'Hide QR';
                 } else {
