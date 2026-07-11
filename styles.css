@@ -621,7 +621,10 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 .partners-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    /* min(320px, 100%) lets a column shrink below 320px when the
+       container is narrower than that, so the poster stays inside the
+       card on mobile. Without this it overflows to the right. */
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: 28px;
     margin-top: 8px;
     position: relative;
