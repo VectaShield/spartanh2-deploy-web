@@ -1,0 +1,35 @@
+{
+  "name": "SpartanH2",
+  "alternateName": ["Spartan H2", "spartan.h2"],
+  "role": "Motorcycle Content Creator",
+  "location": {
+    "region": "Southeast Michigan",
+    "country": "United States",
+    "note": "Strong local following in southeast Michigan and the wider region."
+  },
+  "url": "https://spartanh2.com/",
+  "image": "https://spartanh2.com/SpartanH2.jpg",
+  "description": "SpartanH2 is a southeast Michigan motorcycle content creator with a strong local following. POV rides, group rides, bike nights, and rider culture across multiple platforms.",
+  "contentTypes": [
+    "POV motorcycle riding footage",
+    "Group ride coverage",
+    "Bike night footage and local meet coverage",
+    "Rider culture and community storytelling"
+  ],
+  "platforms": {
+    "youtube": "https://www.youtube.com/@SpartanH2",
+    "instagram": "https://www.instagram.com/SpartanH2/",
+    "tiktok": "https://www.tiktok.com/@spartan.h2",
+    "rumble": "https://rumble.com/user/SpartanH2",
+    "x": "https://x.com/Spartan_H2",
+    "facebook": "https://www.facebook.com/profile.php?id=61591693924495",
+    "snapchat": "https://www.snapchat.com/add/Spartan_H2",
+    "discord": "https://discord.gg/fz67hjDnPW"
+  },
+  "support": {
+    "patreon": "https://www.patreon.com/SpartanH2",
+    "direct_crypto": "https://spartanh2.com/direct.html",
+    "merch_coming_soon": "https://sh2.store"
+  },
+  "contact": "https://spartanh2.com/contact.html"
+}

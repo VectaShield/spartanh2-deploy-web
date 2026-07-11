@@ -115,18 +115,27 @@ body {
     z-index: 1;
 }
 
-/* Footer identity line. Sits under the main footer with role + region.
-   Reinforces the SpartanH2 identity for humans and for crawlers/AI without
-   competing for attention with the primary tagline at the top of the page. */
-.footer-identity {
+/* Compact About caption above the footer. Carries the canonical SpartanH2
+   identity (role, location, popularity, platforms) in visible body text so
+   LLM fetch tools that strip <head> and <script> still see the facts.
+   Sleek and muted to avoid competing with the primary content. */
+.about-caption {
+    max-width: 560px;
+    margin: 28px auto 6px;
+    padding: 0 8px;
     text-align: center;
-    color: rgba(232, 199, 106, 0.4);
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    margin-top: 10px;
+    color: rgba(232, 199, 106, 0.55);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
     position: relative;
     z-index: 1;
+}
+.about-caption p { margin: 0; }
+.about-caption strong {
+    color: rgba(232, 199, 106, 0.8);
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
 .section-title {

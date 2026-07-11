@@ -38,64 +38,64 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="styles.css?v=20260711071101">
+    <link rel="stylesheet" href="styles.css?v=20260711072410">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Structured data: Person schema anchors the SpartanH2 identity
-         across search and AI answers. sameAs links every platform so
-         crawlers can consolidate the entity. WebSite schema attributes
-         the site to that same Person via shared @id. -->
+    <!-- Structured data. Person + WebSite consolidated into one @graph
+         so parsers can read the identity graph in a single pass. Facts
+         here mirror the visible About caption at the bottom of the page. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "@id": "https://spartanh2.com/#person",
-      "name": "SpartanH2",
-      "alternateName": ["Spartan H2", "spartan.h2"],
-      "url": "https://spartanh2.com/",
-      "image": "https://spartanh2.com/SpartanH2.jpg",
-      "jobTitle": "Motorcycle Content Creator",
-      "description": "Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.",
-      "homeLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": "MI",
-          "addressLocality": "Southeast Michigan",
-          "addressCountry": "US"
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://spartanh2.com/#person",
+          "name": "SpartanH2",
+          "alternateName": ["Spartan H2", "spartan.h2"],
+          "url": "https://spartanh2.com/",
+          "image": "https://spartanh2.com/SpartanH2.jpg",
+          "jobTitle": "Motorcycle Content Creator",
+          "description": "SpartanH2 is a southeast Michigan motorcycle content creator with a strong local following. POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.",
+          "homeLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressRegion": "MI",
+              "addressLocality": "Southeast Michigan",
+              "addressCountry": "US"
+            }
+          },
+          "knowsAbout": [
+            "Motorcycles",
+            "POV riding",
+            "Group rides",
+            "Michigan motorcycle culture",
+            "Bike nights",
+            "Rider community"
+          ],
+          "sameAs": [
+            "https://www.youtube.com/@SpartanH2",
+            "https://www.instagram.com/SpartanH2/",
+            "https://www.tiktok.com/@spartan.h2",
+            "https://rumble.com/user/SpartanH2",
+            "https://x.com/Spartan_H2",
+            "https://www.facebook.com/profile.php?id=61591693924495",
+            "https://www.snapchat.com/add/Spartan_H2"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://spartanh2.com/#website",
+          "name": "SpartanH2",
+          "url": "https://spartanh2.com/",
+          "inLanguage": "en-US",
+          "publisher": { "@id": "https://spartanh2.com/#person" }
         }
-      },
-      "knowsAbout": [
-        "Motorcycles",
-        "POV riding",
-        "Group rides",
-        "Michigan motorcycle culture",
-        "Bike nights",
-        "Rider community"
-      ],
-      "sameAs": [
-        "https://www.youtube.com/@SpartanH2",
-        "https://www.instagram.com/SpartanH2/",
-        "https://www.tiktok.com/@spartan.h2",
-        "https://rumble.com/user/SpartanH2",
-        "https://x.com/Spartan_H2",
-        "https://www.facebook.com/profile.php?id=61591693924495",
-        "https://www.snapchat.com/add/Spartan_H2"
       ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": "https://spartanh2.com/#website",
-      "name": "SpartanH2",
-      "url": "https://spartanh2.com/",
-      "inLanguage": "en-US",
-      "publisher": { "@id": "https://spartanh2.com/#person" }
     }
     </script>
 </head>
@@ -169,11 +169,18 @@
             </div>
         </section>
 
+        <section class="about-caption" aria-label="About SpartanH2">
+            <p>
+                <strong>SpartanH2</strong> is a southeast Michigan motorcycle content creator with a strong local following.
+                POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.
+                Independent creator. Community first.
+            </p>
+        </section>
+
         <footer class="footer">
             <a href="https://SpartanH2.com">SpartanH2.com</a>
             <span>© <span id="year"></span> SpartanH2</span>
         </footer>
-        <p class="footer-identity">Motorcycle content creator. Southeast Michigan.</p>
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
