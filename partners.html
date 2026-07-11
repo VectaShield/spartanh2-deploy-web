@@ -6,15 +6,45 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Partners — SpartanH2</title>
-    <meta name="description" content="Partnered creators and brands riding with SpartanH2.">
+    <title>Partners | SpartanH2</title>
+    <meta name="description" content="Partnered creators and brands riding with SpartanH2. Southeast Michigan motorcycle community.">
+    <meta name="author" content="SpartanH2">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a1020">
     <link rel="canonical" href="https://spartanh2.com/partners.html">
-    <link rel="stylesheet" href="styles.css?v=20260711064041">
+
+    <meta property="og:title" content="Partners | SpartanH2">
+    <meta property="og:description" content="Partnered creators and brands riding with SpartanH2. Southeast Michigan motorcycle community.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spartanh2.com/partners.html">
+    <meta property="og:site_name" content="SpartanH2">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:width" content="992">
+    <meta property="og:image:height" content="1040">
+    <meta property="og:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Partners | SpartanH2">
+    <meta name="twitter:description" content="Partnered creators and brands riding with SpartanH2.">
+    <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
+
+    <link rel="stylesheet" href="styles.css?v=20260711071101">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://spartanh2.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Partners", "item": "https://spartanh2.com/partners.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <main class="card card-wide">
@@ -36,24 +66,24 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════
-        //  PARTNERS CONFIG — single source of truth. Edit here, only here.
+        //  PARTNERS CONFIG : single source of truth. Edit here, only here.
         //  Fields per entry (all optional except name):
-        //    name          — display name (required)
-        //    brandColor    — hex used for the name text + top accent stripe
-        //    avatar        — image path/URL, OR omit to use SVG initials fallback
-        //    tagline       — short one-liner
-        //    since         — year they became a partner (number or string)
-        //    region        — 2-letter ISO country code ('US', 'JP', 'GB' — rendered as a small text badge; emoji flags don't render on Windows) or omit
-        //    disciplines   — array: e.g. ['Street','Track']
-        //    categories    — array: e.g. ['Creator'] or ['Brand','Apparel']
-        //    socials       — array of {label, url, iconId} — iconId is a key from icons.svg (e.g. 'youtube', 'instagram', 'tiktok', 'facebook')
-        //    cta           — { label, url } primary call-to-action button, or omit
-        //    kind          — 'creator' | 'brand' (for future filtering; unused visually)
+        //    name          : display name (required)
+        //    brandColor    : hex used for the name text + top accent stripe
+        //    avatar        : image path/URL, OR omit to use SVG initials fallback
+        //    tagline       : short one-liner
+        //    since         : year they became a partner (number or string)
+        //    region        : 2-letter ISO country code ('US', 'JP', 'GB' : rendered as a small text badge; emoji flags don't render on Windows) or omit
+        //    disciplines   : array: e.g. ['Street','Track']
+        //    categories    : array: e.g. ['Creator'] or ['Brand','Apparel']
+        //    socials       : array of {label, url, iconId} : iconId is a key from icons.svg (e.g. 'youtube', 'instagram', 'tiktok', 'facebook')
+        //    cta           : { label, url } primary call-to-action button, or omit
+        //    kind          : 'creator' | 'brand' (for future filtering; unused visually)
         // ═══════════════════════════════════════════════════════════════
         const PARTNERS = [
             {
                 name: 'zh.who',
-                brandColor: '#c9a24b', // placeholder — confirm real brand color (photo has red + teal hoodie print)
+                brandColor: '#c9a24b', // placeholder : confirm real brand color (photo has red + teal hoodie print)
                 avatar: 'zh-who.jpg?v=2',
                 tagline: 'Detroit biketok, street & strip.',
                 since: 2024,
@@ -72,7 +102,7 @@
 
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Build an SVG "initials on brand color" avatar as a data URI — no external calls.
+        // Build an SVG "initials on brand color" avatar as a data URI : no external calls.
         function initialsAvatar(name, color) {
             const initials = name
                 .split(/[\s.]+/)
@@ -97,19 +127,19 @@
             return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
         }
 
-        // Escape HTML — turns user-content into safe text for innerHTML interpolation
+        // Escape HTML : turns user-content into safe text for innerHTML interpolation
         const esc = (s) => String(s ?? '')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
-        // Validate URLs — only http(s), mailto, or same-page fragment allowed in href
+        // Validate URLs : only http(s), mailto, or same-page fragment allowed in href
         const safeUrl = (u) => {
             const s = String(u ?? '');
             return /^(https?:|mailto:|#|\/|\.\/|\.\.\/|[a-z0-9_\-.]+\.html)/i.test(s) ? s : '#';
         };
-        // Validate brand color — only 3/6/8-digit hex allowed in inline style
+        // Validate brand color : only 3/6/8-digit hex allowed in inline style
         const safeColor = (c) => /^#[0-9a-f]{3,8}$/i.test(String(c ?? '')) ? c : '#e8c76a';
 
         function renderPartners() {
@@ -137,7 +167,7 @@
                 const buttonsBlock = buttons ? `<div class="partner-buttons">${buttons}</div>` : '';
 
                 const cta = p.cta
-                    ? `<a class="partner-cta" href="${esc(safeUrl(p.cta.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.name)} — ${esc(p.cta.label)}">${esc(p.cta.label)} →</a>`
+                    ? `<a class="partner-cta" href="${esc(safeUrl(p.cta.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.cta.label)} on ${esc(p.name)}">${esc(p.cta.label)} →</a>`
                     : '';
 
                 const sinceBadge = p.since ? `<span class="partner-since">Since ${esc(p.since)}</span>` : '';

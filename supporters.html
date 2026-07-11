@@ -6,15 +6,45 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Supporters — SpartanH2</title>
-    <meta name="description" content="Thank you to the SpartanH2 supporters keeping the content going.">
+    <title>Supporters | SpartanH2</title>
+    <meta name="description" content="Public thank you to the supporters keeping SpartanH2 on the road. Active Patreon supporters and direct crypto backers listed here.">
+    <meta name="author" content="SpartanH2">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a1020">
     <link rel="canonical" href="https://spartanh2.com/supporters.html">
-    <link rel="stylesheet" href="styles.css?v=20260711064041">
+
+    <meta property="og:title" content="Supporters | SpartanH2">
+    <meta property="og:description" content="Public thank you to the supporters keeping SpartanH2 on the road.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spartanh2.com/supporters.html">
+    <meta property="og:site_name" content="SpartanH2">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:width" content="992">
+    <meta property="og:image:height" content="1040">
+    <meta property="og:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Supporters | SpartanH2">
+    <meta name="twitter:description" content="Public thank you to the supporters keeping SpartanH2 on the road.">
+    <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
+
+    <link rel="stylesheet" href="styles.css?v=20260711071101">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://spartanh2.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Supporters", "item": "https://spartanh2.com/supporters.html" }
+      ]
+    }
+    </script>
 </head>
 <body>
     <main class="card">
@@ -30,7 +60,7 @@
 
             <p class="supporters-tail" id="supporters-tail"></p>
 
-            <p class="fine-print">Want your name here? Any active Patreon tier (or a supporter role via Direct) gets you on the list. Prefer to stay anonymous? Just say so — we count you silently in the tail below.</p>
+            <p class="fine-print">Want your name here? Any active Patreon tier (or a supporter role via Direct) gets you on the list. Prefer to stay anonymous? Just say so and we count you silently in the tail below.</p>
         </section>
 
         <footer class="footer">
@@ -41,14 +71,14 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════
-        //  Supporters are loaded from supporters.json — edit that file to
+        //  Supporters are loaded from supporters.json : edit that file to
         //  add / remove / update entries. This script only renders.
         //
         //  Fields in supporters.json:
-        //    name       — display name (required)
-        //    tier       — "Rider" | "Legend" | custom string (required)
-        //    since      — YYYY-MM-DD start date (required; months computed live)
-        //    instagram  — IG handle without @ (optional)
+        //    name       : display name (required)
+        //    tier       : "Rider" | "Legend" | custom string (required)
+        //    since      : YYYY-MM-DD start date (required; months computed live)
+        //    instagram  : IG handle without @ (optional)
         //  Plus top-level anonymousCount for opt-out tail.
         // ═══════════════════════════════════════════════════════════════
 

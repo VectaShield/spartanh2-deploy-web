@@ -6,20 +6,103 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>SpartanH2 — Motorcycle Content</title>
-    <meta name="description" content="SpartanH2 — motorcycle content creator. Central hub for YouTube, Instagram, TikTok, Rumble, X, Discord, Snapchat, Facebook, Patreon, merch, and direct crypto support.">
+    <title>SpartanH2 | Motorcycle Content Creator | Southeast Michigan</title>
+    <meta name="description" content="SpartanH2 is a motorcycle content creator based in southeast Michigan. Central hub for YouTube, Instagram, TikTok, Rumble, X, Discord, Snapchat, Facebook, Patreon, merch, and direct crypto support.">
+    <meta name="author" content="SpartanH2">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0a1020">
     <link rel="canonical" href="https://spartanh2.com/">
-    <link rel="stylesheet" href="styles.css?v=20260711064041">
+
+    <!-- Open Graph. Renders the preview card when the site is linked on
+         Discord, Facebook, LinkedIn, Slack, and iMessage. -->
+    <meta property="og:title" content="SpartanH2 | Motorcycle Content Creator | Southeast Michigan">
+    <meta property="og:description" content="Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spartanh2.com/">
+    <meta property="og:site_name" content="SpartanH2">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:secure_url" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="992">
+    <meta property="og:image:height" content="1040">
+    <meta property="og:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <!-- Twitter Card. summary (not summary_large_image) because our
+         current avatar is near square, not the 2:1 landscape a large
+         card wants. Swap to summary_large_image when we ship a
+         1200x630 hero. -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="SpartanH2 | Motorcycle Content Creator | Southeast Michigan">
+    <meta name="twitter:description" content="Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.">
+    <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <link rel="stylesheet" href="styles.css?v=20260711071101">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Structured data: Person schema anchors the SpartanH2 identity
+         across search and AI answers. sameAs links every platform so
+         crawlers can consolidate the entity. WebSite schema attributes
+         the site to that same Person via shared @id. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": "https://spartanh2.com/#person",
+      "name": "SpartanH2",
+      "alternateName": ["Spartan H2", "spartan.h2"],
+      "url": "https://spartanh2.com/",
+      "image": "https://spartanh2.com/SpartanH2.jpg",
+      "jobTitle": "Motorcycle Content Creator",
+      "description": "Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.",
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressRegion": "MI",
+          "addressLocality": "Southeast Michigan",
+          "addressCountry": "US"
+        }
+      },
+      "knowsAbout": [
+        "Motorcycles",
+        "POV riding",
+        "Group rides",
+        "Michigan motorcycle culture",
+        "Bike nights",
+        "Rider community"
+      ],
+      "sameAs": [
+        "https://www.youtube.com/@SpartanH2",
+        "https://www.instagram.com/SpartanH2/",
+        "https://www.tiktok.com/@spartan.h2",
+        "https://rumble.com/user/SpartanH2",
+        "https://x.com/Spartan_H2",
+        "https://www.facebook.com/profile.php?id=61591693924495",
+        "https://www.snapchat.com/add/Spartan_H2"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://spartanh2.com/#website",
+      "name": "SpartanH2",
+      "url": "https://spartanh2.com/",
+      "inLanguage": "en-US",
+      "publisher": { "@id": "https://spartanh2.com/#person" }
+    }
+    </script>
 </head>
 <body>
     <main class="card">
         <div class="avatar-wrap">
-            <img src="SpartanH2.jpg" alt="SpartanH2" class="avatar">
+            <img src="SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
         </div>
 
         <h1 class="name">SPARTAN<span class="accent">H2</span></h1>
@@ -28,12 +111,12 @@
         <section class="links">
             <h2 class="section-title">Support</h2>
             <div class="link-grid" style="grid-template-columns: 1fr;">
-                <a class="link-btn support" href="coming-soon.html" rel="noopener" aria-label="Merch — coming soon" title="Merch (Coming Soon)">
+                <a class="link-btn support" href="coming-soon.html" rel="noopener" aria-label="Merch coming soon" title="Merch (Coming Soon)">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-cart"/></svg></span><span class="label">Merch Coming Soon</span>
                 </a>
             </div>
             <div class="link-grid" style="grid-template-columns: 1fr 1fr;">
-                <a class="link-btn support" href="https://www.patreon.com/SpartanH2" target="_blank" rel="noopener" aria-label="Patreon — SpartanH2" title="Patreon">
+                <a class="link-btn support" href="https://www.patreon.com/SpartanH2" target="_blank" rel="noopener" aria-label="Patreon page for SpartanH2" title="Patreon">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-patreon"/></svg></span><span class="label">Patreon</span>
                 </a>
                 <a class="link-btn support" href="direct.html" rel="noopener" aria-label="Direct crypto support" title="Direct">
@@ -43,16 +126,16 @@
 
             <h2 class="section-title">Watch</h2>
             <div class="link-grid">
-                <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube — SpartanH2 channel" title="YouTube">
+                <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube channel for SpartanH2" title="YouTube">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-youtube"/></svg></span><span class="label">YouTube</span>
                 </a>
-                <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram — @SpartanH2" title="Instagram">
+                <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram profile for SpartanH2" title="Instagram">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-instagram"/></svg></span><span class="label">Instagram</span>
                 </a>
-                <a class="link-btn" href="https://www.tiktok.com/@spartan.h2" target="_blank" rel="noopener" aria-label="TikTok — @spartan.h2" title="TikTok">
+                <a class="link-btn" href="https://www.tiktok.com/@spartan.h2" target="_blank" rel="noopener" aria-label="TikTok profile for SpartanH2" title="TikTok">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-tiktok"/></svg></span><span class="label">TikTok</span>
                 </a>
-                <a class="link-btn" href="https://rumble.com/user/SpartanH2" target="_blank" rel="noopener" aria-label="Rumble — SpartanH2" title="Rumble">
+                <a class="link-btn" href="https://rumble.com/user/SpartanH2" target="_blank" rel="noopener" aria-label="Rumble channel for SpartanH2" title="Rumble">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-rumble"/></svg></span><span class="label">Rumble</span>
                 </a>
             </div>
@@ -62,13 +145,13 @@
                 <a class="link-btn" href="https://discord.gg/fz67hjDnPW" target="_blank" rel="noopener" aria-label="Discord server invite" title="Discord">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-discord"/></svg></span><span class="label">Discord</span>
                 </a>
-                <a class="link-btn" href="https://x.com/Spartan_H2" target="_blank" rel="noopener" aria-label="X (Twitter) — @Spartan_H2" title="X / Twitter">
+                <a class="link-btn" href="https://x.com/Spartan_H2" target="_blank" rel="noopener" aria-label="X profile for SpartanH2" title="X / Twitter">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-x"/></svg></span><span class="label">X / Twitter</span>
                 </a>
-                <a class="link-btn" href="https://www.snapchat.com/add/Spartan_H2" target="_blank" rel="noopener" aria-label="Snapchat — Spartan_H2" title="Snapchat">
+                <a class="link-btn" href="https://www.snapchat.com/add/Spartan_H2" target="_blank" rel="noopener" aria-label="Snapchat for SpartanH2" title="Snapchat">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-snapchat"/></svg></span><span class="label">Snapchat</span>
                 </a>
-                <a class="link-btn" href="https://www.facebook.com/profile.php?id=61591693924495" target="_blank" rel="noopener" aria-label="Facebook — SpartanH2 profile" title="Facebook">
+                <a class="link-btn" href="https://www.facebook.com/profile.php?id=61591693924495" target="_blank" rel="noopener" aria-label="Facebook profile for SpartanH2" title="Facebook">
                     <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-facebook"/></svg></span><span class="label">Facebook</span>
                 </a>
             </div>
@@ -80,7 +163,7 @@
                 <a class="business-cta" href="partners.html" aria-label="Partners page">
                     <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-shield"/></svg><span class="label">Partners</span>
                 </a>
-                <a class="business-cta" href="contact.html" aria-label="Business contact — SpartanH2">
+                <a class="business-cta" href="contact.html" aria-label="Business contact for SpartanH2">
                     <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-envelope"/></svg><span class="label">Business Contact</span>
                 </a>
             </div>
@@ -90,6 +173,7 @@
             <a href="https://SpartanH2.com">SpartanH2.com</a>
             <span>© <span id="year"></span> SpartanH2</span>
         </footer>
+        <p class="footer-identity">Motorcycle content creator. Southeast Michigan.</p>
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>

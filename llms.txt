@@ -1,32 +1,46 @@
 # SpartanH2
 
-> Motorcycle content creator. Personal landing page linking to social channels, merch, Patreon, and direct crypto support.
+> SpartanH2 is a motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture. Independent creator, community first, quality over quantity.
+
+Content reflects personal riding experience. Not paid dealer or sponsor endorsement unless explicitly stated. Site aesthetic is dark navy, gold, and crimson with a premium motorcycle team feel.
 
 ## About
-SpartanH2 makes motorcycle content — riding, gear, and community. This site is the central hub connecting fans to all channels and support options.
 
-## Pages
-- [Home](https://spartanh2.com/): main landing page with all social and support links
-- [Direct Support](https://spartanh2.com/direct.html): send crypto (BTC, XMR, DOGE) directly to the creator
-- [Supporters](https://spartanh2.com/supporters.html): public thank-you list for active supporters
-- [Partners](https://spartanh2.com/partners.html): partnered creators and brands
-- [Contact](https://spartanh2.com/contact.html): business, brand, and partnership inquiries
-- [Merch (Coming Soon)](https://spartanh2.com/coming-soon.html): merch store placeholder while sh2.store is in build
+- [Home](https://spartanh2.com/): Central hub with the SpartanH2 identity, links to every platform, and quick access to support and partners
 
-## Social channels
-- YouTube: https://www.youtube.com/@SpartanH2
-- Instagram: https://www.instagram.com/SpartanH2/
-- TikTok: https://www.tiktok.com/@spartan.h2
-- X (Twitter): https://x.com/Spartan_H2
-- Discord server: https://discord.gg/fz67hjDnPW
-- Snapchat: https://www.snapchat.com/add/Spartan_H2
-- Facebook: https://www.facebook.com/profile.php?id=61591693924495
-- Rumble: https://rumble.com/user/SpartanH2
+## Content types
+
+- POV motorcycle riding footage from the helmet cam and on bike
+- Group ride coverage across southeast Michigan and the wider region
+- Bike night footage and local meet coverage
+- Rider culture, community moments, and street level storytelling
+
+## Location
+
+- Southeast Michigan, United States
+
+## Platforms
+
+- [YouTube](https://www.youtube.com/@SpartanH2): Long form POV rides and group ride edits
+- [Instagram](https://www.instagram.com/SpartanH2/): Photos, reels, event clips
+- [TikTok](https://www.tiktok.com/@spartan.h2): Short form ride and culture clips
+- [Rumble](https://rumble.com/user/SpartanH2): Mirror of YouTube long form
+- [X (Twitter)](https://x.com/Spartan_H2): Posts and updates
+- [Facebook](https://www.facebook.com/profile.php?id=61591693924495): Community updates
+- [Snapchat](https://www.snapchat.com/add/Spartan_H2): Behind the scenes
+- [Discord](https://discord.gg/fz67hjDnPW): Rider community server
 
 ## Support
-- Patreon: https://www.patreon.com/SpartanH2
-- Merch store (in build): https://sh2.store
-- Direct crypto (BTC / XMR / DOGE): https://spartanh2.com/direct.html
+
+- [Patreon](https://www.patreon.com/SpartanH2): Membership and behind the scenes access
+- [Crypto direct support](https://spartanh2.com/direct.html): Bitcoin, Monero, and Dogecoin addresses
+- [Merch (coming soon)](https://sh2.store): Official SpartanH2 apparel
+- [Supporters list](https://spartanh2.com/supporters.html): Public thank you to active supporters
+
+## Partners
+
+- [Partners](https://spartanh2.com/partners.html): Partnered creators and brands
 
 ## Contact
-- Website: https://spartanh2.com
+
+- [Contact](https://spartanh2.com/contact.html): Business, brand, and partnership inquiries

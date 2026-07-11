@@ -1,4 +1,58 @@
-User-agent: *
+# SpartanH2. Allow all discovery and AI ingestion.
+Sitemap: https://spartanh2.com/sitemap.xml
+
+# Traditional search
+User-agent: Googlebot
+Allow: /
+User-agent: Bingbot
 Allow: /
 
-Sitemap: https://spartanh2.com/sitemap.xml
+# OpenAI (training + search + user fetch)
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic (training + search + user fetch)
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+
+# Google Gemini training opt-in (token only, governs training use of Googlebot data)
+User-agent: Google-Extended
+Allow: /
+
+# Apple Intelligence opt-in (token only)
+User-agent: Applebot-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+
+# Common Crawl (feeds most open training corpora)
+User-agent: CCBot
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+# Amazon (Alexa, Rufus)
+User-agent: Amazonbot
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# Everyone else
+User-agent: *
+Allow: /

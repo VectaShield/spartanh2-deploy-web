@@ -115,6 +115,20 @@ body {
     z-index: 1;
 }
 
+/* Footer identity line. Sits under the main footer with role + region.
+   Reinforces the SpartanH2 identity for humans and for crawlers/AI without
+   competing for attention with the primary tagline at the top of the page. */
+.footer-identity {
+    text-align: center;
+    color: rgba(232, 199, 106, 0.4);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}
+
 .section-title {
     font-family: 'Cinzel', serif;
     font-size: 1.05rem;
