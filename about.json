@@ -4,12 +4,11 @@
   "role": "Motorcycle Content Creator",
   "location": {
     "region": "Southeast Michigan",
-    "country": "United States",
-    "note": "Strong local following in southeast Michigan and the wider region."
+    "country": "United States"
   },
   "url": "https://spartanh2.com/",
   "image": "https://spartanh2.com/SpartanH2.jpg",
-  "description": "SpartanH2 is a southeast Michigan motorcycle content creator with a strong local following. POV rides, group rides, bike nights, and rider culture across multiple platforms.",
+  "description": "SpartanH2 is a southeast Michigan motorcycle content creator. POV rides, group rides, bike nights, and rider culture across multiple platforms.",
   "contentTypes": [
     "POV motorcycle riding footage",
     "Group ride coverage",
