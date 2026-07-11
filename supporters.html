@@ -10,7 +10,7 @@
     <meta name="description" content="Thank you to the SpartanH2 supporters keeping the content going.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://spartanh2.com/supporters.html">
-    <link rel="stylesheet" href="styles.css?v=20260711061257">
+    <link rel="stylesheet" href="styles.css?v=20260711063511">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,7 +97,7 @@
                 const tierClass = tier.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
                 const igHandle = s.instagram ? encodeURIComponent(s.instagram) : '';
                 const igLink = igHandle
-                    ? `<a class="supporter-ig" href="https://www.instagram.com/${igHandle}/" target="_blank" rel="noopener" aria-label="${esc(s.name)} on Instagram" title="@${esc(s.instagram)}">◉</a>`
+                    ? `<a class="supporter-ig" href="https://www.instagram.com/${igHandle}/" target="_blank" rel="noopener" aria-label="${esc(s.name)} on Instagram" title="@${esc(s.instagram)}"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-instagram"/></svg></a>`
                     : '';
                 return `
                     <div class="supporter-row ${ms}">

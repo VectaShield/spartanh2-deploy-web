@@ -10,7 +10,7 @@
     <meta name="description" content="Partnered creators and brands riding with SpartanH2.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://spartanh2.com/partners.html">
-    <link rel="stylesheet" href="styles.css?v=20260711061257">
+    <link rel="stylesheet" href="styles.css?v=20260711063511">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
         //    region        — 2-letter ISO country code ('US', 'JP', 'GB' — rendered as a small text badge; emoji flags don't render on Windows) or omit
         //    disciplines   — array: e.g. ['Street','Track']
         //    categories    — array: e.g. ['Creator'] or ['Brand','Apparel']
-        //    socials       — array of {label, url, icon} — icon is a single glyph/emoji
+        //    socials       — array of {label, url, iconId} — iconId is a key from icons.svg (e.g. 'youtube', 'instagram', 'tiktok', 'facebook')
         //    cta           — { label, url } primary call-to-action button, or omit
         //    kind          — 'creator' | 'brand' (for future filtering; unused visually)
         // ═══════════════════════════════════════════════════════════════
@@ -61,8 +61,8 @@
                 disciplines: ['Street', 'Drag'],
                 categories: ['Creator'],
                 socials: [
-                    { label: 'TikTok',    url: 'https://www.tiktok.com/@zh.who',      icon: '♪' },
-                    { label: 'Instagram', url: 'https://www.instagram.com/zh.who/',   icon: '◉' },
+                    { label: 'TikTok',    url: 'https://www.tiktok.com/@zh.who',      iconId: 'tiktok' },
+                    { label: 'Instagram', url: 'https://www.instagram.com/zh.who/',   iconId: 'instagram' },
                 ],
                 cta: { label: 'Follow', url: 'https://www.tiktok.com/@zh.who' },
                 kind: 'creator',
@@ -128,9 +128,12 @@
                     ? `<div class="partner-chips">${categoryChips}${disciplineChips}</div>`
                     : '';
 
-                const buttons = (p.socials || []).map(s =>
-                    `<a class="partner-btn" href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.name)} on ${esc(s.label)}">${esc(s.label)}</a>`
-                ).join('');
+                const buttons = (p.socials || []).map(s => {
+                    const iconMarkup = s.iconId
+                        ? `<svg class="icon-svg partner-btn-icon" aria-hidden="true"><use href="icons.svg#i-${esc(s.iconId)}"/></svg>`
+                        : '';
+                    return `<a class="partner-btn" href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener" style="--brand:${color};" aria-label="${esc(p.name)} on ${esc(s.label)}">${iconMarkup}<span>${esc(s.label)}</span></a>`;
+                }).join('');
                 const buttonsBlock = buttons ? `<div class="partner-buttons">${buttons}</div>` : '';
 
                 const cta = p.cta

@@ -200,6 +200,19 @@ body {
     box-shadow: inset 0 0 0 1px rgba(201, 162, 75, 0.4);
 }
 
+/* Inline-referenced icon SVGs. `fill: currentColor` lets each host
+   element control the icon color via its own `color` property. */
+.icon-svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    display: block;
+}
+.business-cta .icon-svg {
+    width: 18px;
+    height: 18px;
+}
+
 .link-btn.support .icon {
     background: linear-gradient(135deg, var(--gold-bright), var(--gold));
     color: var(--navy);
@@ -723,6 +736,26 @@ body {
     color: #0a1020;
     border-color: var(--brand, #e8c76a);
     transform: translateY(-1px);
+}
+.partner-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.partner-btn-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.supporter-ig {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.supporter-ig .icon-svg {
+    width: 18px;
+    height: 18px;
 }
 .partner-cta {
     position: relative;
