@@ -29,7 +29,7 @@
     <meta name="twitter:description" content="Partnered creators and brands riding with SpartanH2.">
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
 
-    <link rel="stylesheet" href="styles.css?v=20260711150506">
+    <link rel="stylesheet" href="styles.css?v=20260711150929">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,7 +73,8 @@
         //    avatar        : image path/URL, OR omit to use SVG initials fallback
         //    tagline       : short one-liner
         //    since         : year they became a partner (number or string)
-        //    region        : 2-letter ISO country code ('US', 'JP', 'GB' : rendered as a small text badge; emoji flags don't render on Windows) or omit
+        //    region        : 2-letter ISO country code ('US', 'JP', 'GB'). Renders as an inline SVG flag if present in the FLAGS map below, falls back to a small text badge otherwise. Omit to hide.
+        //    bike          : motorcycle model as a string (e.g. 'Z H2', 'Panigale V2'). Renders as a small badge after the flag.
         //    disciplines   : array: e.g. ['Street','Track']
         //    categories    : array: e.g. ['Creator'] or ['Brand','Apparel']
         //    socials       : array of {label, url, iconId} : iconId is a key from icons.svg (e.g. 'youtube', 'instagram', 'tiktok', 'facebook')
@@ -88,6 +89,7 @@
                 tagline: 'Detroit biketok, street & strip.',
                 since: 2024,
                 region: 'US',
+                bike: 'Z H2',
                 disciplines: ['Street', 'Drag'],
                 categories: ['Creator'],
                 socials: [
@@ -142,6 +144,21 @@
         // Validate brand color : only 3/6/8-digit hex allowed in inline style
         const safeColor = (c) => /^#[0-9a-f]{3,8}$/i.test(String(c ?? '')) ? c : '#e8c76a';
 
+        // Country flags as inline SVG. Data URI so each <img> instance is
+        // fully self contained and marker IDs cannot collide across cards.
+        // Source: flag-icons library (github.com/lipis/flag-icons, MIT).
+        // Add new countries here as partners appear.
+        const FLAGS = {
+            US: {
+                name: 'United States',
+                svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"><path fill="#bd3d44" d="M0 0h640v480H0"/><path stroke="#fff" stroke-width="37" d="M0 55.3h640M0 129h640M0 203h640M0 277h640M0 351h640M0 425h640"/><path fill="#192f5d" d="M0 0h364.8v258.5H0"/><marker id="a" markerHeight="30" markerWidth="30"><path fill="#fff" d="m14 0 9 27L0 10h28L5 27z"/></marker><path fill="none" marker-mid="url(#a)" d="m0 0 16 11h61 61 61 61 60L47 37h61 61 60 61L16 63h61 61 61 61 60L47 89h61 61 60 61L16 115h61 61 61 61 60L47 141h61 61 60 61L16 166h61 61 61 61 60L47 192h61 61 60 61L16 218h61 61 61 61 60z"/></svg>`,
+            },
+        };
+        const flagDataUri = (code) => {
+            const f = FLAGS[code];
+            return f ? 'data:image/svg+xml,' + encodeURIComponent(f.svg) : null;
+        };
+
         function renderPartners() {
             const container = document.getElementById('partners-grid');
             container.innerHTML = PARTNERS.map(p => {
@@ -171,9 +188,19 @@
                     : '';
 
                 const sinceBadge = p.since ? `<span class="partner-since">Since ${esc(p.since)}</span>` : '';
-                const region = p.region ? `<span class="partner-region">${esc(p.region)}</span>` : '';
-                const metaLine = (sinceBadge || region)
-                    ? `<div class="partner-meta">${region}${sinceBadge}</div>`
+                const bikeBadge = p.bike ? `<span class="partner-bike">${esc(p.bike)}</span>` : '';
+                let regionMarkup = '';
+                if (p.region) {
+                    const uri = flagDataUri(p.region);
+                    if (uri) {
+                        const flagName = FLAGS[p.region].name;
+                        regionMarkup = `<img class="partner-flag" src="${uri}" alt="${esc(flagName)}" title="${esc(flagName)}" width="22" height="16">`;
+                    } else {
+                        regionMarkup = `<span class="partner-region">${esc(p.region)}</span>`;
+                    }
+                }
+                const metaLine = (regionMarkup || bikeBadge || sinceBadge)
+                    ? `<div class="partner-meta">${regionMarkup}${bikeBadge}${sinceBadge}</div>`
                     : '';
 
                 return `
