@@ -29,7 +29,7 @@
     <meta name="twitter:description" content="Partnered creators and brands riding with SpartanH2.">
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
 
-    <link rel="stylesheet" href="styles.css?v=20260711150929">
+    <link rel="stylesheet" href="styles.css?v=20260711151249">
     <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -194,7 +194,7 @@
                     const uri = flagDataUri(p.region);
                     if (uri) {
                         const flagName = FLAGS[p.region].name;
-                        regionMarkup = `<img class="partner-flag" src="${uri}" alt="${esc(flagName)}" title="${esc(flagName)}" width="22" height="16">`;
+                        regionMarkup = `<span class="partner-flag-wrap" title="${esc(flagName)}"><img class="partner-flag" src="${uri}" alt="${esc(flagName)}" width="18" height="13"></span>`;
                     } else {
                         regionMarkup = `<span class="partner-region">${esc(p.region)}</span>`;
                     }

@@ -710,14 +710,21 @@ body {
     border-radius: 3px;
     background: rgba(232, 199, 106, 0.05);
 }
-/* Inline SVG country flag from FLAGS map. Sits inside partner-meta line. */
+/* Country flag chip. Wrapper carries the border and padding so the
+   badge matches the neighboring SINCE and BIKE chips in size. */
+.partner-flag-wrap {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border: 1px solid rgba(232, 199, 106, 0.25);
+    border-radius: 4px;
+    line-height: 1;
+}
 .partner-flag {
-    display: inline-block;
-    width: 22px;
-    height: 16px;
+    display: block;
+    width: 18px;
+    height: 13px;
     border-radius: 2px;
-    box-shadow: 0 0 0 1px rgba(232, 199, 106, 0.3);
-    vertical-align: middle;
     object-fit: cover;
 }
 .partner-since,
