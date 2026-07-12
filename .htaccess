@@ -1,0 +1,90 @@
+# Cache control — force fresh HTML/CSS/JS, allow short cache for images.
+# All rules wrapped in IfModule so a missing Apache module can't 500 the site.
+
+<IfModule mod_headers.c>
+    # HTML: never cache, always revalidate
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # CSS / JS: revalidate every request (304 if unchanged — cheap)
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    # Text config files (robots, sitemap, llms): revalidate every request
+    <FilesMatch "\.(txt|xml)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+
+    # Images: revalidate every request (browser caches locally but asks
+    # server; server returns 304 if unchanged, fresh if changed).
+    # Was max-age=86400 but that caused updated images to be invisible
+    # for up to 24 hours after a swap.
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType text/css "access plus 0 seconds"
+    ExpiresByType application/javascript "access plus 0 seconds"
+    ExpiresByType image/jpeg "access plus 0 seconds"
+    ExpiresByType image/png "access plus 0 seconds"
+    ExpiresByType image/webp "access plus 0 seconds"
+    ExpiresByType image/svg+xml "access plus 0 seconds"
+</IfModule>
+
+# Security and privacy headers. All optional but standard for a
+# public site. Guarded so a missing mod_headers cannot 500 us.
+<IfModule mod_headers.c>
+    # HTTPS enforcement signal for compliant browsers
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+    # Prevent MIME sniffing (browser trusts our Content-Type)
+    Header set X-Content-Type-Options "nosniff"
+    # Send only the origin (not the full URL) on cross origin navigations
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # Deny APIs we do not use so a supply chain compromise cannot silently enable them
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    # Legacy XSS protection header. Modern browsers ignore it but some enterprise proxies still respect it.
+    Header set X-XSS-Protection "0"
+</IfModule>
+
+# Gzip compression for text based responses. Big Core Web Vitals win
+# for HTML and CSS. Images already ship compressed, do not double compress.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/rss+xml application/atom+xml image/svg+xml
+</IfModule>
+
+# Brotli where available, preferred over gzip when both are supported
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml application/rss+xml application/atom+xml image/svg+xml
+</IfModule>
+
+# ─────────────────────────────────────────────────────────────
+# Custom error pages
+# ─────────────────────────────────────────────────────────────
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+ErrorDocument 503 /maintenance.html
+
+# ─────────────────────────────────────────────────────────────
+# Maintenance mode — DISABLED by default.
+# To enable: uncomment the RewriteEngine block below. All requests
+# will 503 to /maintenance.html except the maintenance page itself
+# and its static assets. Undo by re-commenting.
+# ─────────────────────────────────────────────────────────────
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{REQUEST_URI} !^/maintenance\.html$
+#     RewriteCond %{REQUEST_URI} !^/styles\.css
+#     RewriteCond %{REQUEST_URI} !^/SpartanH2\.jpg$
+#     RewriteCond %{REQUEST_URI} !\.(css|jpg|jpeg|png|gif|webp|svg|ico|woff|woff2)$
+#     RewriteRule ^ /maintenance.html [R=503,L]
+#     # Optional: tell clients when to retry (in seconds)
+#     Header always set Retry-After "3600"
+# </IfModule>
