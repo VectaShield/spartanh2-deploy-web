@@ -6,12 +6,12 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>SpartanH2 | Motorcycle Content Creator | Southeast Michigan</title>
+    <title>Headlight — BG demo</title>
     <meta name="description" content="SpartanH2 is a motorcycle content creator based in southeast Michigan. Central hub for YouTube, Instagram, TikTok, Rumble, X, Discord, Snapchat, Facebook, Patreon, merch, and direct crypto support.">
     <meta name="author" content="SpartanH2">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#0a1020">
-    <link rel="canonical" href="https://spartanh2.com/">
+    
 
     <!-- Open Graph. Renders the preview card when the site is linked on
          Discord, Facebook, LinkedIn, Slack, and iMessage. -->
@@ -38,8 +38,8 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="styles.css?v=20260713161411">
-    <link rel="icon" type="image/jpeg" href="SpartanH2.jpg">
+    <link rel="stylesheet" href="/styles.css?v=20260713161411">
+    <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -98,11 +98,98 @@
       ]
     }
     </script>
+<style>
+
+.demo-bar {
+  position: fixed; top: 8px; left: 8px; z-index: 99;
+  max-width: calc(100vw - 16px);
+  background: rgba(4,6,14,0.94);
+  border: 1px solid rgba(201,162,75,0.5);
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.demo-bar summary {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; cursor: pointer; list-style: none;
+  color: #f4f1e8; white-space: nowrap;
+}
+.demo-bar summary::-webkit-details-marker { display: none; }
+.demo-current { color: #e8c76a; }
+.demo-caret { color: #a9b0c0; transition: transform .15s ease; }
+.demo-bar[open] .demo-caret { transform: rotate(180deg); }
+.demo-links {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid rgba(201,162,75,0.3);
+  max-height: 55vh; overflow-y: auto;
+}
+.demo-bar a { color: #a9b0c0; text-decoration: none; padding: 5px 8px; border: 1px solid transparent; }
+.demo-bar a:hover { color: #f4f1e8; border-color: rgba(201,162,75,0.5); }
+.demo-bar a.on { color: #e8c76a; border-color: #e8c76a; }
+.demo-tag { color: #0a1020; background: #e8c76a; padding: 3px 7px; font-weight: 700; }
+.demo-home { color: #e11d48 !important; }
+@media (min-width: 900px) { .demo-bar { max-width: min(880px, calc(100vw - 16px)); } }
+
+/* FX layer. NOT z-index:-1 — body's own gradient background paints after
+   negative-z-index children in the root stacking context and would hide it.
+   z-index:0 sits above the body gradient, below .card (z-index:1). */
+#bgfx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+#bgfx canvas { width: 100%; height: 100%; display: block; }
+/* Sheet-lightning wash (storm demo). Opacity is driven from JS. */
+.wet-vig { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,10,24,0.95) 18%, rgba(6,10,24,0.45) 45%, transparent); }
+.flash {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(232,199,106,0.30), rgba(185,28,44,0.10) 45%, transparent 75%);
+  transition: opacity 90ms linear;
+}
+
+.haze { position: absolute; inset: -20%; background-repeat: repeat; opacity: 0.4; animation: hazeDrift 100s linear infinite; will-change: transform; }
+@keyframes hazeDrift { from { transform: translate3d(-4%,0,0) scale(1.6); } to { transform: translate3d(4%,-2%,0) scale(1.6); } }
+.beam {
+  position: absolute; top: -30%; left: 50%; width: 42%; height: 170%;
+  margin-left: -21%;
+  background: linear-gradient(180deg, rgba(232,199,106,0.20), rgba(201,162,75,0.06) 45%, transparent 75%);
+  clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);   /* cone */
+  filter: blur(26px);
+  transform-origin: 50% 0;
+  animation: sweep 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.beam-2 {
+  position: absolute; top: -30%; left: 50%; width: 26%; height: 150%;
+  margin-left: -13%;
+  background: linear-gradient(180deg, rgba(255,250,235,0.14), transparent 60%);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  filter: blur(14px);
+  transform-origin: 50% 0;
+  animation: sweep 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes sweep {
+  from { transform: rotate(-16deg); }
+  to   { transform: rotate(16deg); }
+}
+.beam-vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(6,10,24,0.88) 78%); }
+@media (prefers-reduced-motion: reduce) { .beam, .beam-2, .haze { animation: none !important; } }
+</style>
 </head>
 <body>
+
+<details class="demo-bar">
+  <summary>
+    <span class="demo-tag">BG</span>
+    <span class="demo-current">Headlight</span>
+    <span class="demo-caret">▾</span>
+  </summary>
+  <div class="demo-links">
+    <a href="storm.html" class="">Storm City</a><a href="lightning.html" class="">Thunderhead</a><a href="wet.html" class="">Wet Asphalt</a><a href="chrome-rain.html" class="">Rain on Chrome</a><a href="carbon.html" class="">Carbon Weave</a><a href="goldleaf.html" class="">Gold Leaf</a><a href="pinstripe.html" class="">Pinstripe</a><a href="brushed.html" class="">Brushed Metal</a><a href="slash.html" class="">Paint Slash</a><a href="halftone.html" class="">Halftone</a><a href="speedlines.html" class="">Speed Lines</a><a href="tach.html" class="">Redline</a><a href="sparks.html" class="">Sparks</a><a href="beam.html" class="on">Headlight</a>
+    <a href="index.html" class="demo-home">All ▦</a>
+  </div>
+</details>
+<div id="bgfx"><div class="haze"></div><div class="beam"></div><div class="beam-2"></div><div class="beam-vig"></div></div>
     <main class="card">
         <div class="avatar-wrap">
-            <img src="SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
+            <img src="/SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
         </div>
 
         <h1 class="name">SPARTAN<span class="accent">H2</span></h1>
@@ -112,59 +199,59 @@
             <h2 class="section-title">Support</h2>
             <div class="link-grid" style="grid-template-columns: 1fr;">
                 <a class="link-btn support" href="coming-soon.html" rel="noopener" aria-label="Merch coming soon" title="Merch (Coming Soon)">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-cart"/></svg></span><span class="label">Merch Coming Soon</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-cart"/></svg></span><span class="label">Merch Coming Soon</span>
                 </a>
             </div>
             <div class="link-grid" style="grid-template-columns: 1fr 1fr;">
                 <a class="link-btn support" href="https://www.patreon.com/SpartanH2" target="_blank" rel="noopener" aria-label="Patreon page for SpartanH2" title="Patreon">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-patreon"/></svg></span><span class="label">Patreon</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-patreon"/></svg></span><span class="label">Patreon</span>
                 </a>
                 <a class="link-btn support" href="direct.html" rel="noopener" aria-label="Direct crypto support" title="Direct">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-bitcoin"/></svg></span><span class="label">Direct</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-bitcoin"/></svg></span><span class="label">Direct</span>
                 </a>
             </div>
 
             <h2 class="section-title">Watch</h2>
             <div class="link-grid">
                 <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube channel for SpartanH2" title="YouTube">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-youtube"/></svg></span><span class="label">YouTube</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-youtube"/></svg></span><span class="label">YouTube</span>
                 </a>
                 <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram profile for SpartanH2" title="Instagram">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-instagram"/></svg></span><span class="label">Instagram</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-instagram"/></svg></span><span class="label">Instagram</span>
                 </a>
                 <a class="link-btn" href="https://www.tiktok.com/@spartan.h2" target="_blank" rel="noopener" aria-label="TikTok profile for SpartanH2" title="TikTok">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-tiktok"/></svg></span><span class="label">TikTok</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-tiktok"/></svg></span><span class="label">TikTok</span>
                 </a>
                 <a class="link-btn" href="https://rumble.com/user/SpartanH2" target="_blank" rel="noopener" aria-label="Rumble channel for SpartanH2" title="Rumble">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-rumble"/></svg></span><span class="label">Rumble</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-rumble"/></svg></span><span class="label">Rumble</span>
                 </a>
             </div>
 
             <h2 class="section-title">Connect</h2>
             <div class="link-grid">
                 <a class="link-btn" href="https://discord.gg/fz67hjDnPW" target="_blank" rel="noopener" aria-label="Discord server invite" title="Discord">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-discord"/></svg></span><span class="label">Discord</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-discord"/></svg></span><span class="label">Discord</span>
                 </a>
                 <a class="link-btn" href="https://x.com/Spartan_H2" target="_blank" rel="noopener" aria-label="X profile for SpartanH2" title="X / Twitter">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-x"/></svg></span><span class="label">X / Twitter</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-x"/></svg></span><span class="label">X / Twitter</span>
                 </a>
                 <a class="link-btn" href="https://www.snapchat.com/add/Spartan_H2" target="_blank" rel="noopener" aria-label="Snapchat for SpartanH2" title="Snapchat">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-snapchat"/></svg></span><span class="label">Snapchat</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-snapchat"/></svg></span><span class="label">Snapchat</span>
                 </a>
                 <a class="link-btn" href="https://www.facebook.com/profile.php?id=61591693924495" target="_blank" rel="noopener" aria-label="Facebook profile for SpartanH2" title="Facebook">
-                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-facebook"/></svg></span><span class="label">Facebook</span>
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-facebook"/></svg></span><span class="label">Facebook</span>
                 </a>
             </div>
 
             <div class="meta-cta-row">
                 <a class="business-cta" href="supporters.html" aria-label="Supporters page">
-                    <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-star"/></svg><span class="label">Supporters</span>
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-star"/></svg><span class="label">Supporters</span>
                 </a>
                 <a class="business-cta" href="partners.html" aria-label="Partners page">
-                    <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-shield"/></svg><span class="label">Partners</span>
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-shield"/></svg><span class="label">Partners</span>
                 </a>
                 <a class="business-cta" href="contact.html" aria-label="Business contact for SpartanH2">
-                    <svg class="icon-svg" aria-hidden="true"><use href="icons.svg#i-envelope"/></svg><span class="label">Business Contact</span>
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-envelope"/></svg><span class="label">Business Contact</span>
                 </a>
             </div>
         </section>
@@ -184,5 +271,29 @@
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+(function(){
+
+function bake(tint, blur, blobs) {
+  const s = 512, c = document.createElement('canvas');
+  c.width = c.height = s;
+  const x = c.getContext('2d');
+  x.filter = 'blur(' + blur + 'px)';
+  for (let i = 0; i < blobs; i++) {
+    const cx = Math.random() * s, cy = Math.random() * s, r = 60 + Math.random() * 130;
+    const a = 0.08 + Math.random() * 0.16;
+    for (const dx of [-s, 0, s]) for (const dy of [-s, 0, s]) {
+      const g = x.createRadialGradient(cx + dx, cy + dy, 0, cx + dx, cy + dy, r);
+      g.addColorStop(0, 'rgba(' + tint + ',' + a + ')');
+      g.addColorStop(1, 'rgba(' + tint + ',0)');
+      x.fillStyle = g;
+      x.beginPath(); x.arc(cx + dx, cy + dy, r, 0, 7); x.fill();
+    }
+  }
+  return c.toDataURL();
+}
+document.querySelector('.haze').style.backgroundImage = 'url(' + bake('201,162,75', 34, 14) + ')';
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Storm City — BG demo</title>
+    <meta name="description" content="SpartanH2 is a motorcycle content creator based in southeast Michigan. Central hub for YouTube, Instagram, TikTok, Rumble, X, Discord, Snapchat, Facebook, Patreon, merch, and direct crypto support.">
+    <meta name="author" content="SpartanH2">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0a1020">
+    
+
+    <!-- Open Graph. Renders the preview card when the site is linked on
+         Discord, Facebook, LinkedIn, Slack, and iMessage. -->
+    <meta property="og:title" content="SpartanH2 | Motorcycle Content Creator | Southeast Michigan">
+    <meta property="og:description" content="Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://spartanh2.com/">
+    <meta property="og:site_name" content="SpartanH2">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:secure_url" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="992">
+    <meta property="og:image:height" content="1040">
+    <meta property="og:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <!-- Twitter Card. summary (not summary_large_image) because our
+         current avatar is near square, not the 2:1 landscape a large
+         card wants. Swap to summary_large_image when we ship a
+         1200x630 hero. -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="SpartanH2 | Motorcycle Content Creator | Southeast Michigan">
+    <meta name="twitter:description" content="Motorcycle content creator based in southeast Michigan. POV rides, group rides, bike night footage, and rider culture.">
+    <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
+    <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
+
+    <link rel="stylesheet" href="/styles.css?v=20260713161411">
+    <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Structured data. Person + WebSite consolidated into one @graph
+         so parsers can read the identity graph in a single pass. Facts
+         here mirror the visible About caption at the bottom of the page. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://spartanh2.com/#person",
+          "name": "SpartanH2",
+          "alternateName": ["Spartan H2", "spartan.h2"],
+          "url": "https://spartanh2.com/",
+          "image": "https://spartanh2.com/SpartanH2.jpg",
+          "jobTitle": "Motorcycle Content Creator",
+          "description": "SpartanH2 is a southeast Michigan motorcycle content creator. POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.",
+          "homeLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressRegion": "MI",
+              "addressLocality": "Southeast Michigan",
+              "addressCountry": "US"
+            }
+          },
+          "knowsAbout": [
+            "Motorcycles",
+            "POV riding",
+            "Group rides",
+            "Michigan motorcycle culture",
+            "Bike nights",
+            "Rider community"
+          ],
+          "sameAs": [
+            "https://www.youtube.com/@SpartanH2",
+            "https://www.instagram.com/SpartanH2/",
+            "https://www.tiktok.com/@spartan.h2",
+            "https://rumble.com/user/SpartanH2",
+            "https://x.com/Spartan_H2",
+            "https://www.facebook.com/profile.php?id=61591693924495",
+            "https://www.snapchat.com/add/Spartan_H2"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://spartanh2.com/#website",
+          "name": "SpartanH2",
+          "url": "https://spartanh2.com/",
+          "inLanguage": "en-US",
+          "publisher": { "@id": "https://spartanh2.com/#person" }
+        }
+      ]
+    }
+    </script>
+<style>
+
+.demo-bar {
+  position: fixed; top: 8px; left: 8px; z-index: 99;
+  max-width: calc(100vw - 16px);
+  background: rgba(4,6,14,0.94);
+  border: 1px solid rgba(201,162,75,0.5);
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.demo-bar summary {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px; cursor: pointer; list-style: none;
+  color: #f4f1e8; white-space: nowrap;
+}
+.demo-bar summary::-webkit-details-marker { display: none; }
+.demo-current { color: #e8c76a; }
+.demo-caret { color: #a9b0c0; transition: transform .15s ease; }
+.demo-bar[open] .demo-caret { transform: rotate(180deg); }
+.demo-links {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid rgba(201,162,75,0.3);
+  max-height: 55vh; overflow-y: auto;
+}
+.demo-bar a { color: #a9b0c0; text-decoration: none; padding: 5px 8px; border: 1px solid transparent; }
+.demo-bar a:hover { color: #f4f1e8; border-color: rgba(201,162,75,0.5); }
+.demo-bar a.on { color: #e8c76a; border-color: #e8c76a; }
+.demo-tag { color: #0a1020; background: #e8c76a; padding: 3px 7px; font-weight: 700; }
+.demo-home { color: #e11d48 !important; }
+@media (min-width: 900px) { .demo-bar { max-width: min(880px, calc(100vw - 16px)); } }
+
+/* FX layer. NOT z-index:-1 — body's own gradient background paints after
+   negative-z-index children in the root stacking context and would hide it.
+   z-index:0 sits above the body gradient, below .card (z-index:1). */
+#bgfx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+#bgfx canvas { width: 100%; height: 100%; display: block; }
+/* Sheet-lightning wash (storm demo). Opacity is driven from JS. */
+.wet-vig { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,10,24,0.95) 18%, rgba(6,10,24,0.45) 45%, transparent); }
+.flash {
+  position: absolute; inset: 0; opacity: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(232,199,106,0.30), rgba(185,28,44,0.10) 45%, transparent 75%);
+  transition: opacity 90ms linear;
+}
+
+#bgc { filter: blur(0.4px); }
+</style>
+</head>
+<body>
+
+<details class="demo-bar">
+  <summary>
+    <span class="demo-tag">BG</span>
+    <span class="demo-current">Storm City</span>
+    <span class="demo-caret">▾</span>
+  </summary>
+  <div class="demo-links">
+    <a href="storm.html" class="on">Storm City</a><a href="lightning.html" class="">Thunderhead</a><a href="wet.html" class="">Wet Asphalt</a><a href="chrome-rain.html" class="">Rain on Chrome</a><a href="carbon.html" class="">Carbon Weave</a><a href="goldleaf.html" class="">Gold Leaf</a><a href="pinstripe.html" class="">Pinstripe</a><a href="brushed.html" class="">Brushed Metal</a><a href="slash.html" class="">Paint Slash</a><a href="halftone.html" class="">Halftone</a><a href="speedlines.html" class="">Speed Lines</a><a href="tach.html" class="">Redline</a><a href="sparks.html" class="">Sparks</a><a href="beam.html" class="">Headlight</a>
+    <a href="index.html" class="demo-home">All ▦</a>
+  </div>
+</details>
+<div id="bgfx"><canvas id="bgc"></canvas><div class="flash"></div></div>
+    <main class="card">
+        <div class="avatar-wrap">
+            <img src="/SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
+        </div>
+
+        <h1 class="name">SPARTAN<span class="accent">H2</span></h1>
+        <p class="tagline">Suit up. Helmet on. Ride hard.</p>
+
+        <section class="links">
+            <h2 class="section-title">Support</h2>
+            <div class="link-grid" style="grid-template-columns: 1fr;">
+                <a class="link-btn support" href="coming-soon.html" rel="noopener" aria-label="Merch coming soon" title="Merch (Coming Soon)">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-cart"/></svg></span><span class="label">Merch Coming Soon</span>
+                </a>
+            </div>
+            <div class="link-grid" style="grid-template-columns: 1fr 1fr;">
+                <a class="link-btn support" href="https://www.patreon.com/SpartanH2" target="_blank" rel="noopener" aria-label="Patreon page for SpartanH2" title="Patreon">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-patreon"/></svg></span><span class="label">Patreon</span>
+                </a>
+                <a class="link-btn support" href="direct.html" rel="noopener" aria-label="Direct crypto support" title="Direct">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-bitcoin"/></svg></span><span class="label">Direct</span>
+                </a>
+            </div>
+
+            <h2 class="section-title">Watch</h2>
+            <div class="link-grid">
+                <a class="link-btn" href="https://www.youtube.com/@SpartanH2" target="_blank" rel="noopener" aria-label="YouTube channel for SpartanH2" title="YouTube">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-youtube"/></svg></span><span class="label">YouTube</span>
+                </a>
+                <a class="link-btn" href="https://www.instagram.com/SpartanH2/" target="_blank" rel="noopener" aria-label="Instagram profile for SpartanH2" title="Instagram">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-instagram"/></svg></span><span class="label">Instagram</span>
+                </a>
+                <a class="link-btn" href="https://www.tiktok.com/@spartan.h2" target="_blank" rel="noopener" aria-label="TikTok profile for SpartanH2" title="TikTok">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-tiktok"/></svg></span><span class="label">TikTok</span>
+                </a>
+                <a class="link-btn" href="https://rumble.com/user/SpartanH2" target="_blank" rel="noopener" aria-label="Rumble channel for SpartanH2" title="Rumble">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-rumble"/></svg></span><span class="label">Rumble</span>
+                </a>
+            </div>
+
+            <h2 class="section-title">Connect</h2>
+            <div class="link-grid">
+                <a class="link-btn" href="https://discord.gg/fz67hjDnPW" target="_blank" rel="noopener" aria-label="Discord server invite" title="Discord">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-discord"/></svg></span><span class="label">Discord</span>
+                </a>
+                <a class="link-btn" href="https://x.com/Spartan_H2" target="_blank" rel="noopener" aria-label="X profile for SpartanH2" title="X / Twitter">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-x"/></svg></span><span class="label">X / Twitter</span>
+                </a>
+                <a class="link-btn" href="https://www.snapchat.com/add/Spartan_H2" target="_blank" rel="noopener" aria-label="Snapchat for SpartanH2" title="Snapchat">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-snapchat"/></svg></span><span class="label">Snapchat</span>
+                </a>
+                <a class="link-btn" href="https://www.facebook.com/profile.php?id=61591693924495" target="_blank" rel="noopener" aria-label="Facebook profile for SpartanH2" title="Facebook">
+                    <span class="icon"><svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-facebook"/></svg></span><span class="label">Facebook</span>
+                </a>
+            </div>
+
+            <div class="meta-cta-row">
+                <a class="business-cta" href="supporters.html" aria-label="Supporters page">
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-star"/></svg><span class="label">Supporters</span>
+                </a>
+                <a class="business-cta" href="partners.html" aria-label="Partners page">
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-shield"/></svg><span class="label">Partners</span>
+                </a>
+                <a class="business-cta" href="contact.html" aria-label="Business contact for SpartanH2">
+                    <svg class="icon-svg" aria-hidden="true"><use href="/icons.svg#i-envelope"/></svg><span class="label">Business Contact</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="about-caption" aria-label="About SpartanH2">
+            <p>
+                <strong>SpartanH2</strong> is a southeast Michigan motorcycle content creator.
+                POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.
+                <a href="about.html">More about SpartanH2 &rarr;</a>
+            </p>
+        </section>
+
+        <footer class="footer">
+            <a href="https://SpartanH2.com">SpartanH2.com</a>
+            <span>© <span id="year"></span> SpartanH2</span>
+        </footer>
+    </main>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+(function(){
+
+const cv = document.getElementById('bgc');
+const ctx = cv.getContext('2d');
+let w = 0, h = 0, dpr = 1;
+function resize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  w = cv.clientWidth; h = cv.clientHeight;
+  cv.width = Math.floor(w * dpr); cv.height = Math.floor(h * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (typeof onResize === 'function') onResize();
+}
+
+let drops = [], sky = null, bolt = null, nextBolt = 3, flashV = 0;
+const flashEl = document.querySelector('.flash');
+
+// Skyline is baked ONCE into an offscreen canvas: it never changes, so
+// redrawing 40 buildings + 400 windows every frame would be pure waste.
+function bakeSkyline() {
+  sky = document.createElement('canvas');
+  sky.width = Math.floor(w * dpr); sky.height = Math.floor(h * dpr);
+  const s = sky.getContext('2d');
+  s.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Two ranks of towers: far (hazier, shorter) then near (black, taller).
+  const ranks = [
+    { base: h * 0.60, min: 60,  max: 190, wmin: 40, wmax: 90, fill: 'rgba(8,12,26,0.75)', win: 0.10 },
+    { base: h * 0.72, min: 110, max: 320, wmin: 50, wmax: 120, fill: '#04060f',           win: 0.16 },
+  ];
+  for (const r of ranks) {
+    let x = -40;
+    while (x < w + 40) {
+      const bw = r.wmin + Math.random() * (r.wmax - r.wmin);
+      const bh = r.min + Math.random() * (r.max - r.min);
+      const top = r.base - bh;
+      s.fillStyle = r.fill;
+      s.fillRect(x, top, bw, h - top);
+      // Lit windows. Gold, with the odd crimson one.
+      for (let wy = top + 10; wy < h - 8; wy += 12) {
+        for (let wx = x + 6; wx < x + bw - 6; wx += 10) {
+          if (Math.random() > r.win) continue;
+          s.fillStyle = Math.random() < 0.12
+            ? 'rgba(225,29,72,' + (0.3 + Math.random() * 0.5) + ')'
+            : 'rgba(232,199,106,' + (0.25 + Math.random() * 0.6) + ')';
+          s.fillRect(wx, wy, 3, 5);
+        }
+      }
+      // Antenna on the tall ones.
+      if (bh > 240 && Math.random() < 0.5) {
+        s.fillStyle = r.fill;
+        s.fillRect(x + bw / 2 - 1, top - 30, 2, 30);
+        s.fillStyle = 'rgba(225,29,72,0.8)';
+        s.fillRect(x + bw / 2 - 2, top - 33, 4, 4);
+      }
+      x += bw + 3 + Math.random() * 14;
+    }
+  }
+}
+function onResize() {
+  bakeSkyline();
+  const n = Math.round(Math.min(500, (w * h) / 2200));
+  drops = Array.from({ length: n }, () => ({
+    x: Math.random() * w, y: Math.random() * h,
+    len: 10 + Math.random() * 22, sp: 9 + Math.random() * 14, a: 0.12 + Math.random() * 0.35,
+  }));
+}
+function strike() {
+  // A bolt is a jagged polyline that forks. Drawn for a few frames only.
+  const x0 = w * (0.1 + Math.random() * 0.8);
+  const pts = [{ x: x0, y: -20 }];
+  let x = x0, y = -20;
+  while (y < h * 0.62) {
+    y += 18 + Math.random() * 34;
+    x += (Math.random() - 0.5) * 60;
+    pts.push({ x, y });
+  }
+  const forks = [];
+  for (let i = 2; i < pts.length - 1; i++) {
+    if (Math.random() < 0.3) {
+      const f = [pts[i]];
+      let fx = pts[i].x, fy = pts[i].y;
+      for (let k = 0; k < 3; k++) { fy += 14 + Math.random() * 24; fx += (Math.random() - 0.5) * 50; f.push({ x: fx, y: fy }); }
+      forks.push(f);
+    }
+  }
+  bolt = { pts, forks, life: 1 };
+  flashV = 0.55 + Math.random() * 0.45;
+}
+function drawBolt() {
+  if (!bolt) return;
+  ctx.globalCompositeOperation = 'lighter';
+  const a = bolt.life;
+  const paths = [bolt.pts, ...bolt.forks];
+  // Wide dim pass under a thin bright pass = cheap bloom, no shadowBlur.
+  for (const [width, col] of [[7, 'rgba(201,162,75,' + (a * 0.18) + ')'], [2.2, 'rgba(255,250,235,' + a + ')']]) {
+    ctx.lineWidth = width; ctx.strokeStyle = col;
+    for (const p of paths) {
+      ctx.beginPath(); ctx.moveTo(p[0].x, p[0].y);
+      for (const q of p.slice(1)) ctx.lineTo(q.x, q.y);
+      ctx.stroke();
+    }
+  }
+  bolt.life -= 0.18;
+  if (bolt.life <= 0) bolt = null;
+}
+function draw(t) {
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.clearRect(0, 0, w, h);
+  ctx.drawImage(sky, 0, 0, w, h);
+  drawBolt();
+  // Rain, drawn as one batched path: 500 strokes would be 500 draw calls.
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.strokeStyle = 'rgba(232,199,106,0.22)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (const d of drops) {
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(d.x - d.len * 0.16, d.y + d.len);
+    d.y += d.sp; d.x -= d.sp * 0.16;
+    if (d.y > h) { d.y = -d.len; d.x = Math.random() * w; }
+  }
+  ctx.stroke();
+  // Sheet lightning: whole-viewport wash that decays. Kept under the WCAG
+  // 3-flashes-per-second ceiling by the strike scheduler below.
+  if (flashV > 0.01) { flashV *= 0.72; flashEl.style.opacity = flashV.toFixed(3); }
+  else if (flashEl.style.opacity !== '0') flashEl.style.opacity = '0';
+  nextBolt -= 1 / 30;
+  if (nextBolt <= 0) { strike(); nextBolt = 3.5 + Math.random() * 6; }
+}
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+let raf = 0, last = 0, running = false;
+const FRAME = 1000 / 30;
+function loop(t) {
+  raf = requestAnimationFrame(loop);
+  if (t - last < FRAME) return;
+  last = t;
+  draw(t / 1000);
+}
+const FORCE = location.search.indexOf('force') !== -1; // automated tabs report hidden
+function sync() {
+  const should = (FORCE || !document.hidden) && !reduce.matches;
+  if (should && !running) { running = true; last = 0; raf = requestAnimationFrame(loop); }
+  else if (!should && running) { running = false; cancelAnimationFrame(raf); }
+}
+window.addEventListener('resize', resize);
+document.addEventListener('visibilitychange', sync);
+reduce.addEventListener('change', sync);
+resize(); sync();
+
+})();
+</script>
+</body>
+</html>
