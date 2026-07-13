@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260713161411">
+    <link rel="stylesheet" href="/styles.css?v=20260713211926">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -143,7 +143,15 @@
   transition: opacity 90ms linear;
 }
 
-
+.leaf-shaft {
+  position: absolute; inset: -20% -10%;
+  background: radial-gradient(ellipse 40% 90% at 62% 15%, rgba(232,199,106,0.12), rgba(201,162,75,0.03) 45%, transparent 72%);
+  filter: blur(30px);
+  animation: shaftBreathe 15s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes shaftBreathe { from { opacity: 0.5; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .leaf-shaft { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -159,7 +167,7 @@
     <a href="index.html" class="demo-home">All ▦</a>
   </div>
 </details>
-<div id="bgfx"><canvas id="bgc"></canvas></div>
+<div id="bgfx"><div class="leaf-shaft"></div><canvas id="bgc"></canvas></div>
     <main class="card">
         <div class="avatar-wrap">
             <img src="/SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
@@ -260,13 +268,21 @@ function resize() {
 
 let flecks = [];
 function onResize() {
-  flecks = Array.from({ length: 110 }, () => ({
-    x: Math.random() * w, y: Math.random() * h,
-    s: 1.5 + Math.random() * 5,
-    vx: (Math.random() - 0.5) * 0.18, vy: -0.05 - Math.random() * 0.22,
-    rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.03,
-    ph: Math.random() * 6,
-  }));
+  // Three depths: near flecks big/faint/soft (out of focus), far ones
+  // small/sharp/bright. That contrast IS the depth of field.
+  flecks = Array.from({ length: 130 }, () => {
+    const depth = Math.random();
+    return {
+      x: Math.random() * w, y: Math.random() * h,
+      s: 1.2 + depth * 7,
+      soft: depth > 0.72,
+      dim: 1 - depth * 0.5,
+      vx: (Math.random() - 0.5) * 0.1 * (0.4 + depth),
+      vy: (-0.04 - Math.random() * 0.16) * (0.4 + depth * 1.4),
+      rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.035,
+      ph: Math.random() * 6,
+    };
+  });
 }
 function draw(t) {
   ctx.globalCompositeOperation = 'source-over';

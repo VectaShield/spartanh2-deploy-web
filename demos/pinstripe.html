@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260713161411">
+    <link rel="stylesheet" href="/styles.css?v=20260713211926">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -143,6 +143,7 @@
   transition: opacity 90ms linear;
 }
 
+.cloth { position: absolute; inset: 0; background-repeat: repeat; opacity: 0.55; }
 .stripe { position: absolute; inset: -50%; will-change: transform; }
 .stripe.a {
   background-image: repeating-linear-gradient(102deg, transparent 0 46px, rgba(201,162,75,0.13) 46px 47px, transparent 47px 94px);
@@ -173,7 +174,7 @@
     <a href="index.html" class="demo-home">All ▦</a>
   </div>
 </details>
-<div id="bgfx"><div class="stripe a"></div><div class="stripe b"></div><div class="stripe-vig"></div></div>
+<div id="bgfx"><div class="cloth"></div><div class="stripe a"></div><div class="stripe b"></div><div class="stripe-vig"></div></div>
     <main class="card">
         <div class="avatar-wrap">
             <img src="/SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
@@ -258,5 +259,21 @@
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+(function(){
+
+// Woven twill, baked once. Stripes with no cloth under them read as a screen
+// artifact; with cloth, they read as a suit.
+const T = 6, c = document.createElement('canvas');
+c.width = c.height = T * 2;
+const x = c.getContext('2d');
+x.fillStyle = '#0c1120'; x.fillRect(0, 0, T * 2, T * 2);
+x.fillStyle = 'rgba(255,255,255,0.03)';
+x.fillRect(0, 0, T, T); x.fillRect(T, T, T, T);      // warp over
+x.fillStyle = 'rgba(0,0,0,0.24)';
+x.fillRect(T, 0, T, T); x.fillRect(0, T, T, T);      // weft under
+document.querySelector('.cloth').style.backgroundImage = 'url(' + c.toDataURL() + ')';
+})();
+</script>
 </body>
 </html>

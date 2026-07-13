@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260713161411">
+    <link rel="stylesheet" href="/styles.css?v=20260713211926">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -143,7 +143,14 @@
   transition: opacity 90ms linear;
 }
 
-
+.sl-core {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(232,199,106,0.13), rgba(185,28,44,0.06) 22%, transparent 48%);
+  filter: blur(24px);
+  animation: corePulse 3.6s ease-in-out infinite;
+}
+@keyframes corePulse { 0%,100% { opacity: 0.55; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .sl-core { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -159,7 +166,7 @@
     <a href="index.html" class="demo-home">All ▦</a>
   </div>
 </details>
-<div id="bgfx"><canvas id="bgc"></canvas></div>
+<div id="bgfx"><div class="sl-core"></div><canvas id="bgc"></canvas></div>
     <main class="card">
         <div class="avatar-wrap">
             <img src="/SpartanH2.jpg" alt="SpartanH2, motorcycle content creator based in southeast Michigan" class="avatar" width="220" height="220" fetchpriority="high">
