@@ -258,149 +258,8 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   box(podL - 30 * S, 24 * S, 62 * S, 0.2, '#090d1a');
   box(podL - 58 * S, 20 * S, 50 * S, 0.18, '#090d1a');
 
-  /* ── EASTER EGG: him, on the bike, on the podium roof.
-
-       A motorcycle silhouette is MASS, not line-work. Stick lines between two
-       circles read as a bicycle every time. What says "sportbike" at a glance:
-
-         - fat, low wheels set wide apart, the bike long and slammed
-         - a solid body running wheel to wheel: raised tail, dropped tank,
-           fairing sloping down over the front wheel
-         - a steeply raked fork
-         - the rider TUCKED — spine low and forward over the tank, elbows in,
-           knee up — not sitting upright like a commuter
-
-       So it is drawn as filled polygons, and the rider is a filled body, not a
-       stickman. */
-  (function rider() {
-    const gy = HZ - 26 * S;                    // podium roof line
-    const rx = podR - 40 * S;
-    const k = Math.max(1.0, S) * 1.25;         // never so small it vanishes
-
-    s.save();
-    s.translate(rx, gy);
-
-    // Headlight throw. A circle, not a rect: a radial gradient painted into a
-    // rectangle is cut off square at the edges and reads as a glowing box.
-    const beam = s.createRadialGradient(11 * k, -6 * k, 0, 11 * k, -6 * k, 26 * k);
-    beam.addColorStop(0, 'rgba(' + GOLD_HI + ',0.38)');
-    beam.addColorStop(0.45, 'rgba(' + GOLD_HI + ',0.10)');
-    beam.addColorStop(1, 'rgba(' + GOLD_HI + ',0)');
-    s.fillStyle = beam;
-    s.beginPath(); s.arc(11 * k, -6 * k, 26 * k, 0, 7); s.fill();
-
-    const SIL = '#010204';
-    s.lineJoin = 'round';
-    s.lineCap = 'round';
-    const rimStroke = 'rgba(' + GOLD + ',0.5)';
-
-    // ── Wheels: fat, and set wide. The wheelbase is what makes it long.
-    s.fillStyle = SIL;
-    s.strokeStyle = rimStroke;
-    s.lineWidth = Math.max(0.8, 0.5 * k);
-    s.beginPath(); s.arc(-7 * k, -3.1 * k, 3.1 * k, 0, 7); s.fill(); s.stroke();
-    s.beginPath(); s.arc(8 * k, -3.1 * k, 3.1 * k, 0, 7); s.fill(); s.stroke();
-
-    // ── Swingarm + exhaust.
-    s.strokeStyle = rimStroke;
-    s.lineWidth = 1.1 * k;
-    s.beginPath();
-    s.moveTo(-7 * k, -3.1 * k);
-    s.lineTo(-1 * k, -4.6 * k);
-    s.stroke();
-    s.fillStyle = SIL;
-    s.beginPath();                              // stubby can, kicked up
-    s.moveTo(-3 * k, -4.4 * k);
-    s.lineTo(-7.4 * k, -5.6 * k);
-    s.lineTo(-7.6 * k, -4.2 * k);
-    s.lineTo(-3 * k, -3.2 * k);
-    s.closePath(); s.fill(); s.stroke();
-
-    // ── The body: one solid mass, tail -> seat -> tank -> fairing. This is the
-    //    single most important shape; without it there is no motorcycle.
-    s.fillStyle = SIL;
-    s.beginPath();
-    s.moveTo(-8.6 * k, -8.4 * k);               // tail tip, kicked up high
-    s.lineTo(-5.4 * k, -9.4 * k);               // tail top
-    s.lineTo(-2.2 * k, -8.2 * k);               // seat dips
-    s.lineTo(0.6 * k, -9.6 * k);                // tank shoulder
-    s.lineTo(4.4 * k, -9.9 * k);                // tank top
-    s.lineTo(7.6 * k, -8.6 * k);                // fairing shoulder
-    s.lineTo(10.4 * k, -6.4 * k);               // nose
-    s.lineTo(10.8 * k, -4.4 * k);               // nose bottom
-    s.lineTo(8.6 * k, -5.2 * k);                // under the fairing
-    s.lineTo(5.2 * k, -5.6 * k);                // belly pan
-    s.lineTo(1.2 * k, -5.4 * k);
-    s.lineTo(-2.6 * k, -6.2 * k);               // under the seat
-    s.lineTo(-6.4 * k, -6.6 * k);
-    s.closePath();
-    s.fill();
-    s.lineWidth = Math.max(1, 0.7 * k);
-    s.strokeStyle = 'rgba(' + GOLD + ',0.45)';
-    s.stroke();
-
-    // ── Raked fork, down to the front wheel.
-    s.strokeStyle = rimStroke;
-    s.lineWidth = 1.2 * k;
-    s.beginPath();
-    s.moveTo(9.4 * k, -7.6 * k);
-    s.lineTo(8 * k, -3.1 * k);
-    s.stroke();
-
-    // ── The rider, TUCKED. A filled body: hips low and back, spine raked
-    //    forward over the tank, shoulders down, knee up into the tank.
-    s.fillStyle = SIL;
-    s.beginPath();
-    s.moveTo(-4.6 * k, -9.4 * k);               // seat, at the hips
-    s.lineTo(-3.4 * k, -13.4 * k);              // lower back
-    s.lineTo(-0.6 * k, -15.6 * k);              // shoulders, well forward
-    s.lineTo(2.6 * k, -15.2 * k);               // chest over the tank
-    s.lineTo(2.2 * k, -13.2 * k);               // under the chest
-    s.lineTo(-1.4 * k, -11.4 * k);              // belly back to the hips
-    s.lineTo(-2 * k, -9.4 * k);
-    s.closePath();
-    s.fill();
-    s.lineWidth = Math.max(1, 0.7 * k);
-    s.strokeStyle = 'rgba(' + GOLD + ',0.5)';
-    s.stroke();
-
-    // Arm reaching down to the clip-on bar.
-    s.strokeStyle = rimStroke;
-    s.lineWidth = 1.15 * k;
-    s.beginPath();
-    s.moveTo(1.4 * k, -14.4 * k);
-    s.lineTo(4.6 * k, -12.4 * k);               // elbow, tucked in
-    s.lineTo(7.4 * k, -9.4 * k);                // hand on the bar
-    s.stroke();
-
-    // Leg: thigh forward, knee up into the tank, boot back on the peg.
-    s.beginPath();
-    s.moveTo(-3.4 * k, -10.4 * k);              // hip
-    s.lineTo(-0.4 * k, -8.6 * k);               // knee, up against the tank
-    s.lineTo(-2.6 * k, -5.4 * k);               // boot, back on the peg
-    s.stroke();
-
-    // Helmet: chin down, visor toward the front wheel.
-    s.fillStyle = SIL;
-    s.beginPath();
-    s.arc(3.9 * k, -15.6 * k, 2.15 * k, 0, 7);
-    s.fill();
-    s.strokeStyle = rimStroke;
-    s.lineWidth = Math.max(0.8, 0.55 * k);
-    s.stroke();
-    s.fillStyle = 'rgba(' + GOLD_HI + ',0.4)';  // visor catching the city light
-    s.beginPath();
-    s.arc(4.6 * k, -15.9 * k, 1.15 * k, -0.9, 0.9);
-    s.fill();
-
-    // Lights.
-    s.fillStyle = 'rgba(' + GOLD_HI + ',0.95)';
-    s.beginPath(); s.arc(10 * k, -6.4 * k, 1.15 * k, 0, 7); s.fill();
-    s.fillStyle = 'rgba(' + CRIMSON + ',0.95)';
-    s.beginPath(); s.arc(-8 * k, -8.8 * k, 0.95 * k, 0, 7); s.fill();
-
-    s.restore();
-  })();
+  // ── EASTER EGG: him, on the bike, parked on the podium roof (see drawRider).
+  drawRider(s, podR - 46 * S, HZ - 26 * S, Math.max(1.0, S) * 1.05);
 
   /* ═══════════════════════════════════════════════════════════════════════
      THE LANDMARKS.
@@ -584,6 +443,213 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   shore.addColorStop(1, 'rgba(' + GOLD + ',0)');
   s.fillStyle = shore;
   s.fillRect(0, HZ, W, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE RIDER — him, on the bike. Traced from his own reference photo.
+
+   Rendered big and alone by rider-lab.html so the anatomy can be CHECKED
+   against the photo rather than guessed at, then dropped into the skyline at a
+   few dozen pixels tall.
+
+   PROPORTIONS, measured off the photo and expressed in wheelbase units. This
+   is the part that was wrong before — the rider was drawn far too tall against
+   the bike, which is what made him look like a man perched on a bicycle:
+
+     wheelbase              16.4 u   (rear wheel -8.0, front wheel +8.4)
+     wheel radius            3.2 u   (~0.20 of wheelbase)
+     seat height             8.0 u   (~0.49)   he sits LOW in the bike
+     tank top               10.2 u   (~0.62)
+     helmet top             16.4 u   (~1.00)   total height ~= the wheelbase
+     hip                     7.8 u   knee 8.7 u   boot 4.4 u
+
+   The bike is a NAKED streetfighter (Z900), and every difference from a faired
+   sportbike matters to the read:
+     - no fairing, so the ENGINE is the middle of the silhouette, exposed
+     - the rider sits UPRIGHT with a slight forward lean, not in a racing tuck
+     - wide flat bars, arms reaching forward and only slightly down
+     - upside-down forks, strongly raked, and GOLD: the one flash of colour
+     - short tail kicked UP above the seat, ending in a point
+   ═══════════════════════════════════════════════════════════════════════════ */
+function drawRider(s, gx, gy, k) {
+  const GOLD = '201,162,75';
+  const GOLD_HI = '232,199,106';
+  const CRIMSON = '225,29,72';
+
+  const SIL = '#010204';                      // the silhouette itself
+  const EDGE = 'rgba(' + GOLD + ',0.5)';      // rim light: separates, never draws
+
+  s.save();
+  s.translate(gx, gy);
+  s.lineJoin = 'round';
+  s.lineCap = 'round';
+
+  // Headlight throw. A circle, not a rect: a radial gradient painted into a
+  // rect is cut off square at the edges and reads as a glowing box.
+  const beam = s.createRadialGradient(10 * k, -8 * k, 0, 10 * k, -8 * k, 24 * k);
+  beam.addColorStop(0, 'rgba(' + GOLD_HI + ',0.32)');
+  beam.addColorStop(0.45, 'rgba(' + GOLD_HI + ',0.08)');
+  beam.addColorStop(1, 'rgba(' + GOLD_HI + ',0)');
+  s.fillStyle = beam;
+  s.beginPath(); s.arc(10 * k, -8 * k, 24 * k, 0, 7); s.fill();
+
+  const P = (pts) => {
+    s.beginPath();
+    s.moveTo(pts[0][0] * k, pts[0][1] * k);
+    for (let i = 1; i < pts.length; i++) s.lineTo(pts[i][0] * k, pts[i][1] * k);
+    s.closePath();
+  };
+  const fillEdge = (pts, edgeA) => {
+    s.fillStyle = SIL;
+    P(pts);
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',' + (edgeA || 0.45) + ')';
+    s.lineWidth = Math.max(0.7, 0.5 * k);
+    s.stroke();
+  };
+
+  // ── WHEELS. Fat, and a full wheelbase apart.
+  s.fillStyle = SIL;
+  s.strokeStyle = EDGE;
+  s.lineWidth = Math.max(0.8, 0.55 * k);
+  s.beginPath(); s.arc(-8 * k, -3.2 * k, 3.2 * k, 0, 7); s.fill(); s.stroke();
+  s.beginPath(); s.arc(8.4 * k, -3.2 * k, 3.2 * k, 0, 7); s.fill(); s.stroke();
+
+  // ── SWINGARM, EXHAUST CAN, HEADER PIPE.
+  s.strokeStyle = EDGE;
+  s.lineWidth = 1.0 * k;
+  s.beginPath();
+  s.moveTo(-8 * k, -3.2 * k);
+  s.lineTo(-2.5 * k, -4.6 * k);
+  s.stroke();
+  fillEdge([[-4.6, -3.4], [-8.8, -4.6], [-9.0, -3.2], [-4.6, -2.6]], 0.4);   // can
+  s.lineWidth = 0.8 * k;                                                      // header
+  s.strokeStyle = 'rgba(' + GOLD + ',0.35)';
+  s.beginPath();
+  s.moveTo(3.0 * k, -4.4 * k);
+  s.quadraticCurveTo(-0.5 * k, -1.9 * k, -4.4 * k, -3.0 * k);
+  s.stroke();
+
+  // ── ENGINE: on a naked bike this block IS the middle of the silhouette.
+  //    Leave it out and the bike reads as hollow, which is exactly what a
+  //    bicycle looks like.
+  fillEdge([
+    [-3.6, -3.4], [-3.4, -7.0], [4.4, -7.2], [4.9, -4.8], [3.4, -3.0], [-1.0, -2.9],
+  ], 0.4);
+
+  // ── TANK + SEAT + TAIL, one mass. Tail kicks UP above the seat to a point.
+  fillEdge([
+    [-9.0, -10.4],   // tail tip, up and back to a point
+    [-6.4, -10.0],   // tail top
+    [-4.8, -9.4],
+    [-3.6, -8.4],    // seat, low: he sits DOWN in the bike
+    [-1.2, -8.8],
+    [1.2, -10.4],    // tank top: the chunky wedge
+    [3.6, -10.2],
+    [5.4, -9.0],     // tank shoulder, sloping to the bars
+    [5.8, -7.8],
+    [3.8, -8.0],     // underside of the tank — stops ABOVE the engine
+    [-1.6, -7.9],
+    [-3.8, -8.0],
+    [-5.6, -8.6],    // under the seat
+    [-7.6, -8.8],    // underside of the tail: give it depth, not a rod
+  ], 0.5);
+  // Frame rails bridging the gap between the tank unit and the engine. Without
+  // the gap (and these), the tank, seat and engine fuse into one black slab and
+  // the bike stops reading as a naked bike.
+  s.strokeStyle = 'rgba(' + GOLD + ',0.5)';
+  s.lineWidth = Math.max(0.7, 0.5 * k);
+  s.beginPath();
+  s.moveTo(-3.4 * k, -8.0 * k);
+  s.lineTo(-1.4 * k, -6.6 * k);
+  s.moveTo(3.4 * k, -8.0 * k);
+  s.lineTo(4.2 * k, -7.2 * k);
+  s.moveTo(-4.6 * k, -8.6 * k);
+  s.lineTo(-2.4 * k, -4.9 * k);   // rear shock / subframe
+  s.stroke();
+
+  // ── FORKS: upside-down, strongly raked, and GOLD.
+  s.strokeStyle = 'rgba(' + GOLD_HI + ',0.8)';
+  s.lineWidth = 0.55 * k;
+  s.beginPath();
+  s.moveTo(5.6 * k, -12.2 * k);
+  s.lineTo(8.4 * k, -3.2 * k);          // down to the axle
+  s.stroke();
+  // Wide flat bars.
+  s.strokeStyle = 'rgba(' + GOLD + ',0.6)';
+  s.lineWidth = 0.5 * k;
+  s.beginPath();
+  s.moveTo(3.2 * k, -11.7 * k);
+  s.lineTo(6.2 * k, -12.3 * k);
+  s.stroke();
+  // Headlight, small and round, behind the bars.
+  s.fillStyle = 'rgba(' + GOLD_HI + ',0.95)';
+  s.beginPath(); s.arc(6.6 * k, -11.3 * k, 0.75 * k, 0, 7); s.fill();
+  // Front mudguard hugging the wheel.
+  s.strokeStyle = EDGE;
+  s.lineWidth = 0.9 * k;
+  s.beginPath();
+  s.arc(8.4 * k, -3.2 * k, 4.2 * k, -2.6, -1.3);
+  s.stroke();
+
+  // ── LEG. Drawn before the torso: the thigh disappears behind the hip.
+  //    Thigh rises FORWARD from the hip to a high knee, shin drops back to the
+  //    peg. Filled, with real thickness — a line here is a stick figure.
+  fillEdge([
+    [-5.6, -7.8],    // hip
+    [-2.4, -9.0],    // thigh forward and up
+    [-1.2, -8.0],    // knee, high and forward against the tank
+    [-2.2, -5.6],    // shin dropping back, in FRONT of the engine
+    [-2.4, -4.2],    // boot on the peg
+    [-4.4, -4.0],    // toe pointing forward
+    [-4.2, -5.4],
+    [-4.4, -6.6],    // back up the calf
+    [-6.4, -7.2],
+  ], 0.55);
+
+  // ── TORSO. UPRIGHT with a slight forward lean, and bulky — he is in a
+  //    hoodie. He sits DOWN in the bike, hips barely above the seat.
+  fillEdge([
+    [-5.2, -8.0],    // hips, on the seat
+    [-4.6, -11.4],   // back, near vertical
+    [-2.6, -13.2],   // shoulder, only slightly forward
+    [0.2, -13.0],
+    [0.6, -11.2],    // chest
+    [-1.2, -9.0],    // hoodie front falling into the lap
+    [-3.0, -8.2],
+  ], 0.5);
+
+  // ── ARM: forward, only slightly down, elbow bent, hands on the bars.
+  fillEdge([
+    [-1.2, -12.9],   // shoulder
+    [1.2, -12.4],    // upper arm
+    [3.0, -12.0],    // elbow, slightly dropped
+    [4.6, -11.9],    // forearm out to the bar
+    [4.8, -11.1],    // hand on the grip
+    [3.0, -11.2],
+    [1.0, -11.4],    // underside back to the shoulder
+    [-1.4, -11.8],
+  ], 0.5);
+
+  // ── HELMET: full-face, chin bar jutting forward. Total height lands at about
+  //    one wheelbase, which is what the photo says.
+  s.fillStyle = SIL;
+  s.beginPath();
+  s.arc(-0.6 * k, -14.6 * k, 1.95 * k, 0, 7);
+  s.fill();
+  s.strokeStyle = EDGE;
+  s.lineWidth = Math.max(0.7, 0.55 * k);
+  s.stroke();
+  fillEdge([[0.2, -15.6], [1.9, -14.9], [1.8, -13.5], [0.0, -13.2]], 0.5);   // chin bar
+  s.fillStyle = 'rgba(' + GOLD_HI + ',0.4)';                                  // visor
+  P([[0.3, -15.4], [1.7, -14.8], [1.6, -13.9], [0.2, -14.1]]);
+  s.fill();
+
+  // ── Tail light.
+  s.fillStyle = 'rgba(' + CRIMSON + ',0.95)';
+  s.beginPath(); s.arc(-8.4 * k, -10.4 * k, 0.85 * k, 0, 7); s.fill();
+
+  s.restore();
 }
 
 const c = document.getElementById('c');
