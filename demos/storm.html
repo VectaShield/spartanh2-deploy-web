@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260713211926">
+    <link rel="stylesheet" href="/styles.css?v=20260714050844">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -144,6 +144,9 @@
 }
 
 #bgc { filter: blur(0.3px); }
+/* The card goes more transparent so the storm reads through it. Buttons keep
+   their own opacity — only the panel behind them changes. */
+.card { background: linear-gradient(180deg, rgba(17,26,51,0.55), rgba(10,16,32,0.58)) !important; }
 </style>
 </head>
 <body>
@@ -258,45 +261,77 @@ function resize() {
   if (typeof onResize === 'function') onResize();
 }
 
-let sky = null, refl = null, rain = [], bolt = null, nextBolt = 2.5, flashV = 0, horizon = 0;
+let sky = null, rain = [], bolts = [], clouds = [], puffs = [];
+let nextBolt = 2, flashV = 0, horizon = 0;
 const flashEl = document.querySelector('.flash');
-const WIND = -0.20;   // rain slant. Every layer shares it, or the wind reads wrong.
+const WIND = -0.20;   // every rain layer shares this slant, or the wind reads wrong
 
-// ── The skyline, baked once. Buildings are drawn as pure silhouette with lit
-//    windows: from across the river at night that is all you actually see.
+// ── Storm clouds, baked as a few soft sprites and then drifted. Painted in the
+//    site palette: black mass, crimson underbelly, gold rim where the light is.
+function bakeCloud(seed) {
+  const W = 520, H = 260, c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.filter = 'blur(18px)';
+  const blob = (bx, by, br, col) => {
+    const g = x.createRadialGradient(bx, by, 0, bx, by, br);
+    g.addColorStop(0, col);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g;
+    x.beginPath(); x.arc(bx, by, br, 0, 7); x.fill();
+  };
+  // The body must be LIGHTER than the night sky or the cloud is invisible:
+  // dark-on-dark reads as nothing. A storm cloud at night is lit from below by
+  // the city, so it is a grey-navy mass, not a black one.
+  for (let i = 0; i < 16; i++) {
+    const bx = 40 + Math.random() * (W - 80);
+    const by = 70 + Math.random() * 90;
+    blob(bx, by, 55 + Math.random() * 95, 'rgba(32,38,64,0.55)');
+  }
+  // Crimson underbelly: the city's light thrown back up into the cloud base.
+  for (let i = 0; i < 9; i++) {
+    blob(60 + Math.random() * (W - 120), 155 + Math.random() * 60,
+         45 + Math.random() * 75, 'rgba(185,28,44,0.30)');
+  }
+  // Gold rim along the top, where what is left of the light catches it.
+  for (let i = 0; i < 7; i++) {
+    blob(70 + Math.random() * (W - 140), 50 + Math.random() * 32,
+         34 + Math.random() * 58, 'rgba(201,162,75,0.20)');
+  }
+  // Ragged dark core so it is not just a soft smudge.
+  for (let i = 0; i < 6; i++) {
+    blob(80 + Math.random() * (W - 160), 105 + Math.random() * 55,
+         30 + Math.random() * 55, 'rgba(8,11,22,0.5)');
+  }
+  return c;
+}
+
 function bakeSkyline() {
-  horizon = h * 0.66;
+  horizon = h * 0.55;                                   // higher horizon = more river
   sky = document.createElement('canvas');
   sky.width = Math.floor(w * dpr); sky.height = Math.floor(h * dpr);
   const s = sky.getContext('2d');
   s.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // City sits left of centre: dead centre would be hidden behind the card.
-  const cx = w * 0.30;
-  const unit = Math.max(0.6, Math.min(1.3, w / 1150));
+  const unit = Math.max(0.62, Math.min(1.35, w / 1150));
 
-  // Storm haze behind the city. Without a lit sky to stand against, black
-  // towers on a black page are invisible - this glow is what makes the
-  // silhouette read at all.
-  const glow = s.createRadialGradient(cx, horizon, 10, cx, horizon, Math.max(w, h) * 0.62);
-  glow.addColorStop(0, 'rgba(201,162,75,0.16)');
-  glow.addColorStop(0.35, 'rgba(185,28,44,0.10)');
+  // Storm haze behind the city: black towers on a black page are invisible, so
+  // the glow they stand against is what makes the silhouette exist at all.
+  const rcx = w * 0.20;                                 // the RenCen sits left
+  const glow = s.createRadialGradient(rcx, horizon, 10, rcx, horizon, Math.max(w, h) * 0.7);
+  glow.addColorStop(0, 'rgba(201,162,75,0.18)');
+  glow.addColorStop(0.35, 'rgba(185,28,44,0.11)');
   glow.addColorStop(1, 'rgba(185,28,44,0)');
   s.fillStyle = glow;
   s.fillRect(0, 0, w, horizon + 2);
-  const band = s.createLinearGradient(0, horizon - 120 * unit, 0, horizon);
-  band.addColorStop(0, 'rgba(201,162,75,0)');
-  band.addColorStop(1, 'rgba(201,162,75,0.10)');
-  s.fillStyle = band;
-  s.fillRect(0, horizon - 120 * unit, w, 120 * unit);
 
-  function windows(x, y, bw, bh, density, tint) {
+  function windows(x, y, bw, bh, density) {
     for (let wy = y + 6; wy < y + bh - 4; wy += 9) {
       for (let wx = x + 4; wx < x + bw - 4; wx += 7) {
         if (Math.random() > density) continue;
         s.fillStyle = Math.random() < 0.10
           ? 'rgba(225,29,72,' + (0.25 + Math.random() * 0.5) + ')'
-          : 'rgba(' + tint + ',' + (0.18 + Math.random() * 0.55) + ')';
+          : 'rgba(232,199,106,' + (0.18 + Math.random() * 0.55) + ')';
         s.fillRect(wx, wy, 2, 3);
       }
     }
@@ -305,126 +340,170 @@ function bakeSkyline() {
     const y = horizon - bh;
     s.fillStyle = '#080b16';
     s.fillRect(x, y, bw, bh);
-    // Rim light: one lit edge catches the storm glow behind it.
-    s.fillStyle = 'rgba(201,162,75,0.16)';
+    s.fillStyle = 'rgba(201,162,75,0.16)';              // rim light on the lit edge
     s.fillRect(x, y, 1, bh);
     s.fillRect(x, y, bw, 1);
-    windows(x, y, bw, bh, density, '232,199,106');
+    windows(x, y, bw, bh, density);
     return y;
   }
 
-  // Far bank: a low, hazy band of lesser buildings behind everything.
+  // Far bank behind everything.
   for (let x = -20; x < w + 20; x += 18 + Math.random() * 26) {
-    const bw = 16 + Math.random() * 34, bh = (18 + Math.random() * 46) * unit;
+    const bw = 16 + Math.random() * 34, bh = (16 + Math.random() * 40) * unit;
     s.fillStyle = 'rgba(13,18,36,0.9)';
     s.fillRect(x, horizon - bh, bw, bh);
-    windows(x, horizon - bh, bw, bh, 0.05, '201,162,75');
+    windows(x, horizon - bh, bw, bh, 0.05);
   }
 
-  // ── The Renaissance Center: the thing that makes it unmistakably Detroit.
-  //    Central cylinder flanked by four shorter ones, all round-topped.
-  const rcW = 34 * unit, rcH = 250 * unit;
-  const cyl = (x, bw, bh, lit) => {
+  // ═══════════════════════════════════════════════════════════════
+  //  THE RENAISSANCE CENTER — the real geometry.
+  //  Centre: a 73-storey glass cylinder, taller than everything, with a
+  //  stepped mechanical crown and a mast. Around it: FOUR identical 39-storey
+  //  cylinders in a tight square, so from across the river you read two on the
+  //  left and two on the right, the outer pair partly hidden behind the inner.
+  //  West of the cluster: two low boxy towers (500/600) on a shared podium.
+  //  The podium is what ties the whole thing together at the waterline.
+  // ═══════════════════════════════════════════════════════════════
+  const CW = 30 * unit;                                  // flanking tower width
+  const CH = 150 * unit;                                 // flanking tower height
+  const HW = 40 * unit;                                  // centre tower width
+  const HH = 250 * unit;                                 // centre tower height
+
+  const cylinder = (x, bw, bh, density, crown) => {
     const y = horizon - bh;
     s.fillStyle = '#080b16';
     s.beginPath();
     s.moveTo(x, horizon);
-    s.lineTo(x, y + bw * 0.45);
-    s.quadraticCurveTo(x, y, x + bw * 0.5, y);          // domed cap
-    s.quadraticCurveTo(x + bw, y, x + bw, y + bw * 0.45);
+    s.lineTo(x, y + 5);
+    s.quadraticCurveTo(x, y, x + 5, y);                  // slightly rounded shoulders
+    s.lineTo(x + bw - 5, y);
+    s.quadraticCurveTo(x + bw, y, x + bw, y + 5);
     s.lineTo(x + bw, horizon);
     s.closePath();
     s.fill();
-    s.strokeStyle = 'rgba(201,162,75,0.20)';
+    s.strokeStyle = 'rgba(201,162,75,0.22)';
     s.lineWidth = 1;
     s.stroke();
-    windows(x, y + bw * 0.5, bw, bh - bw * 0.5, lit, '232,199,106');
-    // Crown light on the tops, like the real thing.
-    s.fillStyle = 'rgba(225,29,72,0.75)';
-    s.fillRect(x + bw * 0.5 - 1.5, y - 4, 3, 4);
+    // Vertical mullions: the RenCen reads as ribbed glass, not a flat slab.
+    s.strokeStyle = 'rgba(201,162,75,0.07)';
+    for (let mx = x + 5; mx < x + bw - 2; mx += 5) {
+      s.beginPath(); s.moveTo(mx, y + 4); s.lineTo(mx, horizon); s.stroke();
+    }
+    windows(x, y + 6, bw, bh - 6, density);
+    if (crown) {
+      // Stepped mechanical crown + mast on the hotel tower.
+      s.fillStyle = '#080b16';
+      s.fillRect(x + bw * 0.12, y - 8 * unit, bw * 0.76, 8 * unit);
+      s.fillRect(x + bw * 0.30, y - 14 * unit, bw * 0.40, 6 * unit);
+      s.strokeStyle = 'rgba(201,162,75,0.25)';
+      s.strokeRect(x + bw * 0.12, y - 8 * unit, bw * 0.76, 8 * unit);
+      s.fillRect(x + bw * 0.5 - 1, y - 34 * unit, 2, 20 * unit);   // mast
+      s.fillStyle = 'rgba(225,29,72,0.9)';                          // beacon
+      s.fillRect(x + bw * 0.5 - 2.5, y - 37 * unit, 5, 4);
+    } else {
+      s.fillStyle = '#080b16';
+      s.fillRect(x + bw * 0.2, y - 5 * unit, bw * 0.6, 5 * unit);   // small crown box
+      s.strokeStyle = 'rgba(201,162,75,0.18)';
+      s.strokeRect(x + bw * 0.2, y - 5 * unit, bw * 0.6, 5 * unit);
+    }
   };
-  cyl(cx - rcW * 2.6, rcW * 0.8, rcH * 0.62, 0.16);
-  cyl(cx - rcW * 1.7, rcW * 0.8, rcH * 0.70, 0.16);
-  cyl(cx - rcW * 0.5, rcW,       rcH,        0.20);   // the tall centre tower
-  cyl(cx + rcW * 0.9, rcW * 0.8, rcH * 0.70, 0.16);
-  cyl(cx + rcW * 1.8, rcW * 0.8, rcH * 0.62, 0.16);
 
-  // One Detroit Center: the neo-gothic one with the spire crown, left of the RenCen.
-  (function gothic() {
-    const bw = 46 * unit, bh = 205 * unit, x = cx - rcW * 5.6;
-    const y = tower(x, bw, bh, 0.16);
+  // Podium the whole cluster stands on.
+  s.fillStyle = '#0a0e1c';
+  s.fillRect(rcx - CW * 3.4, horizon - 30 * unit, CW * 6.9, 30 * unit);
+  s.fillStyle = 'rgba(201,162,75,0.10)';
+  s.fillRect(rcx - CW * 3.4, horizon - 30 * unit, CW * 6.9, 1);
+
+  // Outer pair (further away in the square, so shorter on screen and dimmer).
+  cylinder(rcx - CW * 3.0, CW * 0.92, CH * 0.92, 0.10, false);
+  cylinder(rcx + CW * 2.1, CW * 0.92, CH * 0.92, 0.10, false);
+  // Inner pair, flanking the hotel.
+  cylinder(rcx - CW * 1.85, CW, CH, 0.14, false);
+  cylinder(rcx + CW * 0.9,  CW, CH, 0.14, false);
+  // The hotel: tallest, centred, crowned.
+  cylinder(rcx - HW * 0.5, HW, HH, 0.18, true);
+  // Towers 500 / 600: low, boxy, west of the cluster.
+  tower(rcx - CW * 5.2, 34 * unit, 70 * unit, 0.12);
+  tower(rcx - CW * 4.1, 30 * unit, 62 * unit, 0.12);
+
+  // ── The rest of downtown, right of the RenCen.
+  const gothic = (x, bw, bh) => {
+    const y = tower(x, bw, bh, 0.15);
     s.fillStyle = '#080b16';
-    for (const [ox, sw, sh] of [[0.12, 0.16, 34], [0.42, 0.18, 52], [0.74, 0.16, 34]]) {
+    for (const spire of [[0.12, 0.16, 30], [0.42, 0.18, 48], [0.74, 0.16, 30]]) {
       s.beginPath();
-      s.moveTo(x + bw * ox, y);
-      s.lineTo(x + bw * (ox + sw / 2), y - sh * unit);
-      s.lineTo(x + bw * (ox + sw), y);
+      s.moveTo(x + bw * spire[0], y);
+      s.lineTo(x + bw * (spire[0] + spire[1] / 2), y - spire[2] * unit);
+      s.lineTo(x + bw * (spire[0] + spire[1]), y);
       s.closePath(); s.fill();
     }
-  })();
-
-  // A few generic towers either side, so it reads as a city and not five objects.
+  };
+  gothic(w * 0.42, 44 * unit, 195 * unit);               // One Detroit Center
   const others = [
-    [cx - rcW * 8.4, 40, 150, 0.14], [cx - rcW * 7.0, 26, 110, 0.12],
-    [cx - rcW * 4.0, 30, 128, 0.13], [cx + rcW * 3.4, 44, 168, 0.15],
-    [cx + rcW * 5.0, 30, 120, 0.12], [cx + rcW * 6.4, 52, 190, 0.15],
-    [cx + rcW * 8.6, 28, 96,  0.10],
+    [w * 0.36, 30, 120, 0.13], [w * 0.51, 34, 150, 0.14],
+    [w * 0.58, 26, 105, 0.11], [w * 0.65, 46, 175, 0.15],
+    [w * 0.73, 30, 128, 0.12], [w * 0.80, 24, 92, 0.10],
+    [w * 0.87, 38, 140, 0.13], [w * 0.94, 28, 100, 0.11],
   ];
-  for (const [x, bw, bh, d] of others) tower(x, bw * unit, bh * unit, d);
-
-  // Antenna beacons.
-  s.fillStyle = 'rgba(225,29,72,0.8)';
-  s.fillRect(cx + rcW * 6.4 + 24 * unit, horizon - 200 * unit, 2, 10 * unit);
-
-  // ── Pre-flip the skyline for the water. Reflecting = blitting this, not
-  //    re-drawing the city upside down every frame.
-  refl = document.createElement('canvas');
-  refl.width = sky.width; refl.height = sky.height;
-  const r = refl.getContext('2d');
-  r.setTransform(dpr, 0, 0, dpr, 0, 0);
-  r.translate(0, h);
-  r.scale(1, -1);
-  r.drawImage(sky, 0, 0, w, h);
+  for (const o of others) tower(o[0], o[1] * unit, o[2] * unit, o[3]);
 }
 
-// ── Rain in three depth layers. Near rain is long, fast, fat and faint;
-//    far rain is short, slow and fine. That gradient IS the perspective.
+// ── Rain in three depth layers. Near = long, fast, fat, faint. Far = short,
+//    slow, fine. That gradient IS the perspective.
 function onResize() {
   bakeSkyline();
+  puffs = [bakeCloud(0), bakeCloud(1), bakeCloud(2)];
+  // Clouds live in the sky band above the horizon, at two depths.
+  clouds = [];
+  for (let i = 0; i < 7; i++) {
+    const far = i < 4;
+    clouds.push({
+      x: Math.random() * (w + 400) - 200,
+      y: (far ? h * 0.02 : -h * 0.02) + Math.random() * horizon * (far ? 0.42 : 0.30),
+      sc: (far ? 0.55 + Math.random() * 0.4 : 0.95 + Math.random() * 0.65) * (w / 1100),
+      sp: (far ? 0.06 : 0.16) + Math.random() * 0.1,
+      a: far ? 0.5 + Math.random() * 0.2 : 0.75 + Math.random() * 0.25,
+      s: puffs[(Math.random() * puffs.length) | 0],
+      far,
+    });
+  }
   const area = w * h;
   const layers = [
-    { n: area / 5200, len: [6, 12],  sp: [3.5, 5.5],  a: [0.05, 0.12], lw: 0.6 },  // far, over the city
-    { n: area / 4200, len: [14, 26], sp: [7, 11],     a: [0.10, 0.22], lw: 1.0 },  // mid
-    { n: area / 9000, len: [34, 62], sp: [15, 24],    a: [0.10, 0.20], lw: 1.9 },  // near, foreground
+    [area / 5200, 6, 12, 3.5, 5.5, 0.6],
+    [area / 4200, 14, 26, 7, 11, 1.0],
+    [area / 9000, 34, 62, 15, 24, 1.9],
   ];
   rain = [];
   layers.forEach((L, depth) => {
-    for (let i = 0; i < L.n; i++) {
+    for (let i = 0; i < L[0]; i++) {
       rain.push({
         depth,
         x: Math.random() * (w + 200) - 100,
         y: Math.random() * h,
-        len: L.len[0] + Math.random() * (L.len[1] - L.len[0]),
-        sp: L.sp[0] + Math.random() * (L.sp[1] - L.sp[0]),
-        a: L.a[0] + Math.random() * (L.a[1] - L.a[0]),
-        lw: L.lw,
+        len: L[1] + Math.random() * (L[2] - L[1]),
+        sp: L[3] + Math.random() * (L[4] - L[3]),
       });
     }
   });
 }
 
-// ── A bolt lives ABOVE the horizon and terminates AT it: from this distance you
-//    see it come down behind the city, never in front of you.
+// ── A bolt is born INSIDE a cloud, not at the top edge of the page. Pick a
+//    cloud, start at its belly, and travel down to (but never past) the horizon.
 function strike() {
-  const x0 = w * (0.08 + Math.random() * 0.84);
-  const endY = horizon - Math.random() * 30;
-  const pts = [{ x: x0, y: -30 }];
-  let x = x0, y = -30;
-  const steps = 7 + (Math.random() * 5 | 0);
-  const dy = (endY + 30) / steps;
+  const src = clouds[(Math.random() * clouds.length) | 0];
+  const x0 = src.x + (Math.random() - 0.5) * 160 * src.sc;
+  const y0 = src.y + 90 * src.sc;                        // the cloud's underside
+  const endY = horizon - Math.random() * 40;
+  if (endY <= y0 + 30) return;
+
+  const near = !src.far;
+  const steps = 6 + (Math.random() * 6 | 0);
+  const dy = (endY - y0) / steps;
+  const pts = [{ x: x0, y: y0 }];
+  let x = x0, y = y0;
   for (let i = 0; i < steps; i++) {
     y += dy;
-    x += (Math.random() - 0.5) * 46;   // jag
+    x += (Math.random() - 0.5) * (near ? 52 : 30);
     pts.push({ x, y });
   }
   const forks = [];
@@ -435,26 +514,31 @@ function strike() {
       const n = 2 + (Math.random() * 3 | 0);
       for (let k = 0; k < n; k++) {
         fy += (endY - fy) * (0.25 + Math.random() * 0.3);
-        fx += (Math.random() - 0.5) * 60;
+        fx += (Math.random() - 0.5) * (near ? 66 : 40);
         f.push({ x: fx, y: fy });
       }
       forks.push(f);
     }
   }
-  bolt = { pts, forks, life: 1, x0 };
-  flashV = 0.45 + Math.random() * 0.5;
+  // Far bolts are thin and dim; near ones are thick and bright. Same trick as
+  // the rain: depth is carried by weight, not by position.
+  bolts.push({ pts, forks, life: 1, near, x: x0, y: y0 });
+  flashV = Math.max(flashV, near ? 0.55 + Math.random() * 0.45 : 0.2 + Math.random() * 0.25);
 }
 
-function strokeBolt(paths, a, mirror) {
-  for (const [width, col] of [[8, 'rgba(201,162,75,' + (a * 0.14) + ')'],
-                              [3.5, 'rgba(232,199,106,' + (a * 0.35) + ')'],
-                              [1.6, 'rgba(255,252,244,' + a + ')']]) {
-    ctx.lineWidth = width; ctx.strokeStyle = col;
-    for (const p of paths) {
+function strokeBolt(b, mirror) {
+  const a = b.life;
+  const paths = [b.pts].concat(b.forks);
+  const passes = b.near
+    ? [[9, 'rgba(201,162,75,' + (a * 0.13) + ')'], [3.6, 'rgba(232,199,106,' + (a * 0.34) + ')'], [1.7, 'rgba(255,252,244,' + a + ')']]
+    : [[5, 'rgba(201,162,75,' + (a * 0.08) + ')'], [1.1, 'rgba(240,235,220,' + (a * 0.55) + ')']];
+  for (const p of passes) {
+    ctx.lineWidth = p[0]; ctx.strokeStyle = p[1];
+    for (const path of paths) {
       ctx.beginPath();
       const my = (v) => mirror ? (2 * horizon - v) : v;
-      ctx.moveTo(p[0].x, my(p[0].y));
-      for (const q of p.slice(1)) ctx.lineTo(q.x, my(q.y));
+      ctx.moveTo(path[0].x, my(path[0].y));
+      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, my(path[i].y));
       ctx.stroke();
     }
   }
@@ -464,40 +548,57 @@ function draw(t) {
   ctx.globalCompositeOperation = 'source-over';
   ctx.clearRect(0, 0, w, h);
 
-  // 1. Lightning, BEHIND the city.
-  if (bolt) {
+  // 1. Bolts, behind the clouds: a strike lights the cloud from inside.
+  ctx.globalCompositeOperation = 'lighter';
+  for (const b of bolts) strokeBolt(b, false);
+
+  // 2. Clouds, drifting. Drawn over the bolts, so the glow bleeds through them.
+  ctx.globalCompositeOperation = 'source-over';
+  for (const c of clouds) {
+    ctx.globalAlpha = c.a;
+    const cw = 520 * c.sc, ch = 260 * c.sc;
+    ctx.drawImage(c.s, c.x - cw / 2, c.y - ch / 2, cw, ch);
+    c.x += c.sp;
+    if (c.x - cw / 2 > w + 60) c.x = -cw / 2 - 60;
+  }
+  ctx.globalAlpha = 1;
+  // The flash lights the cloud bases from within.
+  if (flashV > 0.02) {
     ctx.globalCompositeOperation = 'lighter';
-    strokeBolt([bolt.pts, ...bolt.forks], bolt.life, false);
+    for (const c of clouds) {
+      if (c.far) continue;
+      ctx.globalAlpha = flashV * 0.35;
+      const cw = 520 * c.sc, ch = 260 * c.sc;
+      ctx.drawImage(c.s, c.x - cw / 2, c.y - ch / 2, cw, ch);
+    }
+    ctx.globalAlpha = 1;
   }
 
-  // 2. The city, opaque: it occludes the bolt's base, which is what sells
-  //    "the strike is behind the skyline" rather than in front of it.
+  // 3. The city, opaque: it occludes the bolts, which is what puts the storm
+  //    behind the skyline rather than in front of it.
   ctx.globalCompositeOperation = 'source-over';
   ctx.drawImage(sky, 0, 0, w, h);
 
-  // 3. The river. Slice the pre-flipped skyline row by row, offsetting each row
-  //    by a travelling sine: that horizontal smear is what water does to light.
+  // 4. The river: slice the skyline back, row by row, each row offset by a
+  //    travelling sine. That horizontal smear is what water does to light.
   const SLICE = 3;
   for (let y = horizon; y < h; y += SLICE) {
-    const d = (y - horizon) / (h - horizon);           // 0 at the far bank, 1 at our feet
-    const wob = Math.sin(y * 0.05 + t * 1.6) * (1.5 + d * 14);
-    ctx.globalAlpha = (0.5 * (1 - d * 0.7));         // reflection fades with distance
+    const d = (y - horizon) / (h - horizon);
+    const wob = Math.sin(y * 0.05 + t * 1.6) * (1.5 + d * 16);
+    ctx.globalAlpha = 0.5 * (1 - d * 0.7);
     ctx.drawImage(sky,
       0, Math.floor((2 * horizon - y - SLICE) * dpr), sky.width, Math.floor(SLICE * dpr),
       wob, y, w, SLICE + 1);
   }
   ctx.globalAlpha = 1;
 
-  // Lightning's reflection, mirrored into the water.
-  if (bolt) {
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.28;
-    strokeBolt([bolt.pts], bolt.life, true);
-    ctx.globalAlpha = 1;
-  }
-
-  // Chop on the water: broken horizontal glints, denser toward the viewer.
+  // Lightning reflected in the water.
   ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = 0.25;
+  for (const b of bolts) strokeBolt(b, true);
+  ctx.globalAlpha = 1;
+
+  // Chop: broken glints, denser toward the viewer.
   ctx.strokeStyle = 'rgba(201,162,75,0.05)';
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -511,11 +612,9 @@ function draw(t) {
   }
   ctx.stroke();
 
-  // 4. Rain. One batched path per depth layer: 3 draw calls, not 900.
+  // 5. Rain: one batched path per depth layer. 3 draw calls, not 900.
   for (let depth = 0; depth < 3; depth++) {
-    ctx.strokeStyle = depth === 2
-      ? 'rgba(232,199,106,0.16)'
-      : 'rgba(232,199,106,' + (depth === 0 ? 0.09 : 0.16) + ')';
+    ctx.strokeStyle = 'rgba(232,199,106,' + (depth === 0 ? 0.09 : 0.16) + ')';
     ctx.lineWidth = depth === 2 ? 1.9 : (depth === 1 ? 1 : 0.6);
     ctx.beginPath();
     for (const d of rain) {
@@ -529,14 +628,21 @@ function draw(t) {
     ctx.stroke();
   }
 
-  // 5. Sheet flash. Decays fast; scheduler keeps strikes seconds apart, well
-  //    under the WCAG three-flashes-per-second ceiling.
+  // 6. Sheet flash. Strikes are seconds apart, well under the WCAG
+  //    three-flashes-per-second ceiling.
   if (flashV > 0.01) { flashV *= 0.70; flashEl.style.opacity = flashV.toFixed(3); }
   else if (flashEl.style.opacity !== '0') flashEl.style.opacity = '0';
 
-  if (bolt) { bolt.life -= 0.16; if (bolt.life <= 0) bolt = null; }
+  for (let i = bolts.length - 1; i >= 0; i--) {
+    bolts[i].life -= bolts[i].near ? 0.15 : 0.22;
+    if (bolts[i].life <= 0) bolts.splice(i, 1);
+  }
   nextBolt -= 1 / 30;
-  if (nextBolt <= 0) { strike(); nextBolt = 3 + Math.random() * 6; }
+  if (nextBolt <= 0) {
+    strike();
+    if (Math.random() < 0.3) strike();     // occasional double strike
+    nextBolt = 2.2 + Math.random() * 5;
+  }
 }
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
 let raf = 0, last = 0, running = false;
