@@ -857,3 +857,47 @@ body {
     .partner-avatar-ring { width: 140px; height: 140px; }
     .partner-name { font-size: 1.55rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   STORM CITY — the live background (storm.js).
+   The script builds #bgfx itself; this is the layer it needs to sit in.
+   Remove the script tag and none of this does anything.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* NOT z-index:-1. In the root stacking context, body's own (opaque) gradient
+   background paints AFTER negative-z-index children, so -1 hides the storm
+   completely. z-index:0 sits above the body gradient and below .card (z-1). */
+#bgfx {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+#bgfx canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    filter: blur(0.3px);
+}
+
+/* Sheet lightning: a full-viewport wash whose opacity is driven from JS. */
+#bgfx .flash {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(ellipse at 50% 0%,
+        rgba(232, 199, 106, 0.30), rgba(185, 28, 44, 0.10) 45%, transparent 75%);
+    transition: opacity 90ms linear;
+}
+
+/* The card goes see-through so the storm reads behind it. Two things matter
+   here and only one is obvious: the alpha, AND the backdrop blur — a 6px
+   backdrop-filter frosts whatever sits behind the panel, so it still read as
+   opaque glass at 55% alpha. The buttons keep their own opacity; only the
+   panel and its diagonal sheen moved. */
+.card {
+    background: linear-gradient(180deg, rgba(17, 26, 51, 0.42), rgba(10, 16, 32, 0.46));
+    backdrop-filter: blur(1.5px);
+}
+.card::before { opacity: 0.45; }
