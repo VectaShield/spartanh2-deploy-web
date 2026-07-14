@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skyline lab</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  html, body { margin: 0; height: 100%; background: #05070e; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .hud {
+    position: fixed; top: 10px; left: 10px; z-index: 9;
+    font: 11px/1.6 monospace; color: #c9a24b; letter-spacing: .1em;
+    background: rgba(4,6,14,.9); border: 1px solid rgba(201,162,75,.4); padding: 8px 10px;
+  }
+  .hud input { vertical-align: middle; }
+</style></head>
+<body>
+<div class="hud">
+  SKYLINE LAB &nbsp; zoom <input id="z" type="range" min="0.6" max="3" step="0.1" value="1.4">
+  <span id="zv">1.4</span>x &nbsp; <a href="storm.html" style="color:#e11d48">storm →</a>
+</div>
+<canvas id="c"></canvas>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE DETROIT SKYLINE, from Belle Isle looking west across the river.
+
+   Single source of truth: injected into both the Storm City demo and the
+   skyline lab page (skyline-lab.html), which renders it big and clean with no
+   rain, clouds or card on top so the silhouettes can actually be judged.
+
+   Everything is drawn as SILHOUETTE + LIT WINDOWS. At night, from a mile away
+   across water, that is all a building is: a black shape with a rim where the
+   light catches it, and its windows. Get the shape right and it reads; get it
+   wrong and no amount of detail saves it.
+
+   Coordinates: origin top-left. `HZ` is the waterline. `U` is the scale unit,
+   so every building is expressed in units and scales with the viewport.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function drawSkyline(s, W, H, HZ, U) {
+
+  const GOLD = '201,162,75';
+  const GOLD_HI = '232,199,106';
+  const CRIMSON = '225,29,72';
+
+  const BODY = '#080b16';        // standard tower body
+  const BODY_NEAR = '#04060c';   // nearer = darker (it blocks more of the glow)
+  const BODY_FAR = '#0b0f1e';    // further = lighter (haze washes it out)
+
+  // ── Storm glow behind the city. Black towers on a black page are invisible;
+  //    this is the lit sky they stand against.
+  const glow = s.createRadialGradient(W * 0.30, HZ, 10, W * 0.30, HZ, Math.max(W, H) * 0.7);
+  glow.addColorStop(0, 'rgba(' + GOLD + ',0.18)');
+  glow.addColorStop(0.35, 'rgba(185,28,44,0.11)');
+  glow.addColorStop(1, 'rgba(185,28,44,0)');
+  s.fillStyle = glow;
+  s.fillRect(0, 0, W, HZ + 2);
+
+  // ── Lit windows. They CLUSTER: offices light up by the floor, not at random.
+  function win(x, y, w, h, density) {
+    for (let wy = y + 4; wy < y + h - 2; wy += 6) {
+      const floorLit = Math.random() < 0.35;                 // is this floor busy?
+      for (let wx = x + 2; wx < x + w - 2; wx += 5) {
+        if (Math.random() > (floorLit ? density * 1.9 : density * 0.55)) continue;
+        s.fillStyle = Math.random() < 0.08
+          ? 'rgba(' + CRIMSON + ',' + (0.3 + Math.random() * 0.5) + ')'
+          : 'rgba(' + GOLD_HI + ',' + (0.25 + Math.random() * 0.55) + ')';
+        s.fillRect(wx, wy, 2, 3);
+      }
+    }
+  }
+
+  // Rim light down the lit edge + along the top. This is what separates one
+  // black shape from the black shape behind it.
+  function rim(x, y, w, h, a) {
+    s.fillStyle = 'rgba(' + GOLD + ',' + (a || 0.16) + ')';
+    s.fillRect(x, y, 1, h);
+    s.fillRect(x, y, w, 1);
+  }
+
+  // ── Primitive: a flat-topped box.
+  function box(x, w, h, density, body, rimA) {
+    const y = HZ - h;
+    s.fillStyle = body || BODY;
+    s.fillRect(x, y, w, h);
+    rim(x, y, w, h, rimA);
+    win(x, y, w, h, density === undefined ? 0.18 : density);
+    return y;
+  }
+
+  // ── Primitive: a cylinder (rounded shoulders + vertical mullions).
+  //    The RenCen towers are ribbed glass tubes; the ribs are what say "glass".
+  function cyl(x, w, h, density, body, edgeA) {
+    const y = HZ - h, r = Math.min(7, w * 0.28);
+    s.save();
+    s.beginPath();
+    s.moveTo(x, HZ);
+    s.lineTo(x, y + r);
+    s.quadraticCurveTo(x, y, x + r, y);
+    s.lineTo(x + w - r, y);
+    s.quadraticCurveTo(x + w, y, x + w, y + r);
+    s.lineTo(x + w, HZ);
+    s.closePath();
+    s.clip();
+
+    // CROSS-SHADING is what makes a tube read as a tube instead of a flat box.
+    // A cylinder is darkest where it turns away from us at the edges and
+    // lightest down the middle where it faces us. Without this the RenCen is
+    // just five rectangles, which is exactly what it looked like.
+    const shade = s.createLinearGradient(x, 0, x + w, 0);
+    const base = body || BODY;
+    shade.addColorStop(0, '#03040a');
+    shade.addColorStop(0.22, base);
+    shade.addColorStop(0.5, '#131a30');
+    shade.addColorStop(0.78, base);
+    shade.addColorStop(1, '#03040a');
+    s.fillStyle = shade;
+    s.fillRect(x, y, w, h);
+
+    // A glass tube also catches a vertical highlight just off centre.
+    const hl = s.createLinearGradient(x, 0, x + w, 0);
+    hl.addColorStop(0, 'rgba(' + GOLD + ',0)');
+    hl.addColorStop(0.42, 'rgba(' + GOLD + ',0.10)');
+    hl.addColorStop(0.52, 'rgba(' + GOLD + ',0)');
+    s.fillStyle = hl;
+    s.fillRect(x, y, w, h);
+
+    // Vertical mullions, tighter toward the edges: the ribs wrap around the
+    // curve, so they bunch up where the surface turns away.
+    s.strokeStyle = 'rgba(' + GOLD + ',0.07)';
+    s.lineWidth = 1;
+    for (let i = 1; i < 12; i++) {
+      const f = i / 12;
+      const mx = x + w * (0.5 - Math.cos(f * Math.PI) * 0.5);   // cosine spacing
+      s.beginPath(); s.moveTo(mx, y + r); s.lineTo(mx, HZ); s.stroke();
+    }
+    win(x, y + r, w, h - r, density);
+    s.restore();
+
+    // Outline last, over the shading: this is what stops overlapping black
+    // cylinders from merging into a single blob.
+    s.beginPath();
+    s.moveTo(x, HZ);
+    s.lineTo(x, y + r);
+    s.quadraticCurveTo(x, y, x + r, y);
+    s.lineTo(x + w - r, y);
+    s.quadraticCurveTo(x + w, y, x + w, y + r);
+    s.lineTo(x + w, HZ);
+    s.strokeStyle = 'rgba(' + GOLD + ',' + (edgeA || 0.26) + ')';
+    s.lineWidth = 1;
+    s.stroke();
+    return y;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  THE RENAISSANCE CENTER
+  //
+  //  Plan: a 73-storey hotel cylinder at the centre of a SQUARE, with four
+  //  identical 39-storey office cylinders at the square's corners.
+  //
+  //  We view that square CORNER-ON from Belle Isle, so it projects to a
+  //  diamond and the four identical towers land at four different depths:
+  //
+  //              back   (furthest: mostly swallowed by the hotel)
+  //        left  o           o  right
+  //              front  (nearest: stands in FRONT of the hotel)
+  //
+  //  Perspective therefore makes identical buildings render at different
+  //  heights: near = tallest on screen, back = shortest. The front tower is
+  //  offset LEFT of the hotel's centreline, so the hotel's shaft stays exposed
+  //  down its right side. Painted back -> left -> right -> front so the
+  //  overlaps actually occlude.
+  //
+  //  The whole cluster sits on a wide 5-storey podium at the waterline, which
+  //  is what plants it on the river in every photograph.
+  // ═══════════════════════════════════════════════════════════════
+  const RC = W * 0.22;              // cluster centre
+  const HW = 44 * U;                // hotel: a fat glass tube, not a pole
+  const HH = 248 * U;
+  const hx = RC - HW / 2;
+
+  const T_BACK  = { body: BODY_FAR,  edge: 0.14, win: 0.14 };
+  const T_SIDE  = { body: '#06080f', edge: 0.24, win: 0.22 };
+  const T_FRONT = { body: BODY_NEAR, edge: 0.34, win: 0.26 };
+
+  const BACK  = { x: hx + 0.40 * HW, w: HW * 0.74, h: HH * 0.62, t: T_BACK };
+  const LEFT  = { x: hx - 0.92 * HW, w: HW * 0.86, h: HH * 0.74, t: T_SIDE };
+  const RIGHT = { x: hx + 1.12 * HW, w: HW * 0.90, h: HH * 0.76, t: T_SIDE };
+  const FRONT = { x: hx - 0.14 * HW, w: HW * 0.98, h: HH * 0.80, t: T_FRONT };
+
+  // An office tower: cylinder + the flat mechanical crown box on top.
+  function officeTower(T) {
+    const y = cyl(T.x, T.w, T.h, T.t.win, T.t.body, T.t.edge);
+    // Dark mechanical collar just under the top, then the crown box: the
+    // office towers are capped, not open-topped.
+    s.fillStyle = '#04060c';
+    s.fillRect(T.x + 1, y + 3 * U, T.w - 2, 3 * U);
+    s.fillStyle = T.t.body;
+    s.fillRect(T.x + T.w * 0.18, y - 4 * U, T.w * 0.64, 4 * U);
+    s.strokeStyle = 'rgba(' + GOLD + ',' + T.t.edge + ')';
+    s.lineWidth = 1;
+    s.strokeRect(T.x + T.w * 0.18, y - 4 * U, T.w * 0.64, 4 * U);
+  }
+
+  officeTower(BACK);
+
+  // The hotel.
+  (function hotel() {
+    const y = cyl(hx, HW, HH, 0.24, BODY, 0.28);
+    // Crown: the wide restaurant band, then the narrower drum, then the mast.
+    s.fillStyle = BODY;
+    s.fillRect(hx + HW * 0.06, y - 8 * U, HW * 0.88, 8 * U);
+    s.strokeStyle = 'rgba(' + GOLD + ',0.32)';
+    s.lineWidth = 1;
+    s.strokeRect(hx + HW * 0.06, y - 8 * U, HW * 0.88, 8 * U);
+    // The lit ring: the RenCen's crown glows at night, and it is the single
+    // most recognisable detail on the whole building.
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.5)';
+    s.fillRect(hx + HW * 0.06, y - 6 * U, HW * 0.88, 1.5);
+    s.fillStyle = BODY;
+    s.fillRect(hx + HW * 0.26, y - 14 * U, HW * 0.48, 6 * U);
+    s.strokeRect(hx + HW * 0.26, y - 14 * U, HW * 0.48, 6 * U);
+    s.fillRect(hx + HW * 0.5 - 1, y - 30 * U, 2, 16 * U);          // mast
+    s.fillStyle = 'rgba(' + CRIMSON + ',0.9)';
+    s.fillRect(hx + HW * 0.5 - 2.5, y - 33 * U, 5, 4);             // beacon
+  })();
+
+  officeTower(LEFT);
+  officeTower(RIGHT);
+  officeTower(FRONT);
+
+  // The podium the cluster stands on, and the low riverfront buildings in
+  // front of it. Without this the towers look like they float on the water.
+  const podL = LEFT.x - 26 * U, podR = RIGHT.x + RIGHT.w + 22 * U;
+  s.fillStyle = '#0a0e1c';
+  s.fillRect(podL, HZ - 26 * U, podR - podL, 26 * U);
+  rim(podL, HZ - 26 * U, podR - podL, 26 * U, 0.12);
+  win(podL, HZ - 26 * U, podR - podL, 26 * U, 0.12);
+
+  // Towers 500 / 600: the two low boxy towers immediately west of the cluster.
+  box(podL - 30 * U, 24 * U, 62 * U, 0.2, '#090d1a');
+  box(podL - 58 * U, 20 * U, 50 * U, 0.18, '#090d1a');
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     THE LANDMARKS.
+
+     Detroit's skyline is an art deco skyline. Deco means SETBACKS — the tower
+     steps inward as it rises — and it means a CROWN, not a flat roof. That
+     stepped, crowned silhouette is the entire difference between "Detroit" and
+     "generic city", so each landmark is built from its own real profile rather
+     than from a rectangle with a hat on it.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  // ── Helper: a tower that steps inward as it rises. `steps` is a list of
+  //    [heightFraction, widthFraction] from the ground up.
+  function stepped(x, w, h, steps, body, density) {
+    let cx = x, cw = w, top = HZ;
+    const parts = [];
+    for (const st of steps) {
+      const sh = h * st[0], sw = w * st[1];
+      cx = x + (w - sw) / 2;                    // stay centred as it narrows
+      const y = top - sh;
+      s.fillStyle = body || BODY;
+      s.fillRect(cx, y, sw, sh);
+      rim(cx, y, sw, sh, 0.15);
+      win(cx, y, sw, sh, density === undefined ? 0.2 : density);
+      parts.push({ x: cx, y, w: sw, h: sh });
+      top = y;
+      cw = sw;
+    }
+    return { top, x: cx, w: cw, parts };
+  }
+
+  // ── PENOBSCOT. 1928 art deco. Big square base, then a tall shaft, then a
+  //    tight stack of setbacks, capped by the mast and its red beacon — the
+  //    beacon is the tell, it has been burning over Detroit for a century.
+  (function penobscot() {
+    const x = W * 0.355, w = 40 * U, h = 190 * U;
+    const t = stepped(x, w, h, [[0.52, 1.0], [0.24, 0.66], [0.12, 0.42], [0.07, 0.26]], BODY, 0.2);
+    s.fillStyle = BODY;
+    s.fillRect(t.x + t.w * 0.5 - 1, t.top - 18 * U, 2, 18 * U);     // mast
+    s.fillStyle = 'rgba(' + CRIMSON + ',0.95)';                      // THE beacon
+    s.beginPath(); s.arc(t.x + t.w * 0.5, t.top - 20 * U, 3, 0, 7); s.fill();
+    s.fillStyle = 'rgba(' + CRIMSON + ',0.25)';
+    s.beginPath(); s.arc(t.x + t.w * 0.5, t.top - 20 * U, 7, 0, 7); s.fill();
+  })();
+
+  // ── GUARDIAN. 1929. Deco again, but its top is a stepped PYRAMID of gables
+  //    rather than a mast: the profile tapers to a blunt point.
+  (function guardian() {
+    const x = W * 0.318, w = 30 * U, h = 152 * U;
+    const t = stepped(x, w, h, [[0.62, 1.0], [0.2, 0.7], [0.1, 0.44]], BODY, 0.18);
+    s.fillStyle = BODY;                                              // gabled cap
+    s.beginPath();
+    s.moveTo(t.x, t.top);
+    s.lineTo(t.x + t.w / 2, t.top - 14 * U);
+    s.lineTo(t.x + t.w, t.top);
+    s.closePath(); s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.18)';
+    s.lineWidth = 1; s.stroke();
+  })();
+
+  // ── ALLY / ONE DETROIT CENTER. 1993, postmodern-gothic: the tallest office
+  //    tower, and its crown is a CLUSTER OF SPIRES — a central peak flanked by
+  //    smaller ones, like a cathedral. That crown is its whole identity.
+  (function ally() {
+    const x = W * 0.418, w = 46 * U, h = 190 * U;
+    // Shaft, then TWO setbacks, then the crown. The crown is a single mass that
+    // rises to one central peak with buttress spires tucked against it — not a
+    // row of equal triangles, which reads as a comb.
+    const t = stepped(x, w, h, [[0.72, 1.0], [0.16, 0.78], [0.12, 0.56]], BODY, 0.2);
+    const cx0 = t.x, cw = t.w, y = t.top;
+    s.fillStyle = BODY;
+    s.beginPath();
+    s.moveTo(cx0, y);
+    s.lineTo(cx0, y - 10 * U);
+    s.lineTo(cx0 + cw * 0.18, y - 22 * U);      // shoulder
+    s.lineTo(cx0 + cw * 0.36, y - 16 * U);      // notch
+    s.lineTo(cx0 + cw * 0.5, y - 52 * U);       // THE peak
+    s.lineTo(cx0 + cw * 0.64, y - 16 * U);
+    s.lineTo(cx0 + cw * 0.82, y - 22 * U);
+    s.lineTo(cx0 + cw, y - 10 * U);
+    s.lineTo(cx0 + cw, y);
+    s.closePath();
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.22)';
+    s.lineWidth = 1; s.stroke();
+    // Lit crown: Ally's peak is floodlit at night, and that glow is how you
+    // pick it out of the skyline from a mile away.
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.35)';
+    s.fillRect(cx0 + cw * 0.46, y - 50 * U, 2, 34 * U);
+  })();
+
+  // ── HUDSON'S. 2025, the new one: a slim glass shaft, taller than everything
+  //    around it, topped by a needle. Modern, so no setbacks — the contrast
+  //    with the deco towers beside it is the point.
+  (function hudsons() {
+    const x = W * 0.487, w = 20 * U, h = 232 * U;
+    const y = box(x, w, h, 0.14, '#0a0f1e');
+    s.fillStyle = BODY;
+    s.fillRect(x + w * 0.5 - 1, y - 40 * U, 2, 40 * U);              // needle
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.8)';
+    s.fillRect(x + w * 0.5 - 1.5, y - 42 * U, 3, 3);
+  })();
+
+  // ── DAVID STOTT. 1929. Very slim deco: a narrow shaft with a stack of tight
+  //    setbacks. Reads as a thin, elegant wedge.
+  (function stott() {
+    const x = W * 0.545, w = 22 * U, h = 165 * U;
+    stepped(x, w, h, [[0.58, 1.0], [0.22, 0.72], [0.12, 0.5], [0.08, 0.3]], BODY, 0.18);
+  })();
+
+  // ── BOOK TOWER. 1926. The eccentric one: an ornate shaft capped by a steep
+  //    green mansard ROOF, not a spire. That dome-ish cap is unmistakable.
+  (function book() {
+    const x = W * 0.585, w = 26 * U, h = 148 * U;
+    const y = box(x, w, h, 0.18, BODY);
+    s.fillStyle = BODY;                                              // mansard cap
+    s.beginPath();
+    s.moveTo(x - 2, y);
+    s.lineTo(x + w * 0.22, y - 16 * U);
+    s.lineTo(x + w * 0.78, y - 16 * U);
+    s.lineTo(x + w + 2, y);
+    s.closePath(); s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.22)';
+    s.lineWidth = 1; s.stroke();
+    s.fillStyle = BODY;                                              // cupola
+    s.fillRect(x + w * 0.42, y - 24 * U, w * 0.16, 8 * U);
+  })();
+
+  // ── CADILLAC TOWER. 1927. Slim deco, blunt stepped top.
+  (function cadillac() {
+    const x = W * 0.625, w = 24 * U, h = 140 * U;
+    stepped(x, w, h, [[0.66, 1.0], [0.2, 0.66], [0.14, 0.4]], BODY, 0.18);
+  })();
+
+  // ── RIVERFRONT TOWERS. Three pale residential towers WEST of the RenCen,
+  //    right on the water. Round-shouldered and identical — a rhythm, not a
+  //    landmark, but the eye misses them when they are gone.
+  for (let i = 0; i < 3; i++) {
+    cyl(podL - (95 + i * 30) * U, 18 * U, (112 + i * 8) * U, 0.24, '#0b1020', 0.2);
+  }
+
+  // ── Depth ranks. Landmarks alone sit in a line; a city has buildings BEHIND
+  //    and IN FRONT of its landmarks. The back rank is lighter (haze) and the
+  //    front rank is darker (it blocks the glow), and both overlap their
+  //    neighbours, which is what turns a row into a district.
+  const backRank = [
+    [0.30, 26, 118], [0.345, 22, 96], [0.395, 30, 132], [0.44, 24, 104],
+    [0.475, 28, 122], [0.515, 22, 88], [0.56, 26, 110], [0.60, 30, 126],
+    [0.645, 24, 98], [0.68, 28, 116], [0.72, 22, 90],
+  ];
+  for (const b of backRank) box(W * b[0] - 6 * U, b[1] * U, b[2] * U, 0.12, BODY_FAR, 0.08);
+
+  const frontRank = [
+    [0.315, 30, 74], [0.36, 26, 62], [0.40, 34, 86], [0.45, 24, 58],
+    [0.49, 30, 70], [0.535, 26, 64], [0.575, 32, 80], [0.62, 24, 56],
+    [0.66, 30, 72], [0.70, 26, 60], [0.74, 28, 68],
+  ];
+  for (const b of frontRank) box(W * b[0], b[1] * U, b[2] * U, 0.22, BODY_NEAR, 0.2);
+
+  // ── HUNTINGTON PLACE. The long low convention hall on the waterfront: wide
+  //    and flat, it anchors the shoreline west of the cluster.
+  (function hall() {
+    const x = podL - 200 * U, w = 105 * U, h = 30 * U;
+    const y = HZ - h;
+    s.fillStyle = '#090d1a';
+    s.fillRect(x, y, w, h);
+    rim(x, y, w, h, 0.13);
+    win(x, y, w, h, 0.14);
+  })();
+
+  // ── Shoreline: a thin strip of ground at the waterline, its wet edge faded
+  //    at both ends. A flat full-width line reads as a rule drawn across the
+  //    page rather than a shore.
+  s.fillStyle = '#05070e';
+  s.fillRect(0, HZ - 2 * U, W, 3 * U);
+  const shore = s.createLinearGradient(0, 0, W, 0);
+  shore.addColorStop(0, 'rgba(' + GOLD + ',0)');
+  shore.addColorStop(0.2, 'rgba(' + GOLD + ',0.10)');
+  shore.addColorStop(0.5, 'rgba(' + GOLD + ',0.13)');
+  shore.addColorStop(0.85, 'rgba(' + GOLD + ',0.07)');
+  shore.addColorStop(1, 'rgba(' + GOLD + ',0)');
+  s.fillStyle = shore;
+  s.fillRect(0, HZ, W, 1);
+}
+
+const c = document.getElementById('c');
+const x = c.getContext('2d');
+const zEl = document.getElementById('z'), zv = document.getElementById('zv');
+function render() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w * dpr; c.height = h * dpr;
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  x.clearRect(0, 0, w, h);
+  const zoom = parseFloat(zEl.value);
+  zv.textContent = zoom.toFixed(1);
+  const unit = Math.max(0.5, Math.min(1.3, Math.min(w / 1150, h / 720))) * zoom;
+  drawSkyline(x, w, h, h * 0.78, unit);
+}
+zEl.addEventListener('input', render);
+window.addEventListener('resize', render);
+render();
+</script>
+</body></html>
