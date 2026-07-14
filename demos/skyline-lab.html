@@ -264,11 +264,6 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   box(podL - 30 * S, 24 * S, 62 * S, 0.2, '#090d1a');
   box(podL - 58 * S, 20 * S, 50 * S, 0.18, '#090d1a');
 
-  // A low riverfront block filling the clear space just east of the RenCen —
-  // and the roof he parks on. Without it he stands on thin air.
-  const roofH = 26 * S;
-  box(podR + 4 * S, 74 * S, roofH, 0.14, '#0a0e1c');
-
 
   /* ═══════════════════════════════════════════════════════════════════════
      THE LANDMARKS.
@@ -456,7 +451,13 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   // ── EASTER EGG: him, on the bike, in the clear space just east of the
   //    RenCen. Drawn LAST — every other rank of buildings is painted after the
   //    RenCen, and they were burying him.
-  drawRider(s, podR + 60 * S, HZ - roofH, Math.max(1.0, S) * 1.05);
+  // Parked on the podium roof with his REAR TYRE against the wall of the
+  // right-hand RenCen tower. The rear axle sits 8 units behind the origin and
+  // the tyre is 3.2 units across, so the back of the tyre is 11.2k left of the
+  // origin — put the origin that far right of the tower's wall and the rubber
+  // touches the brickwork.
+  const k = Math.max(1.0, S) * 1.05;
+  drawRider(s, RIGHT.x + RIGHT.w + 11.2 * k, HZ - 26 * S, k);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
