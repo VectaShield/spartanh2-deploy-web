@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714055928">
+    <link rel="stylesheet" href="/styles.css?v=20260714060521">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -689,7 +689,7 @@ function resize() {
 }
 
 let sky = null, rain = [], bolts = [], clouds = [], puffs = [];
-let nextBolt = 2, flashV = 0, horizon = 0;
+let nextBolt = 1.2, flashV = 0, horizon = 0;
 const flashEl = document.querySelector('.flash');
 const WIND = -0.20;
 
@@ -793,11 +793,32 @@ function onResize() {
 
 function strike() {
   if (!clouds.length) return;
-  const src = clouds[(Math.random() * clouds.length) | 0];
-  const x0 = src.x + (Math.random() - 0.5) * 150 * src.sc;
-  const y0 = src.y + 80 * src.sc;
-  const endY = horizon - Math.random() * 40;
-  if (endY <= y0 + 30) return;
+  // Only strike from clouds that are actually ON SCREEN. Clouds drift in from
+  // off-canvas, and on a narrow phone most of them are off-canvas most of the
+  // time — picking one at random meant the lightning was firing where you
+  // could not see it. Also: if a pick fails (cloud too low to leave room for a
+  // bolt), try again rather than silently skipping the strike entirely.
+  const onscreen = clouds.filter(c => c.x > w * 0.05 && c.x < w * 0.95);
+  // On a phone the card fills nearly the full width, so the sky behind it is
+  // where the bolts were firing unseen. Prefer clouds toward the left/right
+  // margins, where the strike is not hidden behind the panel.
+  const narrowVp = w < 700;
+  const sided = narrowVp
+    ? onscreen.filter(c => c.x < w * 0.3 || c.x > w * 0.7)
+    : onscreen;
+  const pool = sided.length ? sided : (onscreen.length ? onscreen : clouds);
+  let src = null, x0 = 0, y0 = 0, endY = 0;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const c = pool[(Math.random() * pool.length) | 0];
+    const tx = c.x + (Math.random() - 0.5) * 120 * c.sc;
+    const ty = c.y + 80 * c.sc;
+    const te = horizon - Math.random() * 40;
+    if (te > ty + 40 && tx > -w * 0.05 && tx < w * 1.05) {
+      src = c; x0 = tx; y0 = ty; endY = te;
+      break;
+    }
+  }
+  if (!src) return;
   const near = !src.far;
   const steps = 6 + (Math.random() * 6 | 0);
   const dy = (endY - y0) / steps;
@@ -823,15 +844,18 @@ function strike() {
     }
   }
   bolts.push({ pts, forks, life: 1, near });
-  flashV = Math.max(flashV, near ? 0.55 + Math.random() * 0.45 : 0.2 + Math.random() * 0.25);
+  flashV = Math.max(flashV, near ? 0.7 + Math.random() * 0.3 : 0.3 + Math.random() * 0.3);
 }
 
 function strokeBolt(b, mirror) {
   const a = b.life;
   const paths = [b.pts].concat(b.forks);
+  // Thicker on a narrow viewport: a 1.7px bolt seen through a translucent card
+  // is invisible, and on a phone the card covers the sky.
+  const k = w < 700 ? 1.7 : 1;
   const passes = b.near
-    ? [[9, 'rgba(201,162,75,' + (a * 0.13) + ')'], [3.6, 'rgba(232,199,106,' + (a * 0.34) + ')'], [1.7, 'rgba(255,252,244,' + a + ')']]
-    : [[5, 'rgba(201,162,75,' + (a * 0.08) + ')'], [1.1, 'rgba(240,235,220,' + (a * 0.55) + ')']];
+    ? [[9 * k, 'rgba(201,162,75,' + (a * 0.16) + ')'], [3.6 * k, 'rgba(232,199,106,' + (a * 0.4) + ')'], [1.7 * k, 'rgba(255,252,244,' + a + ')']]
+    : [[5 * k, 'rgba(201,162,75,' + (a * 0.1) + ')'], [1.1 * k, 'rgba(240,235,220,' + (a * 0.6) + ')']];
   for (const p of passes) {
     ctx.lineWidth = p[0]; ctx.strokeStyle = p[1];
     for (const path of paths) {
@@ -924,14 +948,17 @@ function draw(t) {
   else if (flashEl.style.opacity !== '0') flashEl.style.opacity = '0';
 
   for (let i = bolts.length - 1; i >= 0; i--) {
-    bolts[i].life -= bolts[i].near ? 0.15 : 0.22;
+    bolts[i].life -= bolts[i].near ? 0.11 : 0.17;
     if (bolts[i].life <= 0) bolts.splice(i, 1);
   }
   nextBolt -= 1 / 30;
   if (nextBolt <= 0) {
     strike();
-    if (Math.random() < 0.3) strike();
-    nextBolt = 2.2 + Math.random() * 5;
+    if (Math.random() < 0.35) strike();          // occasional double
+    // Fewer clouds live on a narrow screen, so strikes would be rarer there
+    // for no good reason. Shorten the gap when the viewport is narrow.
+    const narrow = w < 700;
+    nextBolt = (narrow ? 1.6 : 2.2) + Math.random() * (narrow ? 3.4 : 5);
   }
 }
 const reduce = matchMedia('(prefers-reduced-motion: reduce)');
