@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storm City — every screen</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  body { margin:0; background:#06080f; color:#c9a24b; font:12px/1.6 'Courier New',monospace; padding:24px; }
+  h1 { font-size:15px; letter-spacing:.24em; text-transform:uppercase; margin:0 0 4px; }
+  .sub { color:#8a8fa3; margin-bottom:24px; }
+  .sub a { color:#e11d48; }
+  .row { display:flex; flex-wrap:wrap; gap:26px; align-items:flex-start; }
+  .dev { }
+  .cap { margin-bottom:6px; color:#e8c76a; letter-spacing:.14em; text-transform:uppercase; }
+  .cap span { color:#8a8fa3; }
+  .screen { border:1px solid rgba(201,162,75,.45); overflow:hidden; position:relative; background:#000; }
+  iframe { border:0; transform-origin: 0 0; }
+</style></head>
+<body>
+<h1>Storm City — every screen</h1>
+<p class="sub">The live demo, running, at real device viewports. Not screenshots.
+  &nbsp;<a href="storm.html">open full size →</a></p>
+<div class="row" id="row"></div>
+<script>
+const DEVICES = [["iPhone SE",375,667],["iPhone 13 mini",375,812],["iPhone 15",393,852],["Pixel 8",412,915],["iPhone 15 Pro Max",430,932],["Galaxy S24 Ultra",440,956],["iPad mini",768,1024],["Laptop",1440,900],["Desktop 1080p",1920,1080]];
+const row = document.getElementById('row');
+for (const [name, w, h] of DEVICES) {
+  // Scale each device down to a common display height so a phone and a 1080p
+  // desktop can be compared side by side on one page.
+  const scale = Math.min(420 / h, 340 / w);
+  const d = document.createElement('div');
+  d.className = 'dev';
+  d.innerHTML =
+    '<div class="cap">' + name + ' <span>' + w + '×' + h + '</span></div>' +
+    '<div class="screen" style="width:' + Math.round(w * scale) + 'px;height:' + Math.round(h * scale) + 'px">' +
+    '<iframe src="storm.html?force=1" width="' + w + '" height="' + h + '" ' +
+    'style="transform:scale(' + scale + ')" loading="lazy"></iframe></div>';
+  row.appendChild(d);
+}
+</script>
+</body></html>
