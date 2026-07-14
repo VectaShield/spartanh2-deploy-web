@@ -596,53 +596,53 @@ function drawRider(s, gx, gy, k) {
   //    Thigh rises FORWARD from the hip to a high knee, shin drops back to the
   //    peg. Filled, with real thickness — a line here is a stick figure.
   fillEdge([
-    [-5.6, -7.8],    // hip
-    [-2.4, -9.0],    // thigh forward and up
-    [-1.2, -8.0],    // knee, high and forward against the tank
+    [-5.4, -9.6],    // hip, UP off the seat
+    [-2.2, -9.4],    // thigh, driven forward
+    [-1.2, -8.2],    // knee, up into the tank
     [-2.2, -5.6],    // shin dropping back, in FRONT of the engine
     [-2.4, -4.2],    // boot on the peg
-    [-4.4, -4.0],    // toe pointing forward
+    [-4.4, -4.0],    // toe forward
     [-4.2, -5.4],
-    [-4.4, -6.6],    // back up the calf
-    [-6.4, -7.2],
+    [-4.4, -6.8],    // back up the calf
+    [-6.2, -8.6],
   ], 0.55);
 
   // ── TORSO. UPRIGHT with a slight forward lean, and bulky — he is in a
   //    hoodie. He sits DOWN in the bike, hips barely above the seat.
   fillEdge([
-    [-5.2, -8.0],    // hips, on the seat
-    [-4.6, -11.4],   // back, near vertical
-    [-2.6, -13.2],   // shoulder, only slightly forward
-    [0.2, -13.0],
-    [0.6, -11.2],    // chest
-    [-1.2, -9.0],    // hoodie front falling into the lap
-    [-3.0, -8.2],
+    [-5.6, -9.8],    // hips, UP and back: arse in the air
+    [-4.4, -11.6],   // lower back
+    [-1.4, -13.2],   // spine raked down-forward, not stacked upright
+    [1.6, -13.6],    // shoulders, well forward over the tank
+    [2.8, -12.6],
+    [1.8, -11.0],    // chest pointing DOWN at the tank
+    [-0.8, -9.8],    // hoodie falling forward into the lap
+    [-3.4, -9.2],
   ], 0.5);
 
   // ── ARM: forward, only slightly down, elbow bent, hands on the bars.
   fillEdge([
-    [-1.2, -12.9],   // shoulder
-    [1.2, -12.4],    // upper arm
-    [3.0, -12.0],    // elbow, slightly dropped
-    [4.6, -11.9],    // forearm out to the bar
-    [4.8, -11.1],    // hand on the grip
-    [3.0, -11.2],
-    [1.0, -11.4],    // underside back to the shoulder
-    [-1.4, -11.8],
+    [1.2, -13.4],    // shoulder, already forward
+    [3.2, -12.8],    // elbow, tucked in
+    [5.0, -12.2],    // forearm to the bar
+    [5.6, -11.6],    // hand on the grip
+    [4.6, -11.2],
+    [2.8, -11.6],    // underside back to the chest
+    [1.0, -12.2],
   ], 0.5);
 
   // ── HELMET: full-face, chin bar jutting forward. Total height lands at about
   //    one wheelbase, which is what the photo says.
   s.fillStyle = SIL;
   s.beginPath();
-  s.arc(-0.6 * k, -14.6 * k, 1.95 * k, 0, 7);
+  s.arc(2.6 * k, -14.4 * k, 1.95 * k, 0, 7);
   s.fill();
   s.strokeStyle = EDGE;
   s.lineWidth = Math.max(0.7, 0.55 * k);
   s.stroke();
-  fillEdge([[0.2, -15.6], [1.9, -14.9], [1.8, -13.5], [0.0, -13.2]], 0.5);   // chin bar
+  fillEdge([[3.4, -15.2], [5.2, -14.2], [5.0, -12.9], [3.2, -13.1]], 0.5);   // chin bar, over the bars
   s.fillStyle = 'rgba(' + GOLD_HI + ',0.4)';                                  // visor
-  P([[0.3, -15.4], [1.7, -14.8], [1.6, -13.9], [0.2, -14.1]]);
+  P([[3.5, -15.0], [5.0, -14.1], [4.9, -13.3], [3.4, -13.5]]);
   s.fill();
 
   // ── Tail light.
