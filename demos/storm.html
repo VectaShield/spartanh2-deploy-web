@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714051720">
+    <link rel="stylesheet" href="/styles.css?v=20260714052314">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -362,112 +362,143 @@ function bakeSkyline() {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  //  THE RENAISSANCE CENTER, from the reference photos.
-  //  Four identical office cylinders stand at the corners of a square around
-  //  the central hotel tower. From across the river that reads as depth, not
-  //  symmetry: the NEAR pair (front corners) are closer to us, so they appear
-  //  TALLER and WIDER and they overlap the hotel; the FAR pair (back corners)
-  //  peek out beyond them, shorter and narrower and dimmer. Painting order is
-  //  therefore back-to-front: far pair, hotel, near pair, then the low
-  //  riverfront buildings in front of the whole cluster.
+  //  THE RENAISSANCE CENTER — the cluster, not a row.
+  //
+  //  Real plan: the hotel is a cylinder at the centre of a SQUARE, with four
+  //  identical office cylinders at the square's corners. Seen from the river
+  //  the square is foreshortened, so:
+  //
+  //    - the two FRONT-corner towers sit close in and OVERLAP the hotel's
+  //      flanks. They are nearer, so they render taller and wider.
+  //    - the two BACK-corner towers are further away and largely hidden BEHIND
+  //      the front pair. Only their outer shoulders and crowns peek out, and
+  //      they are shorter, narrower and dimmer.
+  //
+  //  The overlap is the whole point: without silhouettes crossing each other
+  //  it reads as five separate towers in a row, which is exactly what the
+  //  RenCen does not look like.
+  //
+  //  Painted strictly back-to-front:  back pair -> hotel -> front pair -> base.
   // ═══════════════════════════════════════════════════════════════
-  const HW = 42 * unit;                                  // hotel width
-  const HH = 250 * unit;                                 // hotel height
-  const CW = 34 * unit;                                  // near-tower width
+  const HW = 40 * unit;          // hotel width
+  const HH = 240 * unit;         // hotel height
+  const FW = HW * 0.80;          // FRONT tower: near, so nearly as wide as the hotel
+  const FH = HH * 0.62;
+  // The back towers are the SAME buildings as the front pair, just further
+  // round the square. So they are only slightly smaller and only slightly
+  // dimmer — if they read as different, shorter buildings, the cluster falls
+  // apart into unrelated towers.
+  const BW = FW * 0.90;
+  const BH = FH * 0.90;
 
-  const cylinder = (x, bw, bh, density, dim) => {
+  const hx = rcx - HW / 2;       // hotel left edge
+
+  // Front towers overlap the hotel: their inner edge crosses INTO the hotel
+  // body by about a third of their width. Back towers sit just outside the
+  // hotel's edges, so they peek past the front pair rather than lining up.
+  // Positions expressed in hotel-widths from the hotel's left edge, so the
+  // square's foreshortening is explicit:
+  //   front towers centred at -0.28 and +1.28  -> each overlaps the hotel by
+  //                                               ~0.12 HW, outer edges flare past it
+  //   back towers  centred at -0.95 and +1.95  -> their outer shoulders clear
+  //                                               the front pair and peek out
+  const frontL = hx - 0.28 * HW - FW / 2;
+  const frontR = hx + 1.28 * HW - FW / 2;
+  const backL  = hx - 0.98 * HW - BW / 2;
+  const backR  = hx + 1.98 * HW - BW / 2;
+
+  const cyl = (x, bw, bh, density, tone) => {
     const y = horizon - bh;
-    s.fillStyle = dim ? '#0b0f1e' : '#080b16';
+    s.fillStyle = tone.body;
     s.beginPath();
     s.moveTo(x, horizon);
     s.lineTo(x, y + 6);
-    s.quadraticCurveTo(x, y, x + 6, y);                  // rounded shoulders
+    s.quadraticCurveTo(x, y, x + 6, y);              // rounded shoulders
     s.lineTo(x + bw - 6, y);
     s.quadraticCurveTo(x + bw, y, x + bw, y + 6);
     s.lineTo(x + bw, horizon);
     s.closePath();
     s.fill();
-    s.strokeStyle = 'rgba(201,162,75,' + (dim ? 0.13 : 0.24) + ')';
+    // Outline. On the FRONT towers this is what separates them from the hotel
+    // behind: without it, overlapping black shapes merge into one blob.
+    s.strokeStyle = tone.edge;
     s.lineWidth = 1;
     s.stroke();
-    // Vertical mullions: the RenCen is ribbed glass, not a flat slab.
-    s.strokeStyle = 'rgba(201,162,75,' + (dim ? 0.04 : 0.08) + ')';
+    s.strokeStyle = tone.rib;                        // ribbed glass
     for (let mx = x + 5; mx < x + bw - 2; mx += 5) {
       s.beginPath(); s.moveTo(mx, y + 5); s.lineTo(mx, horizon); s.stroke();
     }
     windows(x, y + 7, bw, bh - 7, density);
-    // Flat mechanical crown box on top of every office tower.
-    s.fillStyle = dim ? '#0b0f1e' : '#080b16';
+    s.fillStyle = tone.body;                         // flat crown box
     s.fillRect(x + bw * 0.18, y - 5 * unit, bw * 0.64, 5 * unit);
-    s.strokeStyle = 'rgba(201,162,75,' + (dim ? 0.10 : 0.18) + ')';
+    s.strokeStyle = tone.edge;
     s.strokeRect(x + bw * 0.18, y - 5 * unit, bw * 0.64, 5 * unit);
-    return y;
   };
 
-  // 1. FAR pair — back corners of the square. Shorter, narrower, dimmer,
-  //    set wide so they peek out past the near pair.
-  cylinder(rcx - CW * 2.55, CW * 0.82, HH * 0.50, 0.09, true);
-  cylinder(rcx + CW * 1.75, CW * 0.82, HH * 0.50, 0.09, true);
+  const FAR  = { body: '#070a13', edge: 'rgba(201,162,75,0.17)', rib: 'rgba(201,162,75,0.04)' };
+  const NEAR = { body: '#05070e', edge: 'rgba(201,162,75,0.30)', rib: 'rgba(201,162,75,0.08)' };
 
-  // 2. THE HOTEL — tallest, centre, cylindrical, with the stepped crown+mast.
+  // 1. BACK corners.
+  cyl(backL, BW, BH, 0.10, FAR);
+  cyl(backR, BW, BH, 0.10, FAR);
+
+  // 2. THE HOTEL.
   (function hotel() {
-    const x = rcx - HW * 0.5, bh = HH, y = horizon - bh;
+    const y = horizon - HH;
     s.fillStyle = '#080b16';
     s.beginPath();
-    s.moveTo(x, horizon);
-    s.lineTo(x, y + 10);
-    s.quadraticCurveTo(x, y, x + 10, y);
-    s.lineTo(x + HW - 10, y);
-    s.quadraticCurveTo(x + HW, y, x + HW, y + 10);
-    s.lineTo(x + HW, horizon);
+    s.moveTo(hx, horizon);
+    s.lineTo(hx, y + 9);
+    s.quadraticCurveTo(hx, y, hx + 9, y);
+    s.lineTo(hx + HW - 9, y);
+    s.quadraticCurveTo(hx + HW, y, hx + HW, y + 9);
+    s.lineTo(hx + HW, horizon);
     s.closePath();
     s.fill();
-    s.strokeStyle = 'rgba(201,162,75,0.3)';
+    s.strokeStyle = 'rgba(201,162,75,0.26)';
     s.lineWidth = 1;
     s.stroke();
-    s.strokeStyle = 'rgba(201,162,75,0.09)';
-    for (let mx = x + 5; mx < x + HW - 2; mx += 5) {
+    s.strokeStyle = 'rgba(201,162,75,0.07)';
+    for (let mx = hx + 5; mx < hx + HW - 2; mx += 5) {
       s.beginPath(); s.moveTo(mx, y + 6); s.lineTo(mx, horizon); s.stroke();
     }
-    windows(x, y + 10, HW, bh - 10, 0.17);
-    // Crown: the wide band, then the narrower drum, then the mast.
+    windows(hx, y + 10, HW, HH - 10, 0.16);
+    // Crown: wide band, narrow drum, mast, beacon.
     s.fillStyle = '#080b16';
-    s.fillRect(x + HW * 0.08, y - 9 * unit, HW * 0.84, 9 * unit);
+    s.fillRect(hx + HW * 0.08, y - 9 * unit, HW * 0.84, 9 * unit);
     s.strokeStyle = 'rgba(201,162,75,0.3)';
-    s.strokeRect(x + HW * 0.08, y - 9 * unit, HW * 0.84, 9 * unit);
+    s.strokeRect(hx + HW * 0.08, y - 9 * unit, HW * 0.84, 9 * unit);
     s.fillStyle = '#080b16';
-    s.fillRect(x + HW * 0.28, y - 16 * unit, HW * 0.44, 7 * unit);
-    s.strokeRect(x + HW * 0.28, y - 16 * unit, HW * 0.44, 7 * unit);
-    s.fillStyle = '#080b16';
-    s.fillRect(x + HW * 0.5 - 1, y - 34 * unit, 2, 18 * unit);      // mast
+    s.fillRect(hx + HW * 0.28, y - 16 * unit, HW * 0.44, 7 * unit);
+    s.strokeRect(hx + HW * 0.28, y - 16 * unit, HW * 0.44, 7 * unit);
+    s.fillRect(hx + HW * 0.5 - 1, y - 32 * unit, 2, 16 * unit);
     s.fillStyle = 'rgba(225,29,72,0.9)';
-    s.fillRect(x + HW * 0.5 - 2.5, y - 37 * unit, 5, 4);            // beacon
+    s.fillRect(hx + HW * 0.5 - 2.5, y - 35 * unit, 5, 4);
   })();
 
-  // 3. NEAR pair — front corners. Taller and wider than the far pair because
-  //    they are closer to us, and they overlap the hotel's flanks.
-  cylinder(rcx - CW * 1.62, CW, HH * 0.63, 0.14, false);
-  cylinder(rcx + CW * 0.62, CW, HH * 0.63, 0.14, false);
+  // 3. FRONT corners — drawn last so they cut across the hotel's flanks.
+  cyl(frontL, FW, FH, 0.14, NEAR);
+  cyl(frontR, FW, FH, 0.14, NEAR);
 
-  // 4. Towers 500/600 — the low boxy pair west of the cluster.
-  tower(rcx - CW * 3.9, 32 * unit, 78 * unit, 0.12);
-  tower(rcx - CW * 3.0, 26 * unit, 66 * unit, 0.11);
+  // 4. Towers 500/600: low boxes west of the cluster.
+  tower(backL - 44 * unit, 30 * unit, 74 * unit, 0.11);
+  tower(backL - 76 * unit, 24 * unit, 60 * unit, 0.10);
 
-  // 5. The riverfront: low buildings and the podium IN FRONT of the cluster,
-  //    which is what gives the RenCen its base in every photo from the water.
-  s.fillStyle = '#0a0e1c';
-  s.fillRect(rcx - CW * 4.4, horizon - 26 * unit, CW * 8.4, 26 * unit);
+  // 5. Riverfront podium + low buildings IN FRONT of the whole cluster. This is
+  //    what plants the RenCen on the water instead of floating it.
+  const baseL = backL - 90 * unit, baseR = backR + BW + 60 * unit;
+  s.fillStyle = '#090d1a';
+  s.fillRect(baseL, horizon - 24 * unit, baseR - baseL, 24 * unit);
   s.fillStyle = 'rgba(201,162,75,0.10)';
-  s.fillRect(rcx - CW * 4.4, horizon - 26 * unit, CW * 8.4, 1);
-  for (let x = rcx - CW * 4.4; x < rcx + CW * 4.0; x += 18 + Math.random() * 20) {
-    const bw = 14 + Math.random() * 24, bh = (14 + Math.random() * 26) * unit;
-    s.fillStyle = '#0a0e1c';
+  s.fillRect(baseL, horizon - 24 * unit, baseR - baseL, 1);
+  for (let x = baseL; x < baseR; x += 16 + Math.random() * 20) {
+    const bw = 12 + Math.random() * 22, bh = (12 + Math.random() * 24) * unit;
+    s.fillStyle = '#090d1a';
     s.fillRect(x, horizon - bh, bw, bh);
     s.fillStyle = 'rgba(201,162,75,0.12)';
     s.fillRect(x, horizon - bh, bw, 1);
-    windows(x, horizon - bh, bw, bh, 0.10);
+    windows(x, horizon - bh, bw, bh, 0.09);
   }
-
   // ── The rest of downtown, right of the RenCen.
   const gothic = (x, bw, bh) => {
     const y = tower(x, bw, bh, 0.15);
