@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714053237">
+    <link rel="stylesheet" href="/styles.css?v=20260714053950">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -437,10 +437,12 @@ function bakeSkyline() {
   // The four corners, in hotel-widths from the hotel's left edge. Note they are
   // NOT symmetric about the hotel: that asymmetry is the perspective.
   // Side towers reach ~3/4 of the hotel; the near one is taller still.
-  const BACK  = { x: hx + 0.34 * HW, w: HW * 0.74, h: HH * 0.60 };
-  const LEFT  = { x: hx - 0.86 * HW, w: HW * 0.86, h: HH * 0.70 };
-  const RIGHT = { x: hx + 1.15 * HW, w: HW * 0.90, h: HH * 0.73 };
-  const FRONT = { x: hx + 0.16 * HW, w: HW * 0.98, h: HH * 0.78 };
+  const BACK  = { x: hx + 0.40 * HW, w: HW * 0.74, h: HH * 0.62 };
+  const LEFT  = { x: hx - 0.92 * HW, w: HW * 0.86, h: HH * 0.74 };
+  const RIGHT = { x: hx + 1.12 * HW, w: HW * 0.90, h: HH * 0.76 };
+  // Front tower sits LEFT of the hotel's centreline, so the hotel's own shaft
+  // stays exposed down its RIGHT side rather than its left.
+  const FRONT = { x: hx - 0.14 * HW, w: HW * 0.98, h: HH * 0.80 };
 
   // 1. Back corner: furthest, so shortest and dimmest, and the hotel eats most
   //    of it. Only a shoulder shows.
