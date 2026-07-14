@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714064201">
+    <link rel="stylesheet" href="/styles.css?v=20260714064342">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,7 +287,13 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   // sits near the LEFT edge at full size and the rest of downtown marches off
   // to the right. Fitting the whole skyline into 400px is what made it look
   // cramped; showing a proper RenCen and a few neighbours does not.
-  const OX = CITY_W > W ? (W * 0.36 - 0.22 * CITY_W) : 0;
+  //
+  // The framing is keyed on the RENCEN, deliberately. It was briefly shifted
+  // right to keep Michigan Central (which sits west of it) on screen, but that
+  // moved every other building with it — the station is a guest here, it does
+  // not get to reframe the skyline. On a narrow screen it simply runs off the
+  // left edge, the same as the rest of the city runs off the right.
+  const OX = CITY_W > W ? (W * 0.20 - 0.22 * CITY_W) : 0;
   const X = (f) => f * CITY_W + OX;   // design fraction -> screen x
 
   const GOLD = '201,162,75';
