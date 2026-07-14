@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714062518">
+    <link rel="stylesheet" href="/styles.css?v=20260714063649">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -287,7 +287,7 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   // sits near the LEFT edge at full size and the rest of downtown marches off
   // to the right. Fitting the whole skyline into 400px is what made it look
   // cramped; showing a proper RenCen and a few neighbours does not.
-  const OX = CITY_W > W ? (W * 0.20 - 0.22 * CITY_W) : 0;
+  const OX = CITY_W > W ? (W * 0.36 - 0.22 * CITY_W) : 0;
   const X = (f) => f * CITY_W + OX;   // design fraction -> screen x
 
   const GOLD = '201,162,75';
@@ -488,12 +488,144 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   rim(podL, HZ - 26 * S, podR - podL, 26 * S, 0.12);
   win(podL, HZ - 26 * S, podR - podL, 26 * S, 0.12);
 
-  // Towers 500 / 600: the two low boxy towers immediately west of the cluster.
-  box(podL - 30 * S, 24 * S, 62 * S, 0.2, '#090d1a');
-  box(podL - 58 * S, 20 * S, 50 * S, 0.18, '#090d1a');
+  /* ── MICHIGAN CENTRAL STATION, standing in for the two boxy towers that used
+       to sit here. It does not belong on the river, but it earns its place: it
+       is the most photographed building in Detroit and the shape is unmistakable.
 
-  // ── EASTER EGG: him, on the bike, parked on the podium roof (see drawRider).
-  drawRider(s, podR - 46 * S, HZ - 26 * S, Math.max(1.0, S) * 1.05);
+       Drawn in THREE-QUARTER view, which is how it is always photographed and
+       the only way it reads:
+
+         - an 18-storey office tower: a tall slab with a heavy CORNICE that
+           overhangs the wall on every side. The overhang is the tell — without
+           it this is just an office block.
+         - we stand east of it, so we see its long south face plus a narrower
+           EAST return face, foreshortened and darker.
+         - a long low CONCOURSE hall attached at the base, running away from us
+           to the west, with the great arched windows in a row.
+         - the roofline of the hall steps down as it recedes: that convergence
+           is what puts the whole thing in perspective instead of flat-on.
+  */
+  (function michiganCentral() {
+    const TW = 36 * S;                 // tower: front (south) face
+    const TD = 12 * S;                 // tower: east return face, foreshortened
+    const TH = 148 * S;
+    const tx = podL - 54 * S;          // where the two boxes used to be
+    const ty = HZ - TH;
+
+    const FRONT = '#080b16';
+    const SIDE = '#04060d';            // the return face is turned away: darker
+
+    // ── The concourse hall, running west (left) and away from us. Its roofline
+    //    steps DOWN as it recedes, which is the perspective.
+    const hallW = 74 * S, hallH = 30 * S;
+    const hx = tx - hallW;
+    s.fillStyle = '#0a0e1c';
+    s.beginPath();
+    s.moveTo(hx, HZ);
+    s.lineTo(hx, HZ - hallH * 0.74);           // far end: lower (further away)
+    s.lineTo(tx, HZ - hallH);                  // near end: full height
+    s.lineTo(tx, HZ);
+    s.closePath();
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.16)';
+    s.lineWidth = 1;
+    s.stroke();
+
+    // The arched windows. They shrink and crowd together as they recede — the
+    // single cheapest cue that this wall is going away from us.
+    for (let i = 0; i < 9; i++) {
+      const f = i / 9;
+      const ax = hx + 6 * S + f * (hallW - 10 * S);
+      const scale = 0.74 + f * 0.26;           // nearer = bigger
+      const aw = 5.5 * S * scale, ah = 19 * S * scale;
+      const abase = HZ - 5 * S;
+      const atop = abase - ah;
+      s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.18 + Math.random() * 0.3) + ')';
+      s.beginPath();
+      s.moveTo(ax, abase);
+      s.lineTo(ax, atop + aw / 2);
+      s.arc(ax + aw / 2, atop + aw / 2, aw / 2, Math.PI, 0);
+      s.lineTo(ax + aw, abase);
+      s.closePath();
+      s.fill();
+    }
+    // Hall cornice, following the same receding roofline.
+    s.strokeStyle = 'rgba(' + GOLD + ',0.3)';
+    s.lineWidth = 1.5;
+    s.beginPath();
+    s.moveTo(hx - 1, HZ - hallH * 0.74);
+    s.lineTo(tx, HZ - hallH);
+    s.stroke();
+
+    // ── The tower: east return face first (it sits behind the front face).
+    s.fillStyle = SIDE;
+    s.beginPath();
+    s.moveTo(tx + TW, HZ);
+    s.lineTo(tx + TW, ty);
+    s.lineTo(tx + TW + TD, ty + 10 * S);       // top edge slopes down as it recedes
+    s.lineTo(tx + TW + TD, HZ);
+    s.closePath();
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.14)';
+    s.lineWidth = 1;
+    s.stroke();
+    // Return-face windows: narrow, compressed, dim. Foreshortening.
+    for (let wy = ty + 16 * S; wy < HZ - 30 * S; wy += 7 * S) {
+      for (let wx = tx + TW + 2 * S; wx < tx + TW + TD - 2 * S; wx += 4 * S) {
+        if (Math.random() > 0.3) continue;
+        s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.12 + Math.random() * 0.3) + ')';
+        s.fillRect(wx, wy, 1.5, 3);
+      }
+    }
+
+    // Front (south) face.
+    s.fillStyle = FRONT;
+    s.fillRect(tx, ty, TW, TH);
+    rim(tx, ty, TW, TH, 0.2);
+    win(tx, ty + 14 * S, TW, TH - 44 * S, 0.34);
+
+    // The colonnade at the tower's base: tall thin openings, brighter.
+    for (let i = 0; i < 6; i++) {
+      const cx0 = tx + 4 * S + i * (TW - 8 * S) / 6;
+      s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.14 + Math.random() * 0.24) + ')';
+      s.fillRect(cx0, HZ - 26 * S, 2.5 * S, 20 * S);
+    }
+
+    // ── THE CORNICE. It overhangs the wall on both faces, and the overhang is
+    //    the whole silhouette — it is what makes this Michigan Central and not
+    //    an office block.
+    const co = 4.5 * S, ch = 10 * S;
+    s.fillStyle = FRONT;
+    s.fillRect(tx - co, ty - ch, TW + co * 2, ch);
+    rim(tx - co, ty - ch, TW + co * 2, ch, 0.3);
+    s.fillStyle = SIDE;                                  // cornice, return face
+    s.beginPath();
+    s.moveTo(tx + TW + co, ty - ch);
+    s.lineTo(tx + TW + TD + co, ty - ch + 10 * S);
+    s.lineTo(tx + TW + TD + co, ty + 10 * S);
+    s.lineTo(tx + TW + co, ty);
+    s.closePath();
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.22)';
+    s.stroke();
+    // Second, thinner band a few floors below: the building is banded, not bare.
+    s.fillStyle = FRONT;
+    s.fillRect(tx - 1.5 * S, ty + 13 * S, TW + 3 * S, 3 * S);
+    s.fillStyle = 'rgba(' + GOLD + ',0.22)';
+    s.fillRect(tx - 1.5 * S, ty + 13 * S, TW + 3 * S, 1);
+    // The lit top floors under the cornice: the restored storeys, and the
+    // reason the building is worth putting in at all.
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.34)';
+    s.fillRect(tx + 2 * S, ty + 3 * S, TW - 4 * S, 3.5 * S);
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.18)';
+    s.fillRect(tx + 2 * S, ty + 8 * S, TW - 4 * S, 2.5 * S);
+  })();
+
+  // A low riverfront block filling the clear space just east of the RenCen —
+  // and the roof he parks on. Without it he stands on thin air.
+  const roofH = 26 * S;
+  box(podR + 4 * S, 74 * S, roofH, 0.14, '#0a0e1c');
+
 
   /* ═══════════════════════════════════════════════════════════════════════
      THE LANDMARKS.
@@ -632,7 +764,7 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   //    right on the water. Round-shouldered and identical — a rhythm, not a
   //    landmark, but the eye misses them when they are gone.
   for (let i = 0; i < 3; i++) {
-    cyl(podL - (95 + i * 30) * S, 18 * S, (112 + i * 8) * S, 0.24, '#0b1020', 0.2);
+    cyl(podL - (200 + i * 28) * S, 18 * S, (112 + i * 8) * S, 0.24, '#0b1020', 0.2);
   }
 
   // ── Depth ranks. Landmarks alone sit in a line; a city has buildings BEHIND
@@ -677,6 +809,11 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   shore.addColorStop(1, 'rgba(' + GOLD + ',0)');
   s.fillStyle = shore;
   s.fillRect(0, HZ, W, 1);
+
+  // ── EASTER EGG: him, on the bike, in the clear space just east of the
+  //    RenCen. Drawn LAST — every other rank of buildings is painted after the
+  //    RenCen, and they were burying him.
+  drawRider(s, podR + 60 * S, HZ - roofH, Math.max(1.0, S) * 1.05);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
