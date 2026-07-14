@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714053950">
+    <link rel="stylesheet" href="/styles.css?v=20260714054426">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -352,12 +352,15 @@ function bakeSkyline() {
   s.fillRect(0, 0, w, horizon + 2);
 
   function windows(x, y, bw, bh, density) {
-    for (let wy = y + 5; wy < y + bh - 3; wy += 8) {
-      for (let wx = x + 3; wx < x + bw - 3; wx += 6) {
+    for (let wy = y + 4; wy < y + bh - 2; wy += 6) {
+      for (let wx = x + 2; wx < x + bw - 2; wx += 5) {
         if (Math.random() > density) continue;
-        s.fillStyle = Math.random() < 0.10
-          ? 'rgba(225,29,72,' + (0.25 + Math.random() * 0.5) + ')'
-          : 'rgba(232,199,106,' + (0.18 + Math.random() * 0.55) + ')';
+        // Occupied floors cluster: offices light up by the floor, not at
+        // random, so a lit cell brightens its neighbour.
+        const hot = Math.random() < 0.18;
+        s.fillStyle = Math.random() < 0.09
+          ? 'rgba(225,29,72,' + (0.3 + Math.random() * 0.5) + ')'
+          : 'rgba(232,199,106,' + ((hot ? 0.55 : 0.2) + Math.random() * 0.45) + ')';
         s.fillRect(wx, wy, 2, 3);
       }
     }
@@ -378,7 +381,7 @@ function bakeSkyline() {
     const bw = 12 + Math.random() * 28, bh = (12 + Math.random() * 34) * unit;
     s.fillStyle = 'rgba(15,20,40,0.85)';
     s.fillRect(x, horizon - bh, bw, bh);
-    windows(x, horizon - bh, bw, bh, 0.04);
+    windows(x, horizon - bh, bw, bh, 0.09);
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -446,7 +449,7 @@ function bakeSkyline() {
 
   // 1. Back corner: furthest, so shortest and dimmest, and the hotel eats most
   //    of it. Only a shoulder shows.
-  cyl(BACK.x, BACK.w, BACK.h, 0.08, T_BACK);
+  cyl(BACK.x, BACK.w, BACK.h, 0.16, T_BACK);
 
   // 2. The hotel.
   (function hotel() {
@@ -468,7 +471,7 @@ function bakeSkyline() {
     for (let mx = hx + 4; mx < hx + HW - 2; mx += 4) {
       s.beginPath(); s.moveTo(mx, y + 5); s.lineTo(mx, horizon); s.stroke();
     }
-    windows(hx, y + 9, HW, HH - 9, 0.15);
+    windows(hx, y + 9, HW, HH - 9, 0.24);
     s.fillStyle = '#080b16';                       // crown: band, drum, mast
     s.fillRect(hx + HW * 0.06, y - 8 * unit, HW * 0.88, 8 * unit);
     s.strokeStyle = 'rgba(201,162,75,0.3)';
@@ -483,22 +486,22 @@ function bakeSkyline() {
 
   // 3. Side corners. Left is partly swallowed by the hotel and, in a moment,
   //    by the front tower too.
-  cyl(LEFT.x, LEFT.w, LEFT.h, 0.13, T_SIDE);
-  cyl(RIGHT.x, RIGHT.w, RIGHT.h, 0.13, T_SIDE);
+  cyl(LEFT.x, LEFT.w, LEFT.h, 0.22, T_SIDE);
+  cyl(RIGHT.x, RIGHT.w, RIGHT.h, 0.22, T_SIDE);
 
   // 4. Front corner: nearest, so tallest on screen and darkest. Drawn last, it
   //    cuts across the hotel AND the inner edges of both side towers. This is
   //    the overlap that makes the cluster read as one building with depth.
-  cyl(FRONT.x, FRONT.w, FRONT.h, 0.16, T_FRONT);
+  cyl(FRONT.x, FRONT.w, FRONT.h, 0.26, T_FRONT);
 
   // ── Towers 500/600 and the small buildings IN FRONT of the RenCen.
-  box(LEFT.x - 46 * unit, 26 * unit, 66 * unit, 0.11);
-  box(LEFT.x - 74 * unit, 22 * unit, 52 * unit, 0.10);
+  box(LEFT.x - 46 * unit, 26 * unit, 66 * unit, 0.20);
+  box(LEFT.x - 74 * unit, 22 * unit, 52 * unit, 0.18);
 
   const clusterL = LEFT.x - 90 * unit, clusterR = RIGHT.x + RIGHT.w + 70 * unit;
   for (let x = clusterL; x < clusterR; x += 13 + Math.random() * 16) {
     const bw = 10 + Math.random() * 20, bh = (14 + Math.random() * 30) * unit;
-    box(x, bw, bh, 0.10, '#090d1a');
+    box(x, bw, bh, 0.18, '#090d1a');
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -511,12 +514,12 @@ function bakeSkyline() {
   // Pass 1: the back mass — many mid-rises, dim.
   for (let x = cityL - 40 * unit; x < cityR; x += 12 + Math.random() * 22) {
     const bw = 14 + Math.random() * 30, bh = (40 + Math.random() * 90) * unit;
-    box(x, bw, bh, 0.07, '#0a0e1c');
+    box(x, bw, bh, 0.13, '#0a0e1c');
   }
 
   // Pass 2: landmarks.
   const gothic = (x, bw, bh) => {
-    const y = box(x, bw, bh, 0.14);
+    const y = box(x, bw, bh, 0.22);
     s.fillStyle = '#080b16';
     for (const sp of [[0.12, 0.16, 26], [0.42, 0.18, 44], [0.74, 0.16, 26]]) {
       s.beginPath();
@@ -526,18 +529,72 @@ function bakeSkyline() {
       s.closePath(); s.fill();
     }
   };
-  gothic(w * 0.40, 40 * unit, 190 * unit);            // One Detroit Center
-  (function spire() {                                  // the slim modern spire
-    const bw = 18 * unit, bh = 205 * unit, x = w * 0.485;
-    const y = box(x, bw, bh, 0.10);
+  // ── Named buildings. Detroit's skyline is mostly art deco, and art deco
+  //    means SETBACKS: each tower steps inward as it rises. That stepped
+  //    silhouette is the thing that makes it read as Detroit rather than
+  //    Anytown, so it gets its own helper.
+  const deco = (x, bw, bh, steps, beacon) => {
+    let cx0 = x, cw = bw, top = horizon;
+    for (let i = 0; i < steps; i++) {
+      const sh = bh * (i === 0 ? 0.52 : 0.5 / steps + 0.08);
+      const y = top - sh;
+      s.fillStyle = '#080b16';
+      s.fillRect(cx0, y, cw, sh);
+      s.fillStyle = 'rgba(201,162,75,0.16)';
+      s.fillRect(cx0, y, 1, sh);
+      s.fillRect(cx0, y, cw, 1);
+      windows(cx0, y, cw, sh, 0.2);
+      top = y;
+      cx0 += cw * 0.14;                 // step inward
+      cw *= 0.72;
+    }
+    if (beacon) {                       // Penobscot's red beacon on its mast
+      s.fillStyle = '#080b16';
+      s.fillRect(cx0 + cw * 0.5 - 1, top - 16 * unit, 2, 16 * unit);
+      s.fillStyle = 'rgba(225,29,72,0.95)';
+      s.beginPath(); s.arc(cx0 + cw * 0.5, top - 18 * unit, 2.6, 0, 7); s.fill();
+    }
+    return top;
+  };
+
+  // Riverfront Towers: the pale round-shouldered residential towers WEST of
+  // the RenCen, right on the water.
+  for (let i = 0; i < 3; i++) {
+    const bw = 17 * unit, bh = (108 + i * 9) * unit;
+    const x = LEFT.x - (150 + i * 26) * unit;
+    cyl(x, bw, bh, 0.24, { body: '#0a0e1c', edge: 'rgba(201,162,75,0.2)', rib: 'rgba(201,162,75,0.05)' });
+  }
+
+  gothic(w * 0.415, 40 * unit, 195 * unit);          // Ally / One Detroit Center
+  deco(w * 0.355, 34 * unit, 175 * unit, 3, true);   // Penobscot, red beacon and all
+  deco(w * 0.325, 26 * unit, 140 * unit, 3, false);  // Guardian
+  deco(w * 0.475, 22 * unit, 150 * unit, 3, false);  // David Stott
+  deco(w * 0.56, 28 * unit, 132 * unit, 2, false);   // Book Tower
+  deco(w * 0.62, 24 * unit, 118 * unit, 2, false);   // Cadillac Tower
+
+  (function hudsons() {                              // Hudson's: the new slim spire
+    const bw = 18 * unit, bh = 210 * unit, x = w * 0.51;
+    const y = box(x, bw, bh, 0.18);
     s.fillStyle = '#080b16';
     s.beginPath();
     s.moveTo(x + bw * 0.5 - 1.5, y);
-    s.lineTo(x + bw * 0.5, y - 42 * unit);
+    s.lineTo(x + bw * 0.5, y - 44 * unit);
     s.lineTo(x + bw * 0.5 + 1.5, y);
     s.closePath(); s.fill();
-    s.fillStyle = 'rgba(232,199,106,0.7)';
-    s.fillRect(x + bw * 0.5 - 1, y - 44 * unit, 2, 3);
+    s.fillStyle = 'rgba(232,199,106,0.75)';
+    s.fillRect(x + bw * 0.5 - 1, y - 46 * unit, 2, 3);
+  })();
+
+  // Huntington Place: the long low convention hall on the waterfront. Wide and
+  // flat, it anchors the left half of the shoreline.
+  (function hall() {
+    const x = LEFT.x - 210 * unit, bw = 120 * unit, bh = 30 * unit;
+    const y = horizon - bh;
+    s.fillStyle = '#090d1a';
+    s.fillRect(x, y, bw, bh);
+    s.fillStyle = 'rgba(201,162,75,0.14)';
+    s.fillRect(x, y, bw, 1);
+    windows(x, y, bw, bh, 0.16);
   })();
   const talls = [
     [0.335, 26, 140], [0.365, 20, 105], [0.445, 24, 128], [0.525, 30, 150],
@@ -545,13 +602,13 @@ function bakeSkyline() {
     [0.755, 22, 100], [0.80, 32, 155], [0.855, 24, 118], [0.90, 28, 135],
     [0.945, 20, 96],
   ];
-  for (const t of talls) box(w * t[0], t[1] * unit, t[2] * unit, 0.12);
+  for (const t of talls) box(w * t[0], t[1] * unit, t[2] * unit, 0.20);
 
   // Pass 3: MANY short buildings across the whole waterfront, in front of the
   //    rest. This is what makes it a city rather than a handful of towers.
   for (let x = -20; x < w + 20; x += 9 + Math.random() * 14) {
     const bw = 8 + Math.random() * 20, bh = (10 + Math.random() * 34) * unit;
-    box(x, bw, bh, 0.09, '#090d1a');
+    box(x, bw, bh, 0.17, '#090d1a');
   }
 
   // ── The shoreline: a thin strip of ground at the waterline. Kept to a few
