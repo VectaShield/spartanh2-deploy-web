@@ -258,6 +258,150 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   box(podL - 30 * S, 24 * S, 62 * S, 0.2, '#090d1a');
   box(podL - 58 * S, 20 * S, 50 * S, 0.18, '#090d1a');
 
+  /* ── EASTER EGG: him, on the bike, on the podium roof.
+
+       A motorcycle silhouette is MASS, not line-work. Stick lines between two
+       circles read as a bicycle every time. What says "sportbike" at a glance:
+
+         - fat, low wheels set wide apart, the bike long and slammed
+         - a solid body running wheel to wheel: raised tail, dropped tank,
+           fairing sloping down over the front wheel
+         - a steeply raked fork
+         - the rider TUCKED — spine low and forward over the tank, elbows in,
+           knee up — not sitting upright like a commuter
+
+       So it is drawn as filled polygons, and the rider is a filled body, not a
+       stickman. */
+  (function rider() {
+    const gy = HZ - 26 * S;                    // podium roof line
+    const rx = podR - 40 * S;
+    const k = Math.max(1.0, S) * 1.25;         // never so small it vanishes
+
+    s.save();
+    s.translate(rx, gy);
+
+    // Headlight throw. A circle, not a rect: a radial gradient painted into a
+    // rectangle is cut off square at the edges and reads as a glowing box.
+    const beam = s.createRadialGradient(11 * k, -6 * k, 0, 11 * k, -6 * k, 26 * k);
+    beam.addColorStop(0, 'rgba(' + GOLD_HI + ',0.38)');
+    beam.addColorStop(0.45, 'rgba(' + GOLD_HI + ',0.10)');
+    beam.addColorStop(1, 'rgba(' + GOLD_HI + ',0)');
+    s.fillStyle = beam;
+    s.beginPath(); s.arc(11 * k, -6 * k, 26 * k, 0, 7); s.fill();
+
+    const SIL = '#010204';
+    s.lineJoin = 'round';
+    s.lineCap = 'round';
+    const rimStroke = 'rgba(' + GOLD + ',0.5)';
+
+    // ── Wheels: fat, and set wide. The wheelbase is what makes it long.
+    s.fillStyle = SIL;
+    s.strokeStyle = rimStroke;
+    s.lineWidth = Math.max(0.8, 0.5 * k);
+    s.beginPath(); s.arc(-7 * k, -3.1 * k, 3.1 * k, 0, 7); s.fill(); s.stroke();
+    s.beginPath(); s.arc(8 * k, -3.1 * k, 3.1 * k, 0, 7); s.fill(); s.stroke();
+
+    // ── Swingarm + exhaust.
+    s.strokeStyle = rimStroke;
+    s.lineWidth = 1.1 * k;
+    s.beginPath();
+    s.moveTo(-7 * k, -3.1 * k);
+    s.lineTo(-1 * k, -4.6 * k);
+    s.stroke();
+    s.fillStyle = SIL;
+    s.beginPath();                              // stubby can, kicked up
+    s.moveTo(-3 * k, -4.4 * k);
+    s.lineTo(-7.4 * k, -5.6 * k);
+    s.lineTo(-7.6 * k, -4.2 * k);
+    s.lineTo(-3 * k, -3.2 * k);
+    s.closePath(); s.fill(); s.stroke();
+
+    // ── The body: one solid mass, tail -> seat -> tank -> fairing. This is the
+    //    single most important shape; without it there is no motorcycle.
+    s.fillStyle = SIL;
+    s.beginPath();
+    s.moveTo(-8.6 * k, -8.4 * k);               // tail tip, kicked up high
+    s.lineTo(-5.4 * k, -9.4 * k);               // tail top
+    s.lineTo(-2.2 * k, -8.2 * k);               // seat dips
+    s.lineTo(0.6 * k, -9.6 * k);                // tank shoulder
+    s.lineTo(4.4 * k, -9.9 * k);                // tank top
+    s.lineTo(7.6 * k, -8.6 * k);                // fairing shoulder
+    s.lineTo(10.4 * k, -6.4 * k);               // nose
+    s.lineTo(10.8 * k, -4.4 * k);               // nose bottom
+    s.lineTo(8.6 * k, -5.2 * k);                // under the fairing
+    s.lineTo(5.2 * k, -5.6 * k);                // belly pan
+    s.lineTo(1.2 * k, -5.4 * k);
+    s.lineTo(-2.6 * k, -6.2 * k);               // under the seat
+    s.lineTo(-6.4 * k, -6.6 * k);
+    s.closePath();
+    s.fill();
+    s.lineWidth = Math.max(1, 0.7 * k);
+    s.strokeStyle = 'rgba(' + GOLD + ',0.45)';
+    s.stroke();
+
+    // ── Raked fork, down to the front wheel.
+    s.strokeStyle = rimStroke;
+    s.lineWidth = 1.2 * k;
+    s.beginPath();
+    s.moveTo(9.4 * k, -7.6 * k);
+    s.lineTo(8 * k, -3.1 * k);
+    s.stroke();
+
+    // ── The rider, TUCKED. A filled body: hips low and back, spine raked
+    //    forward over the tank, shoulders down, knee up into the tank.
+    s.fillStyle = SIL;
+    s.beginPath();
+    s.moveTo(-4.6 * k, -9.4 * k);               // seat, at the hips
+    s.lineTo(-3.4 * k, -13.4 * k);              // lower back
+    s.lineTo(-0.6 * k, -15.6 * k);              // shoulders, well forward
+    s.lineTo(2.6 * k, -15.2 * k);               // chest over the tank
+    s.lineTo(2.2 * k, -13.2 * k);               // under the chest
+    s.lineTo(-1.4 * k, -11.4 * k);              // belly back to the hips
+    s.lineTo(-2 * k, -9.4 * k);
+    s.closePath();
+    s.fill();
+    s.lineWidth = Math.max(1, 0.7 * k);
+    s.strokeStyle = 'rgba(' + GOLD + ',0.5)';
+    s.stroke();
+
+    // Arm reaching down to the clip-on bar.
+    s.strokeStyle = rimStroke;
+    s.lineWidth = 1.15 * k;
+    s.beginPath();
+    s.moveTo(1.4 * k, -14.4 * k);
+    s.lineTo(4.6 * k, -12.4 * k);               // elbow, tucked in
+    s.lineTo(7.4 * k, -9.4 * k);                // hand on the bar
+    s.stroke();
+
+    // Leg: thigh forward, knee up into the tank, boot back on the peg.
+    s.beginPath();
+    s.moveTo(-3.4 * k, -10.4 * k);              // hip
+    s.lineTo(-0.4 * k, -8.6 * k);               // knee, up against the tank
+    s.lineTo(-2.6 * k, -5.4 * k);               // boot, back on the peg
+    s.stroke();
+
+    // Helmet: chin down, visor toward the front wheel.
+    s.fillStyle = SIL;
+    s.beginPath();
+    s.arc(3.9 * k, -15.6 * k, 2.15 * k, 0, 7);
+    s.fill();
+    s.strokeStyle = rimStroke;
+    s.lineWidth = Math.max(0.8, 0.55 * k);
+    s.stroke();
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.4)';  // visor catching the city light
+    s.beginPath();
+    s.arc(4.6 * k, -15.9 * k, 1.15 * k, -0.9, 0.9);
+    s.fill();
+
+    // Lights.
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.95)';
+    s.beginPath(); s.arc(10 * k, -6.4 * k, 1.15 * k, 0, 7); s.fill();
+    s.fillStyle = 'rgba(' + CRIMSON + ',0.95)';
+    s.beginPath(); s.arc(-8 * k, -8.8 * k, 0.95 * k, 0, 7); s.fill();
+
+    s.restore();
+  })();
+
   /* ═══════════════════════════════════════════════════════════════════════
      THE LANDMARKS.
 
