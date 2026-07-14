@@ -38,7 +38,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="/styles.css?v=20260714064342">
+    <link rel="stylesheet" href="/styles.css?v=20260714064939">
     <link rel="icon" type="image/jpeg" href="/SpartanH2.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -494,150 +494,138 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
   rim(podL, HZ - 26 * S, podR - podL, 26 * S, 0.12);
   win(podL, HZ - 26 * S, podR - podL, 26 * S, 0.12);
 
-  /* ── MICHIGAN CENTRAL STATION, standing where the two anonymous boxes were.
-       It does not belong on the river, but it is the most photographed building
-       in Detroit and its shape is unmistakable, so it earns the spot.
+  /* ── MICHIGAN CENTRAL STATION.
 
-       SCALE, first, because this was badly wrong before: the station is ~230 ft.
-       The RenCen hotel is ~727 ft. So the tower must come to roughly a THIRD of
-       the hotel, not two thirds. It is a wide, squat, heavy building — its
-       presence comes from mass and detail, never from height.
+       ONE VANISHING POINT. The previous version was drawn from two viewpoints
+       at once: the tower showed its right-hand return face (as if we stood to
+       its right) while the concourse wing receded to the LEFT (as if we stood to
+       its left). That is why it read as broken no matter how the details were
+       fixed.
 
-       SHAPE, read off the reference photo (mirrored: the tower reads on the
-       right, the concourse running away to the left):
+       We stand off the building's FRONT-RIGHT CORNER. Therefore, everywhere,
+       without exception:
 
-         - a broad 18-storey office block, far wider than it is tall
-         - a PROJECTING END BAY at each end of the block, stepping forward of
-           the main wall and carrying its own cornice. That pair of end pavilions
-           either side of the recessed centre is the building's real signature.
-         - a huge overhanging CORNICE crowning the whole thing, with a plain
-           attic storey beneath it
-         - we stand east of it, so a narrow return face is visible, foreshortened
-         - at the base, the low CONCOURSE: a colonnaded front with a great
-           arched central entrance under a pediment, and a long arcaded wing
-           running away west, its arches shrinking as they recede
+         - we see the FRONT face square on, and the RIGHT-hand side face
+           foreshortened, disappearing to the right
+         - every horizontal that runs away from us runs to the RIGHT
+         - our eye is at ground level (across the water), so the horizon sits at
+           the waterline: rooflines are ABOVE eye level and therefore RAKE DOWN
+           as they recede right, while bases sit near eye level and stay flat
+         - things further right are further away: they get smaller, dimmer, and
+           their detail crowds together
+
+       SCALE: the station is ~230 ft against the RenCen hotel's ~727, so the
+       block comes to about a third of the hotel. Squat and wide; its presence is
+       mass and detail, never height.
+
+       SHAPE: a broad block with PROJECTING END PAVILIONS bracketing a recessed
+       centre, each pavilion carrying its own overhanging cornice. Below, the
+       low concourse with its colonnade and great arched entrance, and the long
+       arcaded wing running away to the right.
   */
   (function michiganCentral() {
-    const TW = 58 * S;                 // block: wide
-    const TH = 78 * S;                 // block: SHORT — about a third of the hotel
-    const TD = 10 * S;                 // east return face, foreshortened
-    const tx = podL - 84 * S;
-    const ty = HZ - TH;
-
     const FRONT = '#080b16';
-    const SIDE = '#04060d';            // the return face is turned away: darker
+    const SIDE = '#04060d';            // the right return face: turned away, darker
     const HALL = '#0a0e1c';
 
-    const hallH = 26 * S;              // the concourse: a third of the block again
-    const wingW = 70 * S;              // arcaded wing running away to the west
-    const wx = tx - wingW;
+    const TW = 56 * S;                 // block: wide
+    const TH = 78 * S;                 // block: short — about a third of the hotel
+    const TD = 11 * S;                 // right return face, foreshortened
+    const RAKE = 7 * S;                // how far the roofline drops as it recedes
+    const tx = podL - 150 * S;         // block's front-left corner
+    const ty = HZ - TH;
 
-    // ── The arcaded wing, running away from us. Roofline steps DOWN as it
-    //    recedes and the arches crowd together: that convergence is the
-    //    perspective, and it is cheap.
-    s.fillStyle = HALL;
-    s.beginPath();
-    s.moveTo(wx, HZ);
-    s.lineTo(wx, HZ - hallH * 0.72);           // far end: lower
-    s.lineTo(tx, HZ - hallH);                  // near end: full height
-    s.lineTo(tx, HZ);
-    s.closePath();
-    s.fill();
-    s.strokeStyle = 'rgba(' + GOLD + ',0.28)';
-    s.lineWidth = 1.4;
-    s.beginPath();                              // wing cornice, on the same rake
-    s.moveTo(wx, HZ - hallH * 0.72);
-    s.lineTo(tx, HZ - hallH);
-    s.stroke();
-    for (let i = 0; i < 8; i++) {
-      const f = i / 8;
-      const ax = wx + 4 * S + f * (wingW - 8 * S);
-      const sc = 0.72 + f * 0.28;              // nearer = taller
-      const aw = 5.2 * S * sc, ah = 13 * S * sc;
-      const abase = HZ - 4 * S, atop = abase - ah;
-      s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.16 + Math.random() * 0.3) + ')';
-      s.beginPath();
-      s.moveTo(ax, abase);
-      s.lineTo(ax, atop + aw / 2);
-      s.arc(ax + aw / 2, atop + aw / 2, aw / 2, Math.PI, 0);
-      s.lineTo(ax + aw, abase);
-      s.closePath();
-      s.fill();
-    }
+    const hallH = 26 * S;
+    const wingW = 66 * S;              // arcaded wing, running away to the RIGHT
+    const wingRake = 6 * S;
 
-    // ── The block's east return face (drawn first: it sits behind the front).
+    // Its own patch of storm haze. The city glow is centred on the RenCen and
+    // does not reach this far west, so the station was a black building on a
+    // black sky — present, and completely invisible. Same lesson as the skyline
+    // itself: the silhouette only exists if there is light behind it.
+    const halo = s.createRadialGradient(tx + TW * 0.5, HZ, 5 * S,
+                                        tx + TW * 0.5, HZ, 150 * S);
+    halo.addColorStop(0, 'rgba(' + GOLD + ',0.13)');
+    halo.addColorStop(0.45, 'rgba(185,28,44,0.08)');
+    halo.addColorStop(1, 'rgba(185,28,44,0)');
+    s.fillStyle = halo;
+    s.fillRect(tx - 90 * S, HZ - 150 * S, 260 * S, 150 * S);
+
+    // ── 1. The block's RIGHT return face. Drawn first: it lies behind the front
+    //       face and disappears to the right.
     s.fillStyle = SIDE;
     s.beginPath();
-    s.moveTo(tx + TW, HZ);
-    s.lineTo(tx + TW, ty);
-    s.lineTo(tx + TW + TD, ty + 6 * S);        // top edge rakes down as it recedes
-    s.lineTo(tx + TW + TD, HZ);
+    s.moveTo(tx + TW, ty);
+    s.lineTo(tx + TW + TD, ty + RAKE);        // roofline rakes DOWN as it recedes
+    s.lineTo(tx + TW + TD, HZ - 2 * S);       // base rises slightly toward the horizon
+    s.lineTo(tx + TW, HZ);
     s.closePath();
     s.fill();
-    s.strokeStyle = 'rgba(' + GOLD + ',0.13)';
+    s.strokeStyle = 'rgba(' + GOLD + ',0.22)';
     s.lineWidth = 1;
     s.stroke();
+    // Return-face windows: compressed and dim. Foreshortening.
     for (let wy = ty + 12 * S; wy < HZ - hallH; wy += 6 * S) {
       for (let wx2 = tx + TW + 2 * S; wx2 < tx + TW + TD - 1.5 * S; wx2 += 3.5 * S) {
-        if (Math.random() > 0.35) continue;
-        s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.1 + Math.random() * 0.26) + ')';
-        s.fillRect(wx2, wy, 1.5, 2.5);
+        if (Math.random() > 0.32) continue;
+        s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.08 + Math.random() * 0.22) + ')';
+        s.fillRect(wx2, wy + RAKE * ((wx2 - tx - TW) / TD), 1.5, 2.5);
       }
     }
 
-    // ── The main wall (recessed centre).
-    const bayW = 13 * S;                        // the projecting end pavilions
+    // ── 2. The recessed CENTRE wall.
+    const bayW = 12 * S;
     s.fillStyle = FRONT;
     s.fillRect(tx, ty + 4 * S, TW, TH - 4 * S);
     win(tx + bayW, ty + 10 * S, TW - bayW * 2, TH - hallH - 12 * S, 0.42);
-    s.fillStyle = 'rgba(' + GOLD + ',0.10)';    // faint pilaster shadows
+    s.fillStyle = 'rgba(' + GOLD + ',0.09)';       // pilaster shadows
     for (let i = 1; i < 8; i++) {
       s.fillRect(tx + bayW + i * (TW - bayW * 2) / 8, ty + 8 * S, 1, TH - hallH - 10 * S);
     }
-
-    // ── The END PAVILIONS: they step FORWARD of the centre wall, run the full
-    //    height, and each carries its own cornice. This pair either side of the
-    //    recessed middle is the thing that makes the building recognisable.
-    const pavilion = (px) => {
-      s.fillStyle = '#05070f';                  // forward of the wall: darker
-      s.fillRect(px, ty, bayW, TH);
-      rim(px, ty, bayW, TH, 0.26);
-      win(px + 1.5 * S, ty + 8 * S, bayW - 3 * S, TH - hallH - 10 * S, 0.4);
-      s.fillStyle = '#05070f';                  // its own cornice, overhanging
-      s.fillRect(px - 2 * S, ty - 5 * S, bayW + 4 * S, 5 * S);
-      rim(px - 2 * S, ty - 5 * S, bayW + 4 * S, 5 * S, 0.34);
-    };
-    pavilion(tx);
-    pavilion(tx + TW - bayW);
-
-    // ── The great CORNICE over the centre, and the plain attic under it.
-    const co = 3 * S, ch = 6 * S;
+    // Cornice + attic over the centre.
     s.fillStyle = FRONT;
-    s.fillRect(tx + bayW - co, ty + 3 * S, TW - bayW * 2 + co * 2, ch);
-    rim(tx + bayW - co, ty + 3 * S, TW - bayW * 2 + co * 2, ch, 0.3);
-    s.fillStyle = 'rgba(' + GOLD_HI + ',0.26)';  // lit restored floors
+    s.fillRect(tx + bayW - 3 * S, ty + 3 * S, TW - bayW * 2 + 6 * S, 6 * S);
+    rim(tx + bayW - 3 * S, ty + 3 * S, TW - bayW * 2 + 6 * S, 6 * S, 0.45);
+    s.fillStyle = 'rgba(' + GOLD_HI + ',0.26)';    // the restored, lit floors
     s.fillRect(tx + bayW + 1 * S, ty + 11 * S, TW - bayW * 2 - 2 * S, 2.5 * S);
 
-    // ── The CONCOURSE at the base: colonnade, and the great arched entrance
-    //    under its pediment.
+    // ── 3. The END PAVILIONS. They step FORWARD of the centre wall, run past
+    //       the main roofline, and each carries its own overhanging cornice.
+    //       This pair bracketing the recessed middle is the building's signature.
+    //       The RIGHT pavilion is nearer the vanishing point, so it is a touch
+    //       shorter on screen and its cornice sits a shade lower.
+    const pavilion = (px, drop) => {
+      s.fillStyle = '#05070f';                     // forward of the wall: darker
+      s.fillRect(px, ty + drop, bayW, TH - drop);
+      rim(px, ty + drop, bayW, TH - drop, 0.4);
+      win(px + 1.5 * S, ty + drop + 8 * S, bayW - 3 * S, TH - hallH - 10 * S, 0.4);
+      s.fillStyle = '#05070f';
+      s.fillRect(px - 2 * S, ty + drop - 5 * S, bayW + 4 * S, 5 * S);
+      rim(px - 2 * S, ty + drop - 5 * S, bayW + 4 * S, 5 * S, 0.5);
+    };
+    pavilion(tx, 0);
+    pavilion(tx + TW - bayW, RAKE * 0.5);          // further away: sits lower
+
+    // ── 4. The CONCOURSE at the base of the front face: colonnade + the great
+    //       arched entrance under its pediment.
     s.fillStyle = HALL;
-    s.fillRect(tx - 4 * S, HZ - hallH, TW + 8 * S, hallH);
-    rim(tx - 4 * S, HZ - hallH, TW + 8 * S, hallH, 0.22);
-    for (let i = 0; i < 7; i++) {                // colonnade
+    s.fillRect(tx - 3 * S, HZ - hallH, TW + 6 * S, hallH);
+    rim(tx - 3 * S, HZ - hallH, TW + 6 * S, hallH, 0.34);
+    for (let i = 0; i < 7; i++) {
       const cx0 = tx + 2 * S + i * (TW - 4 * S) / 7;
-      s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.12 + Math.random() * 0.22) + ')';
+      s.fillStyle = 'rgba(' + GOLD_HI + ',' + (0.12 + Math.random() * 0.2) + ')';
       s.fillRect(cx0, HZ - hallH + 5 * S, 2.2 * S, hallH - 8 * S);
     }
-    const ex = tx + TW * 0.42, ew = 14 * S;      // the arched entrance
+    const ex = tx + TW * 0.40, ew = 13 * S;
     s.fillStyle = 'rgba(' + GOLD_HI + ',0.4)';
     s.beginPath();
     s.moveTo(ex, HZ);
-    s.lineTo(ex, HZ - hallH + 10 * S);
-    s.arc(ex + ew / 2, HZ - hallH + 10 * S, ew / 2, Math.PI, 0);
+    s.lineTo(ex, HZ - hallH + 9 * S);
+    s.arc(ex + ew / 2, HZ - hallH + 9 * S, ew / 2, Math.PI, 0);
     s.lineTo(ex + ew, HZ);
     s.closePath();
     s.fill();
-    s.fillStyle = HALL;                          // pediment over the entrance
+    s.fillStyle = HALL;                            // pediment
     s.beginPath();
     s.moveTo(ex - 4 * S, HZ - hallH);
     s.lineTo(ex + ew / 2, HZ - hallH - 7 * S);
@@ -647,6 +635,40 @@ function drawSkyline(s, W, H, HZ, ZOOM) {
     s.strokeStyle = 'rgba(' + GOLD + ',0.3)';
     s.lineWidth = 1;
     s.stroke();
+
+    // ── 5. The arcaded WING, running away from us to the RIGHT — the same
+    //       direction as the tower's return face, which is the whole point.
+    //       Its roofline rakes down and its arches shrink and crowd as they go.
+    const w0 = tx + TW + TD;
+    s.fillStyle = HALL;
+    s.beginPath();
+    s.moveTo(w0, HZ - hallH + RAKE * 0.4);         // near end: full height
+    s.lineTo(w0 + wingW, HZ - hallH + wingRake + RAKE * 0.4);  // far end: lower
+    s.lineTo(w0 + wingW, HZ);
+    s.lineTo(w0, HZ);
+    s.closePath();
+    s.fill();
+    s.strokeStyle = 'rgba(' + GOLD + ',0.26)';
+    s.lineWidth = 1.3;
+    s.beginPath();
+    s.moveTo(w0, HZ - hallH + RAKE * 0.4);
+    s.lineTo(w0 + wingW, HZ - hallH + wingRake + RAKE * 0.4);
+    s.stroke();
+    for (let i = 0; i < 8; i++) {
+      const f = i / 8;
+      const ax = w0 + 3 * S + f * (wingW - 7 * S);
+      const sc = 1 - f * 0.3;                      // further right = further away
+      const aw = 5 * S * sc, ah = 12 * S * sc;
+      const abase = HZ - 3 * S, atop = abase - ah;
+      s.fillStyle = 'rgba(' + GOLD_HI + ',' + ((0.16 + Math.random() * 0.28) * sc) + ')';
+      s.beginPath();
+      s.moveTo(ax, abase);
+      s.lineTo(ax, atop + aw / 2);
+      s.arc(ax + aw / 2, atop + aw / 2, aw / 2, Math.PI, 0);
+      s.lineTo(ax + aw, abase);
+      s.closePath();
+      s.fill();
+    }
   })();
 
   // A low riverfront block filling the clear space just east of the RenCen —
