@@ -61,27 +61,49 @@
   function drawSkyline(s, W, H, HZ, ZOOM) {
 
     // ── LAYOUT SPACE. The city is laid out in a fixed virtual width (VW) and
-    //    then scaled. On a wide screen the scale is just W/VW, so the whole
-    //    skyline spans the viewport. On a NARROW screen we refuse to shrink it
-    //    any further — we take the height-derived scale instead and simply let
-    //    the city run off the right edge. The RenCen stays anchored on the left
-    //    at a proper size and you see a few buildings marching right, rather
-    //    than the entire skyline crushed into 400px of phone.
+    //    then scaled. On a wide screen the scale used to be just W/VW, so the
+    //    whole skyline spanned the viewport — which meant on an ultrawide 21:9
+    //    monitor the buildings scaled up until they clipped the top. To stop
+    //    that, we CAP the scaling at 10.5:9 aspect ratio: from mobile up to a
+    //    viewport slightly wider than square, buildings scale with width;
+    //    beyond that, scale is frozen at whatever it was at exactly 10.5:9 and
+    //    the extra viewport width becomes open water on the right.
+    //
+    //    On a NARROW screen we still refuse to shrink further — we take the
+    //    height-derived scale instead and simply let the city run off the right
+    //    edge, so the RenCen stays anchored on the left at a proper size.
     const VW = 1150;
-    const S = Math.max(W / VW, Math.min(1.15, H / 780)) * (ZOOM || 1);
+    const CAP_AR = 10.5 / 9;                     // freeze scale at this aspect
+    const W_FOR_SCALE = Math.min(W, H * CAP_AR); // above cap, W-driven scale plateaus
+    const S = Math.max(W_FOR_SCALE / VW, Math.min(1.15, H / 780)) * (ZOOM || 1);
     const CITY_W = VW * S;
 
-    // When the city is wider than the viewport (any phone), pan it so the RenCen
-    // sits near the LEFT edge at full size and the rest of downtown marches off
-    // to the right. Fitting the whole skyline into 400px is what made it look
-    // cramped; showing a proper RenCen and a few neighbours does not.
+    // Horizontal offset.
     //
-    // The framing is keyed on the RENCEN, deliberately. It was briefly shifted
-    // right to keep Michigan Central (which sits west of it) on screen, but that
-    // moved every other building with it — the station is a guest here, it does
-    // not get to reframe the skyline. On a narrow screen it simply runs off the
-    // left edge, the same as the rest of the city runs off the right.
-    const OX = CITY_W > W ? (W * 0.20 - 0.22 * CITY_W) : 0;
+    // 1. City wider than viewport (any phone): pan so the RenCen sits near the
+    //    LEFT edge at full size and the rest of downtown marches off to the
+    //    right. The framing is keyed on the RENCEN, deliberately. On a narrow
+    //    screen the west-of-RenCen buildings simply run off the left edge, the
+    //    same as the rest of the city runs off the right.
+    //
+    // 2. City NARROWER than viewport (ultrawide, above the 10.5:9 cap): the
+    //    centered card moves right as the viewport widens; anchor the city to
+    //    the card by translating it by the same amount the card shifts. That
+    //    keeps the RenCen at a constant distance from the card's left edge no
+    //    matter how wide the monitor gets. The extra pixels on the right become
+    //    open water.
+    let OX;
+    if (CITY_W > W) {
+      OX = W * 0.20 - 0.22 * CITY_W;
+    } else {
+      // Reference viewport width at exactly the 10.5:9 cap
+      const REF_W = H * CAP_AR;
+      // Where the city sat at the reference viewport (same formula as above)
+      const OX_AT_REF = REF_W * 0.20 - 0.22 * CITY_W;
+      // The centered card shifts right by half the excess viewport width;
+      // translate the city by the same amount to keep it locked to the card
+      OX = OX_AT_REF + (W - REF_W) / 2;
+    }
     const X = (f) => f * CITY_W + OX;   // design fraction -> screen x
 
     const GOLD = '201,162,75';
@@ -196,6 +218,379 @@
       s.stroke();
       return y;
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  EVERYTHING LEFT OF THE RENCEN — the Canadian shore, the Ambassador
+    //  Bridge, and the freighter mid-river. All laid out in DESIGN SPACE
+    //  at negative fractions so they scale and pan as one composition with
+    //  the rest of the city (rather than floating independently in screen
+    //  space, which the previous version did wrong).
+    //
+    //  Layout, running from LEFT edge of design canvas back to the RenCen.
+    //  DELIBERATELY COMPRESSED: the whole west-of-downtown scene has been
+    //  shifted right (toward the RenCen) so on ultrawide viewports the far
+    //  left doesn't read as empty water. Bridge sits close to freighter,
+    //  freighter close to Caesars, Caesars a short reach from the RenCen.
+    //
+    //      fraction  -0.48  -0.44  -0.36  -0.32  -0.16  -0.08 -0.02 0.22
+    //      element   Sand-  Sand-  Gordie Amb.   Amb.   Caes- red   Ren-
+    //                wich   wich   Howe   Bridge Bridge ars   frt.  Cen
+    //                stack  stack  pylon  west   east   Windsr       cluster
+    //                #3     #1,2          tower  tower
+    //
+    //  Windsor riverfront band runs continuously from -0.50 to +0.12 BEHIND
+    //  everything (drawn first, then Sandwich industrial, then Caesars,
+    //  then freighter, then Ambassador Bridge draws on top of everything).
+    //
+    //  Sizing is critical: content placed at fractions < -0.50 is off-screen
+    //  on 21:9 1440p (the target monitor). Everything MUST fit in the
+    //  -0.50 → +0.22 corridor to be visible where it matters.
+    //
+    //  On narrow viewports these draw at negative screen x and fall off the
+    //  left edge — no visible harm. On viewports wide enough to have empty
+    //  water on the left, they slide into view at fixed proportional
+    //  distance from the RenCen.
+    // ═══════════════════════════════════════════════════════════════
+
+    // Skip the whole left-side draw when none of it will land on screen.
+    const leftContentVisible = X(-0.50) < W && X(0.12) > 0;
+
+    if (leftContentVisible) {
+
+      // ── WINDSOR RIVERFRONT. Across the Detroit River on the Canadian
+      //    side, visible in every Belle Isle photograph as a low horizontal
+      //    band of buildings that stretches ALL THE WAY across the middle
+      //    of the frame — from downriver (west, behind and past the
+      //    Ambassador Bridge) to roughly opposite the RenCen. This is what
+      //    fills the "empty water" between the bridge and downtown Detroit.
+      //    In reality that expanse is mostly water, but the Canadian shore
+      //    always reads as a continuous ridge on the horizon behind it.
+      //
+      //    Occupies design fractions -0.50 through +0.12. Passes BEHIND the
+      //    Ambassador Bridge (bridge draws later and occludes overlap).
+      //    Range chosen to stay within the 21:9-visible corridor.
+      (function windsorRiverfront() {
+        const startX = X(-0.50);
+        const endX = X(0.12);
+        const baseY = HZ - 2 * S;
+        const SIL_FAR = '#0a0f1c';             // hazier than the bridge, for distance
+
+        s.fillStyle = SIL_FAR;
+
+        // Continuous ground-level ribbon of the shore itself
+        const bandH = 4 * S;
+        s.fillRect(startX, baseY - bandH, endX - startX, bandH);
+
+        // A rhythm of small mid-rise slabs poking above the band. Slightly
+        // denser overall now that the west span is tighter; heights peak in
+        // the middle (Windsor city core opposite the Ambassador in the
+        // compressed layout) and taper east toward the Riverside Drive
+        // condos and Caesars area.
+        // Arranged so the TALLER, denser cluster (Windsor city core) lands
+        // in the visible-on-21:9 middle range (indices ~22-40). Sandwich /
+        // western Windsor sits on the far-west side (indices 0-20) and only
+        // shows on super-ultrawide. Riverside Drive condos taper east
+        // (indices 40+) toward the freighter/Caesars area behind the card.
+        const heights = [
+          3, 4, 3, 5, 3, 4, 3, 4, 3, 4, 3, 4,     // 0-11: sparse Sandwich mid-low
+          5, 4, 6, 4, 5, 4, 6, 4, 5, 4, 6, 5,     // 12-23: transition into Windsor
+          7, 5, 9, 6, 8, 5, 10, 6, 7, 5, 9, 6,    // 24-35: Windsor CORE (visible cluster)
+          8, 5, 6, 4, 5, 3, 4, 3, 3, 2, 3, 2      // 36-47: taper east / Riverside
+        ];
+        const widths = [
+          4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4,
+          5, 4, 5, 4, 5, 4, 6, 4, 5, 4, 6, 5,
+          5, 4, 7, 4, 6, 4, 7, 5, 5, 4, 6, 5,
+          6, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4
+        ];
+        const gap = 3 * S;
+        let x = startX + 4 * S;
+        for (let i = 0; i < heights.length && x < endX - 6 * S; i++) {
+          const bw = widths[i] * S;
+          const bh = heights[i] * S;
+          s.fillRect(x, baseY - bandH - bh, bw, bh);
+          x += bw + gap;
+        }
+
+        // Sparse night-lit windows scattered across the entire band
+        s.fillStyle = 'rgba(232,199,106,0.4)';
+        const nLights = 18;
+        for (let k = 0; k < nLights; k++) {
+          const lx = startX + ((endX - startX) * ((k + 0.4) / nLights));
+          s.fillRect(lx, baseY - bandH * 0.55, 1, 1);
+        }
+      })();
+
+      // ── SANDWICH TOWN / WINDSOR SALT industrial silhouettes. Just west
+      //    of the Ambassador Bridge on the Canadian side is the historic
+      //    Sandwich neighbourhood, which includes the Windsor Salt mining
+      //    operation and older industrial along the river. From Belle Isle
+      //    distance these read as a couple of tall thin smokestacks and a
+      //    low warehouse mass rising above the Windsor riverfront band —
+      //    the visual anchor that says "working waterfront" rather than
+      //    just condos.
+      (function sandwichIndustrial() {
+        const baseY = HZ - 6 * S;
+        const SIL = '#0a0f1c';
+        s.fillStyle = SIL;
+
+        // Two smokestacks, close together, one noticeably taller
+        const stack1X = X(-0.44), stack1H = 26 * S;
+        const stack2X = X(-0.415), stack2H = 20 * S;
+        s.fillRect(stack1X, baseY - stack1H, 1.3 * S, stack1H);
+        s.fillRect(stack2X, baseY - stack2H, 1.1 * S, stack2H);
+
+        // Squat warehouse mass at the stacks' base
+        const clusterX = X(-0.47);
+        s.fillRect(clusterX, baseY - 9 * S, 26 * S, 9 * S);
+
+        // Windsor Salt cylindrical STORAGE SILOS — the defining feature of
+        // the plant. A row of stubby round-shouldered silos on top of the
+        // warehouse mass.
+        const siloBaseY = baseY - 9 * S;
+        for (let i = 0; i < 4; i++) {
+          const sx = clusterX + 3 * S + i * 5 * S;
+          const sw = 3.5 * S, sh = 10 * S;
+          s.fillRect(sx, siloBaseY - sh, sw, sh);
+          s.beginPath();
+          s.arc(sx + sw / 2, siloBaseY - sh, sw / 2, Math.PI, 2 * Math.PI);
+          s.fill();
+        }
+
+        // A third smaller stack further west (single mark)
+        const stack3X = X(-0.485), stack3H = 15 * S;
+        s.fillRect(stack3X, baseY - stack3H, 0.9 * S, stack3H);
+
+        // Small cluster of low industrial roofs left of the third stack
+        s.fillRect(X(-0.50), baseY - 5 * S, 14 * S, 5 * S);
+
+        // Tiny red aviation warning light on the tallest stack
+        s.fillStyle = 'rgba(225,29,72,0.7)';
+        s.beginPath(); s.arc(stack1X + 0.65, baseY - stack1H - 0.5, 0.9, 0, 7); s.fill();
+      })();
+
+      // ── CAESARS WINDSOR. Paired hotel slabs (Augustus + Forum towers) on
+      //    the Windsor shore, roughly opposite the RenCen. The tallest thing
+      //    on the Canadian side; reads as two blocky flat-topped verticals
+      //    with a slight height difference (Augustus is the taller one).
+      (function caesarsWindsor() {
+        const cx = X(-0.08);
+        const baseY = HZ - 6 * S;              // sits on top of the Windsor band
+        const SIL = '#0c1220';                 // matches Windsor mid-tone
+
+        s.fillStyle = SIL;
+
+        // Augustus tower (taller, on the LEFT of the pair)
+        const augW = 9 * S, augH = 32 * S;
+        s.fillRect(cx - augW - 1 * S, baseY - augH, augW, augH);
+        // Forum tower (shorter, on the RIGHT of the pair)
+        const forW = 7 * S, forH = 26 * S;
+        s.fillRect(cx + 1 * S, baseY - forH, forW, forH);
+
+        // A few window lights scattered on the towers (Windsor at night)
+        s.fillStyle = 'rgba(232,199,106,0.45)';
+        for (let i = 0; i < 6; i++) {
+          const wy = baseY - augH * (0.15 + i * 0.13);
+          s.fillRect(cx - augW * 0.7, wy, 1, 1);
+          if (i < 4) s.fillRect(cx + forW * 0.35, wy + forH * 0.05, 1, 1);
+        }
+      })();
+
+      // ── A RED FREIGHTER on the river between Caesars Windsor and the
+      //    RenCen. Positioned close to Caesars so the bridge/freighter
+      //    scene reads as tightly clustered next to downtown, not spread
+      //    thin across empty water.
+      (function freighter() {
+        const fcx = X(-0.02);
+        const hullW = 44 * S;
+        const hullH = 3 * S;
+        const supersW = 8 * S;
+        const supersH = 5 * S;
+        const y = HZ - 3 * S;
+        s.fillStyle = '#8a1a24';                // dark crimson hull
+        s.fillRect(fcx - hullW / 2, y - hullH, hullW, hullH);
+        s.fillStyle = '#5a1218';                // darker superstructure
+        s.fillRect(fcx + hullW / 2 - supersW - 4 * S, y - hullH - supersH, supersW, supersH);
+        // Thin masts / stacks
+        s.fillRect(fcx + hullW / 2 - 6 * S, y - hullH - supersH - 3 * S, 0.8, 3 * S);
+        s.fillRect(fcx - hullW / 2 + 6 * S, y - hullH - 4 * S, 0.8, 4 * S);
+        // A single warm light on the superstructure
+        s.fillStyle = 'rgba(232,199,106,0.7)';
+        s.fillRect(fcx + hullW / 2 - supersW / 2 - 4 * S, y - hullH - supersH * 0.5, 1, 1);
+      })();
+
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  THE AMBASSADOR BRIDGE. Far to the west / downriver from Belle Isle,
+    //  a distant suspension-bridge silhouette anchored in DESIGN SPACE at
+    //  fractions -0.30 (west tower) through -0.14 (east tower). Shifted
+    //  east from the geographically accurate position so the west scene
+    //  reads as tight and connected rather than a bridge floating alone
+    //  in empty water on ultrawide displays.
+    //
+    //  Traced from actual Belle Isle -> Detroit photographs, not from
+    //  imagination. The silhouette details that matter at this distance:
+    //    - LATTICE steel towers: two thin legs joined by a horizontal CAP
+    //      crossbar at the top (a rectangular portal frame, NOT solid
+    //      rectangles and NOT gothic spires)
+    //    - a soft catenary main cable dipping between the tower tops with
+    //      vertical HANGERS dropping from cable to deck (the comb pattern
+    //      that says "suspension" rather than "cable-stayed")
+    //    - a STRAIGHT horizontal deck through the main span; no arch
+    //    - truss approach ramps angling up from the banks to the main deck
+    //
+    //  Falls off the left edge of the viewport on narrow screens; slides
+    //  into view as the viewport widens past the 10.5:9 cap.
+    // ═══════════════════════════════════════════════════════════════
+    (function ambassadorBridge() {
+      const leftFrac = -0.32;
+      const rightFrac = -0.16;
+      const cx = X((leftFrac + rightFrac) / 2);
+      const leftX = X(leftFrac);
+      const rightX = X(rightFrac);
+      const span = rightX - leftX;
+
+      // Skip if the whole bridge is off the left edge of the viewport.
+      if (rightX + 60 * S < 0) return;
+
+      const towerH = 44 * S;
+      const towerLegGap = 4 * S;
+      const legW = 1.3 * S;
+      const deckY = HZ - 5 * S;
+      const SIL = '#04060e';
+
+      s.fillStyle = SIL;
+      s.strokeStyle = SIL;
+
+      // ── GORDIE HOWE INTERNATIONAL BRIDGE pylon. Downstream (west) of the
+      //    Ambassador Bridge, opened 2025. Cable-stayed with two very tall
+      //    concrete A-frame pylons that rise noticeably ABOVE the Ambassador
+      //    Bridge deckline in Belle Isle photographs. Draw it BEFORE the
+      //    Ambassador so the Ambassador draws on top where they overlap.
+      //    Rendered as two thin needle spikes with a hint of A-frame at the
+      //    base — details invisible at this apparent distance, but the two
+      //    tall vertical marks are the tell.
+      (function gordieHowe() {
+        const gcx = X(-0.36);              // sits just LEFT of Ambassador west tower
+        const pylonH = 62 * S;             // ~40% taller than Ambassador towers
+        const pylonSpacing = 6 * S;
+        const pylonW = 1.4 * S;
+        const gDeckY = HZ - 3 * S;
+        const GSIL = '#05070f';
+        s.fillStyle = GSIL;
+        // Two vertical pylons
+        s.fillRect(gcx - pylonSpacing - pylonW / 2, gDeckY - pylonH, pylonW, pylonH);
+        s.fillRect(gcx + pylonSpacing - pylonW / 2, gDeckY - pylonH, pylonW, pylonH);
+        // Subtle A-frame splay near the base (widens slightly outward)
+        s.beginPath();
+        s.moveTo(gcx - pylonSpacing, gDeckY - pylonH * 0.4);
+        s.lineTo(gcx - pylonSpacing - 2 * S, gDeckY);
+        s.moveTo(gcx + pylonSpacing, gDeckY - pylonH * 0.4);
+        s.lineTo(gcx + pylonSpacing + 2 * S, gDeckY);
+        s.lineWidth = 0.8;
+        s.stroke();
+        // Very faint fan-stay cable hints (cable-stayed, not suspension)
+        s.strokeStyle = 'rgba(10,14,25,0.55)';
+        s.lineWidth = 0.4;
+        s.beginPath();
+        for (let i = 1; i <= 3; i++) {
+          const off = i * 4 * S;
+          s.moveTo(gcx - pylonSpacing, gDeckY - pylonH + 3 * S);
+          s.lineTo(gcx - pylonSpacing - off, gDeckY);
+          s.moveTo(gcx + pylonSpacing, gDeckY - pylonH + 3 * S);
+          s.lineTo(gcx + pylonSpacing + off, gDeckY);
+        }
+        s.stroke();
+        // Tiny red aviation beacons on the pylon tops
+        s.fillStyle = 'rgba(' + CRIMSON + ',0.75)';
+        s.beginPath(); s.arc(gcx - pylonSpacing, gDeckY - pylonH - 0.5, 1, 0, 7); s.fill();
+        s.beginPath(); s.arc(gcx + pylonSpacing, gDeckY - pylonH - 0.5, 1, 0, 7); s.fill();
+        // Restore for the Ambassador draw
+        s.strokeStyle = SIL;
+        s.fillStyle = SIL;
+      })();
+
+      // ── Lattice portal-frame tower: two thin vertical legs, a cap crossbar
+      //    at the top joining them, and two thin mid-height crossbars to
+      //    suggest X-bracing (the actual X pattern is too fine to render at
+      //    this apparent scale; hint at the lattice with horizontal ties).
+      function latticeTower(tx) {
+        const lx = tx - towerLegGap / 2 - legW / 2;   // left leg x
+        const rx = tx + towerLegGap / 2 - legW / 2;   // right leg x
+        const top = deckY - towerH;
+        // Legs
+        s.fillRect(lx, top, legW, towerH);
+        s.fillRect(rx, top, legW, towerH);
+        // Cap crossbeam at the top
+        s.fillRect(lx, top, (rx + legW) - lx, 1.6 * S);
+        // Mid-height horizontal ties (suggest lattice)
+        s.fillRect(lx, top + towerH * 0.38, (rx + legW) - lx, 0.8 * S);
+        s.fillRect(lx, top + towerH * 0.68, (rx + legW) - lx, 0.8 * S);
+      }
+      latticeTower(leftX);
+      latticeTower(rightX);
+
+      // ── Deck: STRAIGHT horizontal bar through the main span, extending
+      //    outward as approach roadways onto the banks.
+      s.fillRect(leftX - 65 * S, deckY, span + 130 * S, 1.7 * S);
+
+      // ── Truss approach ramps: the roadway climbs from bank level up to the
+      //    tower base. Draw as a subtle diagonal from the far end of each
+      //    approach up to the tower base. In silhouette this reads as the
+      //    trussed approach structure.
+      s.lineWidth = 1;
+      s.beginPath();
+      s.moveTo(leftX - 65 * S, deckY + 3 * S);
+      s.lineTo(leftX, deckY);
+      s.moveTo(rightX + 65 * S, deckY + 3 * S);
+      s.lineTo(rightX, deckY);
+      s.stroke();
+
+      // ── Main suspension catenary. Sags between the two tower tops in a
+      //    soft parabolic curve. This is drawn as a slightly thicker line so
+      //    it stays visible at very small apparent scales.
+      s.lineWidth = 1.3;
+      const cableTopY = deckY - towerH + 2;   // cable attaches just below cap
+      const cableSagY = deckY - 6 * S;        // low point of the catenary
+      s.beginPath();
+      s.moveTo(leftX, cableTopY);
+      s.quadraticCurveTo(cx, cableSagY, rightX, cableTopY);
+      s.stroke();
+
+      // ── Cable extensions from tower tops down to the anchor points on the
+      //    banks (matches the M-shape you see from a distance).
+      s.beginPath();
+      s.moveTo(leftX - 55 * S, deckY);
+      s.lineTo(leftX, cableTopY);
+      s.moveTo(rightX + 55 * S, deckY);
+      s.lineTo(rightX, cableTopY);
+      s.stroke();
+
+      // ── Vertical hangers. Short thin lines dropping from the main cable
+      //    to the deck; this "comb" pattern is the visual signature that
+      //    separates a suspension bridge from a cable-stayed one.
+      s.lineWidth = 0.55;
+      s.beginPath();
+      const N_HANGERS = 6;
+      for (let i = 1; i < N_HANGERS; i++) {
+        const t = i / N_HANGERS;
+        const hx = leftX + t * span;
+        // Quadratic Bezier y at parameter t (control point at cableSagY)
+        const cy = (1 - t) * (1 - t) * cableTopY + 2 * (1 - t) * t * cableSagY + t * t * cableTopY;
+        s.moveTo(hx, cy);
+        s.lineTo(hx, deckY);
+      }
+      s.stroke();
+
+      // ── Tiny red aviation beacons on each tower top with a soft halo.
+      s.fillStyle = 'rgba(' + CRIMSON + ',0.75)';
+      s.beginPath(); s.arc(leftX, deckY - towerH - 1, 1.2, 0, 7); s.fill();
+      s.beginPath(); s.arc(rightX, deckY - towerH - 1, 1.2, 0, 7); s.fill();
+      s.fillStyle = 'rgba(' + CRIMSON + ',0.2)';
+      s.beginPath(); s.arc(leftX, deckY - towerH - 1, 3, 0, 7); s.fill();
+      s.beginPath(); s.arc(rightX, deckY - towerH - 1, 3, 0, 7); s.fill();
+    })();
 
     // ═══════════════════════════════════════════════════════════════
     //  THE RENAISSANCE CENTER
@@ -418,6 +813,235 @@
     (function cadillac() {
       const x = X(0.625), w = 24 * S, h = 140 * S;
       stepped(x, w, h, [[0.66, 1.0], [0.2, 0.66], [0.14, 0.4]], BODY, 0.18);
+    })();
+
+    // ═══════════════════════════════════════════════════════════════
+    //  EAST OF DOWNTOWN — the Detroit riverfront going upstream toward
+    //  Belle Isle. From Belle Isle looking west, this stretch appears on
+    //  the RIGHT of the frame, past Cadillac Tower (the eastmost downtown
+    //  deco building). Reference: Chene Park / Aretha Franklin Amphitheatre
+    //  with its multi-peak white PTFE tent roof, Harbortown residential
+    //  mid-rises, MacArthur Bridge arches to Belle Isle.
+    //
+    //  Layout, running LEFT → RIGHT east of Cadillac (0.625):
+    //      fraction  0.66   0.71   0.76        0.83       0.90
+    //      element   Stroh  UAW-   Aretha      Harbor-    MacArthur
+    //                River  Ford   Franklin    town       Bridge
+    //                Place  NTC    Amphi       residnt    arches
+    // ═══════════════════════════════════════════════════════════════
+
+    // ── STROH RIVER PLACE / former Parke-Davis. Long low red-brick
+    //    industrial-institutional block right on the riverfront, capped by
+    //    a squat clock/water tower. Reads as a horizontal mass with a
+    //    single vertical accent — very different from the deco towers
+    //    behind it. Slightly warmer tint hints at the brick.
+    (function strohRiverPlace() {
+      const x = X(0.66), w = 60 * S, h = 34 * S;
+      const y = HZ - h;
+      s.fillStyle = '#100a12';                      // hint of brick warmth (dark)
+      s.fillRect(x, y, w, h);
+      rim(x, y, w, h, 0.12);
+      win(x, y, w, h, 0.15);
+      // Squat clock/water tower on the roof (a distinctive local silhouette)
+      s.fillStyle = '#0e0810';
+      const tW = 8 * S, tH = 14 * S;
+      s.fillRect(x + w * 0.28, y - tH, tW, tH);
+      // Tiny warm light on the tower (clock face)
+      s.fillStyle = 'rgba(' + GOLD_HI + ',0.55)';
+      s.fillRect(x + w * 0.28 + tW * 0.35, y - tH * 0.55, 2, 2);
+    })();
+
+    // ── UAW-FORD NATIONAL PROGRAMS CENTER. Just east of RenCen on the
+    //    river. Mid-rise glassy building with a stepped/pyramidal atrium
+    //    section on the river side. Reads as a wider-than-tall silhouette
+    //    with a slanted top corner.
+    (function uawFord() {
+      const x = X(0.705), w = 38 * S, h = 62 * S;
+      const y = HZ - h;
+      s.fillStyle = '#080b16';
+      s.fillRect(x, y, w, h);
+      rim(x, y, w, h, 0.14);
+      win(x, y, w, h, 0.22);
+      // Stepped/slanted atrium on the LEFT (river) side
+      s.fillStyle = '#080b16';
+      s.beginPath();
+      s.moveTo(x - 6 * S, HZ);
+      s.lineTo(x, HZ - h * 0.55);
+      s.lineTo(x, HZ);
+      s.closePath();
+      s.fill();
+    })();
+
+    // ── ARETHA FRANKLIN AMPHITHEATRE (formerly Chene Park). The white
+    //    PTFE-fiberglass fabric tent roof: multiple sharp peaks tensioned
+    //    on cables, low to the ground. At night in silhouette the fabric
+    //    catches sky light and reads LIGHTER than the surrounding buildings
+    //    — a row of pale triangular peaks against dark water. This is the
+    //    distinctive east-of-downtown landmark.
+    (function arethaAmphi() {
+      const cx = X(0.762);
+      const baseY = HZ - 2 * S;
+      const spanW = 68 * S;
+      const peakH = 24 * S;
+      const nPeaks = 5;
+      const peakSpacing = spanW / (nPeaks - 1);
+      const left = cx - spanW / 2;
+
+      // Pale fabric — lighter than any building silhouette, warmer with
+      // the storm glow. Use two passes: fill + subtle rim.
+      s.fillStyle = '#544048';                       // warmer off-white for tent fabric
+      s.beginPath();
+      s.moveTo(left, baseY);
+      for (let i = 0; i < nPeaks; i++) {
+        const px = left + i * peakSpacing;
+        s.lineTo(px, baseY - peakH * (0.7 + (i % 2 ? 0.3 : 0.0)));
+        if (i < nPeaks - 1) {
+          const valley = left + i * peakSpacing + peakSpacing * 0.5;
+          s.lineTo(valley, baseY - peakH * 0.28);      // dip between peaks
+        }
+      }
+      s.lineTo(left + spanW, baseY);
+      s.closePath();
+      s.fill();
+
+      // Thin support masts (cable tensioners) rising slightly above the peaks
+      s.fillStyle = '#1a1218';
+      for (let i = 0; i < nPeaks; i++) {
+        const px = left + i * peakSpacing;
+        const mH = peakH * (0.7 + (i % 2 ? 0.3 : 0.0)) + 3 * S;
+        s.fillRect(px - 0.4, baseY - mH, 0.8, mH);
+      }
+
+      // Gold rim along the peak edges to catch the glow — brighter than
+      // most rims because the fabric roof is famously lit from below.
+      s.strokeStyle = 'rgba(' + GOLD_HI + ',0.55)';
+      s.lineWidth = 1.2;
+      s.beginPath();
+      s.moveTo(left, baseY);
+      for (let i = 0; i < nPeaks; i++) {
+        const px = left + i * peakSpacing;
+        s.lineTo(px, baseY - peakH * (0.7 + (i % 2 ? 0.3 : 0.0)));
+        if (i < nPeaks - 1) {
+          const valley = left + i * peakSpacing + peakSpacing * 0.5;
+          s.lineTo(valley, baseY - peakH * 0.28);
+        }
+      }
+      s.stroke();
+    })();
+
+    // ── HARBORTOWN. A cluster of mid-rise brick residential towers east
+    //    of Chene Park, with a marina in front (a small forest of thin
+    //    vertical masts). Reads as a small city-block of boxy verticals.
+    (function harbortown() {
+      const cx = X(0.83);
+      const baseY = HZ;
+      const SIL = '#0a0e1c';
+
+      // Three residential slabs at slightly different heights, tightly
+      // grouped
+      const slabs = [
+        { dx: -22, w: 14, h: 56 },
+        { dx:  -6, w: 16, h: 62 },
+        { dx:  12, w: 14, h: 52 },
+      ];
+      for (const b of slabs) {
+        const x = cx + b.dx * S, w = b.w * S, h = b.h * S;
+        const y = baseY - h;
+        s.fillStyle = SIL;
+        s.fillRect(x, y, w, h);
+        rim(x, y, w, h, 0.14);
+        win(x, y, w, h, 0.20);
+      }
+
+      // Marina masts in front — thin vertical hair-lines, warm at tips
+      s.strokeStyle = 'rgba(' + GOLD + ',0.35)';
+      s.lineWidth = 0.5;
+      s.beginPath();
+      for (let i = 0; i < 9; i++) {
+        const mx = cx - 24 * S + i * 6 * S;
+        const mh = 5 * S + (i % 3) * 3 * S;
+        s.moveTo(mx, baseY);
+        s.lineTo(mx, baseY - mh);
+      }
+      s.stroke();
+    })();
+
+    // ── MacARTHUR BRIDGE (Belle Isle Bridge). Long low concrete arch
+    //    bridge — ~19 shallow arches marching across the water toward
+    //    Belle Isle. From Belle Isle POV it's the near-field bridge on
+    //    the right, framing the east edge of the composition. Rendered
+    //    subtly to not compete with the Ambassador Bridge on the west.
+    (function macarthurBridge() {
+      const startX = X(0.87);
+      const endX = X(1.05);
+      const deckY = HZ - 7 * S;
+      const arches = 11;
+      const spacing = (endX - startX) / arches;
+      const archH = 5 * S;
+      const SIL = '#0e1424';                          // darker than sky, visible
+
+      // Deck bar
+      s.fillStyle = SIL;
+      s.fillRect(startX, deckY, endX - startX, 2 * S);
+
+      // Piers + arch underlines
+      s.strokeStyle = SIL;
+      s.lineWidth = 1.4;
+      for (let i = 0; i <= arches; i++) {
+        const x = startX + i * spacing;
+        s.fillRect(x - 0.7, deckY, 1.4, HZ - deckY);   // pier
+        if (i < arches) {
+          s.beginPath();
+          s.moveTo(x, deckY + 1);
+          s.quadraticCurveTo(x + spacing / 2, deckY + archH, x + spacing, deckY + 1);
+          s.stroke();
+        }
+      }
+
+      // Rim highlight along top of deck to lift it from the sky
+      s.fillStyle = 'rgba(' + GOLD + ',0.18)';
+      s.fillRect(startX, deckY - 0.5, endX - startX, 0.7);
+
+      // Warm lamp standards along the deck (a string of amber points)
+      s.fillStyle = 'rgba(' + GOLD_HI + ',0.65)';
+      for (let i = 0; i < 8; i++) {
+        const x = startX + (i + 0.5) * (endX - startX) / 8;
+        s.fillRect(x - 0.4, deckY - 4 * S, 0.8, 4 * S);
+        s.fillRect(x - 0.9, deckY - 4.4 * S, 1.8, 1);
+      }
+    })();
+
+    // ── EAST SHORE MISC: houses / low industrial silhouettes between
+    //    Harbortown and MacArthur Bridge. Not identifiable landmarks,
+    //    just the low urban rhythm you see anywhere along that Detroit
+    //    riverfront going east — a mix of warehouses, small commercial,
+    //    and residential rooftops. Fills what would otherwise be empty
+    //    water on the right of the frame.
+    (function eastShoreMisc() {
+      const items = [
+        { f: 0.79, w: 12, h: 22 },
+        { f: 0.805, w: 16, h: 14 },
+        { f: 0.855, w: 22, h: 18 },
+        { f: 0.875, w: 14, h: 12 },
+        { f: 0.895, w: 20, h: 20 },
+        { f: 0.915, w: 12, h: 10 },
+        { f: 0.94, w: 18, h: 16 },
+        { f: 0.965, w: 14, h: 10 },
+        { f: 0.99, w: 18, h: 14 },
+        { f: 1.02, w: 14, h: 12 },
+        { f: 1.05, w: 20, h: 16 },
+        { f: 1.075, w: 12, h: 10 },
+        { f: 1.10, w: 16, h: 12 },
+        { f: 1.13, w: 14, h: 10 },
+      ];
+      for (const it of items) {
+        const x = X(it.f), w = it.w * S, h = it.h * S;
+        const y = HZ - h;
+        s.fillStyle = '#0a0e1c';
+        s.fillRect(x, y, w, h);
+        rim(x, y, w, h, 0.10);
+        win(x, y, w, h, 0.13);
+      }
     })();
 
     // ── RIVERFRONT TOWERS. Three pale residential towers WEST of the RenCen,
@@ -692,6 +1316,18 @@
 
     ctx.globalCompositeOperation = 'source-over';       // the city occludes the storm
     ctx.drawImage(sky, 0, 0, w, h);
+
+    // On viewports wider than the 10.5:9 cap the skyline no longer scales up
+    // to fill; the extra pixels on the right should read as open water, not
+    // as blank body background. Paint a dark water base across the full width
+    // below the horizon. Below, the reflection slices layer over this and the
+    // chop and rain still span the full width.
+    const waterGrad = ctx.createLinearGradient(0, horizon, 0, h);
+    waterGrad.addColorStop(0,   'rgba(6, 10, 24, 0.90)');
+    waterGrad.addColorStop(0.4, 'rgba(6, 10, 24, 0.80)');
+    waterGrad.addColorStop(1,   'rgba(4, 6, 16, 0.85)');
+    ctx.fillStyle = waterGrad;
+    ctx.fillRect(0, horizon, w, h - horizon);
 
     // The river: slice the skyline back row by row, each row offset by a
     // travelling sine. That horizontal smear is what water does to light.
