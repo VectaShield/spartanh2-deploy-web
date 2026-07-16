@@ -1205,10 +1205,22 @@
      sessionStorage is per-tab: a fresh tab starts with a fresh roll. */
   const SESSION_KEY = 'sh2_wx_v1';
 
+  /* Mobile detection: any touch-primary device (phone or tablet) always
+     gets the STORM preset. The stylized clear/rain feels too calm on a
+     small screen where the sky area is proportionally larger relative to
+     the city, and the storm's rain + lightning + dense clouds fill that
+     space with motion. `pointer: coarse` matches touch input regardless
+     of "request desktop site" toggle — a phone stays a phone.
+
+     Note: the SEED stays random per session, so window lights, cloud
+     positions, and star scatter still vary between visits — the visual
+     variety per session is preserved, only the preset itself is fixed. */
+  const IS_MOBILE = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
   function pickWeather() {
     const p = new URLSearchParams(location.search).get('weather');
-    // URL overrides — ignore session storage, use a fixed seed so the
-    // debug URL is deterministic across reloads too.
+    // URL overrides — bypass mobile lock too, so debug URLs work
+    // everywhere. Fixed seed keeps those URLs deterministic.
     if (p) {
       const byName = SHIPPING_WEATHER.find(w => w.name === p.toLowerCase());
       if (byName) return { ...byName, _seed: 0x2f9a1e5b };
@@ -1217,17 +1229,30 @@
         return { ...WEATHER_PRESETS[idx], _seed: 0x2f9a1e5b };
       }
     }
-    // Restore from session storage if present and still valid.
+    // Read stored seed (both mobile and desktop reuse it).
+    let storedName = null, storedSeed = null;
     try {
       const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
-      if (saved && typeof saved.name === 'string' && Number.isFinite(saved.seed)) {
-        const preset = SHIPPING_WEATHER.find(w => w.name === saved.name);
-        if (preset) return { ...preset, _seed: saved.seed >>> 0 };
+      if (saved && Number.isFinite(saved.seed)) {
+        storedSeed = saved.seed >>> 0;
+        if (typeof saved.name === 'string') storedName = saved.name;
       }
     } catch (_) { /* corrupted storage — treat as first visit */ }
-    // Fresh tab / no valid session — new roll, persist it.
-    const preset = SHIPPING_WEATHER[Math.floor(Math.random() * SHIPPING_WEATHER.length)];
-    const seed = (Math.random() * 0xffffffff) >>> 0;
+
+    // On mobile, force STORM regardless of what was saved (desktop-side
+    // could have persisted a 'clear' or 'rain' for the tab; the mobile
+    // guard overrides). On desktop, use stored name if present, else
+    // random from the shipping pool.
+    const chosenName = IS_MOBILE
+      ? 'storm'
+      : (storedName ||
+         SHIPPING_WEATHER[Math.floor(Math.random() * SHIPPING_WEATHER.length)].name);
+    const preset = SHIPPING_WEATHER.find(w => w.name === chosenName) || SHIPPING_WEATHER[0];
+    const seed = storedSeed !== null
+      ? storedSeed
+      : (Math.random() * 0xffffffff) >>> 0;
+
+    // Persist for next page-load in this tab.
     try {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: preset.name, seed }));
     } catch (_) { /* private mode / disabled storage — session-scoped fallback still fine */ }
