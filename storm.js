@@ -115,10 +115,14 @@
     const BODY_FAR = '#0b0f1e';    // further = lighter (haze washes it out)
 
     // ── Storm glow behind the city. Black towers on a black page are invisible;
-    //    this is the lit sky they stand against.
+    //    this is the lit sky they stand against. Scaled by the active weather
+    //    preset: on a clear night the crimson storm glow drops way down so the
+    //    sky reads as dark navy behind the stars, and only a soft warm halo
+    //    around the city itself remains.
+    const glowMul = (typeof weather !== 'undefined' && weather) ? weather.stormGlow : 1;
     const glow = s.createRadialGradient(X(0.30), HZ, 10, X(0.30), HZ, Math.max(W, H) * 0.7);
-    glow.addColorStop(0, 'rgba(' + GOLD + ',0.18)');
-    glow.addColorStop(0.35, 'rgba(185,28,44,0.11)');
+    glow.addColorStop(0, 'rgba(' + GOLD + ',' + (0.18 * glowMul) + ')');
+    glow.addColorStop(0.35, 'rgba(185,28,44,' + (0.11 * glowMul) + ')');
     glow.addColorStop(1, 'rgba(185,28,44,0)');
     s.fillStyle = glow;
     s.fillRect(0, 0, W, HZ + 2);
@@ -1096,6 +1100,184 @@
   }
 
 
+  /* ═══════════════════════════════════════════════════════════════════════
+     WEATHER PRESETS.
+
+     Eight discrete "moods" the scene picks from on page load. Runs from a
+     calm clear summer 2 AM at the low end to the full driving-rain lightning
+     storm the site was originally designed around. Selection is one-shot at
+     boot; the weather does not change during a session.
+
+     Test any preset with ?weather=N (N is 0..7). Without the query param a
+     preset is picked at random on load.
+
+     Every preset is a bundle of multipliers on the existing engine so we
+     don't have to fork the drawing code — clouds, rain, lightning, water
+     chop and storm glow all scale off these numbers, and stars only exist
+     on the calmer presets.
+     ═════════════════════════════════════════════════════════════════════ */
+  const WEATHER_PRESETS = [
+    // 0 — CLEAR (level 1). Summer, 2 AM. Stars out with named constellations,
+    //     no clouds, mirror-still water. Storm glow way down so the upper sky
+    //     reads as dark navy behind the stars.
+    { name: 'clear',    cloudCount: 0.00, cloudAlpha: 0.00, rainDensity: 0.00,
+      thunderRate: 0,   starDensity: 1.00, chopIntensity: 0.15, wobble: 0.18, stormGlow: 0.14 },
+
+    // 1 — WISPS (level 2). High thin clouds drift across; most of the stars
+    //     are still visible. Water barely moving.
+    { name: 'wisps',    cloudCount: 0.18, cloudAlpha: 0.35, rainDensity: 0.00,
+      thunderRate: 0,   starDensity: 0.70, chopIntensity: 0.2,  wobble: 0.25, stormGlow: 0.25 },
+
+    // 2 — OVERCAST (level 3). Full cloud cover, no stars, no rain yet. Light
+    //     chop; the whole scene sits under lidded grey.
+    { name: 'overcast', cloudCount: 0.75, cloudAlpha: 0.55, rainDensity: 0.00,
+      thunderRate: 0,   starDensity: 0.00, chopIntensity: 0.35, wobble: 0.40, stormGlow: 0.50 },
+
+    // 3 — DRIZZLE (level 4). Light rain begins. Clouds thicker, water
+    //     livelier. Still no thunder.
+    { name: 'drizzle',  cloudCount: 0.85, cloudAlpha: 0.75, rainDensity: 0.30,
+      thunderRate: 0,   starDensity: 0.00, chopIntensity: 0.5,  wobble: 0.55, stormGlow: 0.60 },
+
+    // 4 — STEADY + DISTANT THUNDER (level 5). Standard rain, and the FIRST
+    //     lightning appears — infrequent, mostly distant strikes with a soft
+    //     flash. Water working steadily.
+    { name: 'steady',   cloudCount: 0.95, cloudAlpha: 0.85, rainDensity: 0.65,
+      thunderRate: 0.28, starDensity: 0.00, chopIntensity: 0.65, wobble: 0.70, stormGlow: 0.80 },
+
+    // 5 — HEAVY + MODERATE THUNDER (level 6). Sheeting rain and more
+    //     frequent bolts; still a "storm across town" feel, not overhead.
+    { name: 'heavy',    cloudCount: 1.05, cloudAlpha: 0.95, rainDensity: 1.20,
+      thunderRate: 0.6, starDensity: 0.00, chopIntensity: 0.85, wobble: 0.85, stormGlow: 0.95 },
+
+    // 6 — TRULY INCREDIBLE STORM (level 7). Wall-to-wall clouds, sheeting
+    //     rain, near-continuous close-range lightning with dramatic flashes,
+    //     chaotic wind-driven water. The showpiece preset.
+    { name: 'incredible', cloudCount: 1.30, cloudAlpha: 1.00, rainDensity: 1.75,
+      thunderRate: 1.5, starDensity: 0.00, chopIntensity: 1.15, wobble: 1.10, stormGlow: 1.10 },
+
+    // 7 — APOCALYPTIC (level 8). One notch past incredible — even denser
+    //     clouds, most rain, absolute peak lightning frequency. Kept as an
+    //     extreme option; can be pulled from the random pool if it's too
+    //     much for everyday viewing.
+    { name: 'apocalyptic', cloudCount: 1.50, cloudAlpha: 1.00, rainDensity: 2.10,
+      thunderRate: 2.0, starDensity: 0.00, chopIntensity: 1.30, wobble: 1.20, stormGlow: 1.20 },
+  ];
+
+  /* ── SHIPPING pool.
+     Only three presets ever get randomly picked in production: CLEAR,
+     RAIN, STORM. The 8-preset WEATHER_PRESETS array above stays intact
+     as a debug/test surface, addressable via ?weather=0..7. The shipping
+     configs below are hand-blended (starting from the 8-preset numbers,
+     with a few tweaks) so the three we actually ship feel distinct
+     without any two feeling like near-duplicates of each other. */
+  const SHIPPING_WEATHER = [
+    {
+      // CLEAR = preset 0 (clear starry) with the SLIGHTLY livelier water
+      // borrowed from preset 1 (wisps) — dead-flat water read as unnatural.
+      name: 'clear',
+      cloudCount: 0.00, cloudAlpha: 0.00, rainDensity: 0.00,
+      thunderRate: 0,   starDensity: 1.00,
+      chopIntensity: 0.20, wobble: 0.25, stormGlow: 0.14,
+    },
+    {
+      // RAIN = preset 3 (drizzle) with rain density bumped to preset 4's
+      // level, so it reads as proper rain instead of a light sprinkle.
+      name: 'rain',
+      cloudCount: 0.85, cloudAlpha: 0.75, rainDensity: 0.65,
+      thunderRate: 0,   starDensity: 0.00,
+      chopIntensity: 0.50, wobble: 0.55, stormGlow: 0.60,
+    },
+    {
+      // STORM = preset 7 (apocalyptic), the full-tier stormfront.
+      name: 'storm',
+      cloudCount: 1.50, cloudAlpha: 1.00, rainDensity: 2.10,
+      thunderRate: 2.0, starDensity: 0.00,
+      chopIntensity: 1.30, wobble: 1.20, stormGlow: 1.20,
+    },
+  ];
+
+  /* Weather + seed are cached in sessionStorage. Within a single tab
+     session, every internal navigation reproduces the exact same weather
+     preset AND the same baked visual layout (window lights, stars, cloud
+     positions) — otherwise every click through the site re-rolls all
+     that state and the transitions read as jarring.
+
+     sessionStorage is per-tab: a fresh tab starts with a fresh roll. */
+  const SESSION_KEY = 'sh2_wx_v1';
+
+  function pickWeather() {
+    const p = new URLSearchParams(location.search).get('weather');
+    // URL overrides — ignore session storage, use a fixed seed so the
+    // debug URL is deterministic across reloads too.
+    if (p) {
+      const byName = SHIPPING_WEATHER.find(w => w.name === p.toLowerCase());
+      if (byName) return { ...byName, _seed: 0x2f9a1e5b };
+      const idx = parseInt(p, 10);
+      if (Number.isFinite(idx) && idx >= 0 && idx < WEATHER_PRESETS.length) {
+        return { ...WEATHER_PRESETS[idx], _seed: 0x2f9a1e5b };
+      }
+    }
+    // Restore from session storage if present and still valid.
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+      if (saved && typeof saved.name === 'string' && Number.isFinite(saved.seed)) {
+        const preset = SHIPPING_WEATHER.find(w => w.name === saved.name);
+        if (preset) return { ...preset, _seed: saved.seed >>> 0 };
+      }
+    } catch (_) { /* corrupted storage — treat as first visit */ }
+    // Fresh tab / no valid session — new roll, persist it.
+    const preset = SHIPPING_WEATHER[Math.floor(Math.random() * SHIPPING_WEATHER.length)];
+    const seed = (Math.random() * 0xffffffff) >>> 0;
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: preset.name, seed }));
+    } catch (_) { /* private mode / disabled storage — session-scoped fallback still fine */ }
+    return { ...preset, _seed: seed };
+  }
+  const weather = pickWeather();
+
+  /* Mulberry32 PRNG (Sebastian Vigna, public domain). Small, fast,
+     good statistical quality — plenty for scattering window lights and
+     stars. Deterministic from a 32-bit seed. */
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* Monkey-patch Math.random during the BAKING sequence — window lights,
+     star positions, initial cloud/rain state — so every function that
+     touches Math.random gets the seeded PRNG instead. Restore the native
+     RNG immediately afterwards so per-frame animation (rain respawn,
+     bolt fork paths, thunder scheduling) stays genuinely random. Reset
+     from the seed every time we enter the bake, so the sequence is
+     identical on every page load. */
+  const REAL_RANDOM = Math.random;
+  function withBakedRand(fn) {
+    Math.random = mulberry32(weather._seed);
+    try { return fn(); }
+    finally { Math.random = REAL_RANDOM; }
+  }
+
+  // ── Fetch the sky data once. It's a static JSON (~150 KB) built by
+  //    scripts/build-sky-data.js from the RA/Dec catalog. On stormy presets
+  //    we never draw constellations, so skip the fetch entirely — no point
+  //    pulling data we'll never use.
+  window.__SKY_DATA__ = null;
+  if (weather.starDensity > 0.01) {
+    fetch('/weather/sky-by-month.json')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        window.__SKY_DATA__ = data;
+        // Re-generate stars now that constellation data is available.
+        if (typeof onResize === 'function') onResize();
+      })
+      .catch(() => { /* silent: field stars still work without the data */ });
+  }
+
   const cv = document.getElementById('bgc');
   const ctx = cv.getContext('2d');
   let w = 0, h = 0, dpr = 1;
@@ -1107,8 +1289,139 @@
     if (typeof onResize === 'function') onResize();
   }
 
-  let sky = null, rain = [], bolts = [], clouds = [], puffs = [];
+  let sky = null, rain = [], bolts = [], clouds = [], puffs = [], stars = [];
   let nextBolt = 1.2, flashV = 0, horizon = 0;
+
+  // Layout constants from drawSkyline. Updated on every bake so stars,
+  // constellations, and anything else living in design space can pin
+  // themselves to the same coordinate system as the buildings — meaning
+  // they scale + slide with the city as the viewport changes, instead of
+  // drifting freely across the viewport.
+  const layout = { CITY_W: 0, OX: 0, S: 1, HZ: 0, VW: 1150 };
+  function computeLayout(w, h) {
+    const VW = 1150;
+    const CAP_AR = 10.5 / 9;
+    const W_FOR_SCALE = Math.min(w, h * CAP_AR);
+    const S = Math.max(W_FOR_SCALE / VW, Math.min(1.15, h / 780));
+    const CITY_W = VW * S;
+    let OX;
+    if (CITY_W > w) {
+      OX = w * 0.20 - 0.22 * CITY_W;
+    } else {
+      const REF_W = h * CAP_AR;
+      const OX_AT_REF = REF_W * 0.20 - 0.22 * CITY_W;
+      OX = OX_AT_REF + (w - REF_W) / 2;
+    }
+    return { VW, CITY_W, OX, S, HZ: h * 0.55 };
+  }
+  const X_DES = (f) => f * layout.CITY_W + layout.OX;    // design fraction → screen x
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SKY PROJECTION.
+
+     Standard astronomy convention:
+       azimuth  0° = North, 90° = East, 180° = South, 270° = West
+       altitude 0° = horizon, 90° = zenith, negative = below horizon
+
+     Camera: looks WEST (azimuth ≈ 268°, roughly the bearing of the
+       Detroit skyline from Belle Isle Sunset Point), horizon at bottom.
+     Projection: equirectangular. Both axes are linear in degrees, sharing
+       the same pixel scale so shapes don't distort horizontally vs.
+       vertically. The RenCen (design fraction 0.22) sits at the camera
+       centerline in azimuth.
+     Field of view: pxPerDeg = CITY_W / 90, so 90° of azimuth spans the
+       city width. On 21:9 the viewport is wider than the city, so hFOV
+       naturally exceeds 90° there and more of the sky becomes visible.
+
+     Stars above alt ≈ CITY_W/pxPerDeg × height ratio get clipped off the
+     top of the canvas — that's a limitation of a flat rectilinear canvas
+     representing part of a hemisphere. We accept it: the interesting
+     constellations for this west-facing view (Big Dipper, Cassiopeia,
+     Boötes, the Summer Triangle low in the west) mostly sit in the
+     visible band. Overhead objects like Draco or Cepheus may exceed the
+     top on 1080p.
+     ═════════════════════════════════════════════════════════════════════ */
+  const CAMERA_AZ_DEG = 268;      // WSW — matches the RenCen bearing from Belle Isle
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     SKY PROJECTION — anchor-based, artistic-license.
+
+     The mapping is deliberately NOT a photographically accurate FOV. The
+     drawn skyline compresses the real 11° angular span of downtown Detroit
+     into ~25% of the canvas, so a strict astronomy projection would leave
+     the surrounding sky nearly empty. Instead we anchor the sky to specific
+     positions on the canvas:
+
+       Sky azRel   0°  →  canvas center (W/2)
+       Sky azRel -90°  →  X position of Ambassador Bridge Canadian tower
+                                                (design fraction -0.32)
+       Sky azRel +90°  →  X position of MacArthur Bridge east end
+                                                (design fraction +1.05)
+
+     Piecewise linear on each side of canvas center. Since the drawn city
+     is asymmetric relative to canvas center (Amb west sits some distance
+     LEFT of center, MacArthur east sits some distance RIGHT — the two
+     distances differ, and how they differ depends on viewport width),
+     the left and right halves of sky get different pixel scales.
+
+     Outside the ±90° range we LINEARLY EXTRAPOLATE at the same per-side
+     rate — so a wider viewport naturally shows more sky, filling the
+     extra canvas past the anchors with sky beyond 90° from center. The
+     only clipping is at ±180° (physically behind the observer) plus the
+     usual off-canvas / below-horizon checks.
+
+     Vertical scale uses the AVERAGE horizontal deg-per-pixel from the two
+     sides so constellation shapes don't get too squished. Altitude cap is
+     roughly horizon / pxPerDeg_v — comfortably above Polaris (42°) and
+     the Big Dipper (24-47°); near-zenith objects (Vega 84°, Draco 75°)
+     do clip off the top, an acceptable flat-canvas limitation.
+     ═════════════════════════════════════════════════════════════════════ */
+  const LEFT_ANCHOR_FRAC  = -0.32;   // Ambassador Bridge Canadian (west) tower
+  const RIGHT_ANCHOR_FRAC =  1.05;   // MacArthur Bridge east end (Belle Isle)
+  const SKY_HALF_DEG      = 90;      // Amb west = -90°, MacArthur east = +90°
+
+  function skyToScreen(altDeg, azDeg) {
+    // Signed azimuth relative to camera direction, wrapped to (-180, +180].
+    let azRel = azDeg - CAMERA_AZ_DEG;
+    while (azRel > 180) azRel -= 360;
+    while (azRel < -180) azRel += 360;
+
+    // Horizontal — piecewise linear about canvas center, with linear
+    // extrapolation beyond ±90° so wide viewports get extra sky past the
+    // anchors instead of empty margins.
+    const centerSx      = w / 2;
+    const leftAnchorSx  = X_DES(LEFT_ANCHOR_FRAC);
+    const rightAnchorSx = X_DES(RIGHT_ANCHOR_FRAC);
+    const pxPerDegLeft  = (centerSx - leftAnchorSx)  / SKY_HALF_DEG;   // > 0
+    const pxPerDegRight = (rightAnchorSx - centerSx) / SKY_HALF_DEG;   // > 0
+    const sx = azRel <= 0
+      ? centerSx + azRel * pxPerDegLeft         // azRel negative → sx moves left
+      : centerSx + azRel * pxPerDegRight;
+
+    // Vertical: uniform pxPerDeg from the average of the two horizontal
+    // rates. Uses layout.CITY_W scaled equivalents to stay consistent
+    // even when the anchors are partly off-canvas on narrow viewports.
+    const pxPerDegV = (pxPerDegLeft + pxPerDegRight) / 2;
+    const sy = horizon - altDeg * pxPerDegV;
+
+    // Only physically clip at ±180° (behind observer). The screen bounds
+    // and horizon check do the rest.
+    const visible = Math.abs(azRel) < 180 &&
+                    altDeg >= -0.5 &&
+                    sy >= -2 && sy <= horizon + 4 &&
+                    sx >= -20 && sx <= w + 20;
+    return { sx, sy, azRel, visible };
+  }
+
+  // vmag → brightness (0..1.3). Sirius is ~-1.5, brightest catalog stars
+  // like Vega ~0, faint ones ~4.5. A log-ish curve because human eye is
+  // logarithmic in perceived brightness.
+  function vmagToBrightness(vmag) {
+    // Star at vmag 0 → 1.20 brightness (very bright), vmag 1 → 1.00, vmag
+    // 2.5 → 0.75, vmag 4 → 0.55, vmag 5 → 0.42
+    const b = 1.20 - 0.18 * vmag;
+    return Math.max(0.35, Math.min(1.35, b));
+  }
   const flashEl = document.querySelector('.flash');
   const WIND = -0.20;
 
@@ -1152,7 +1465,8 @@
   function makeClouds() {
     const diag = Math.hypot(w, h);
     const base = diag / 1500;                       // viewport-independent scale
-    const n = Math.max(5, Math.min(14, Math.round(w / 130)));
+    const nBase = Math.max(5, Math.min(14, Math.round(w / 130)));
+    const n = Math.round(nBase * weather.cloudCount);
     clouds = [];
     for (let i = 0; i < n; i++) {
       const far = i % 2 === 0;
@@ -1162,12 +1476,13 @@
       const ch = 250 * sc;
       const yMin = ch * 0.35;
       const yMax = Math.max(yMin + 1, horizon * 0.62);
+      const baseA = far ? 0.45 + Math.random() * 0.2 : 0.7 + Math.random() * 0.25;
       clouds.push({
         x: Math.random() * (w + 400) - 200,
         y: yMin + Math.random() * (yMax - yMin),
         sc,
         sp: (far ? 0.05 : 0.13) + Math.random() * 0.08,
-        a: far ? 0.45 + Math.random() * 0.2 : 0.7 + Math.random() * 0.25,
+        a: baseA * weather.cloudAlpha,
         s: puffs[(Math.random() * puffs.length) | 0],
         far,
       });
@@ -1176,6 +1491,8 @@
 
   function bakeSkyline() {
     horizon = h * 0.55;
+    const L = computeLayout(w, h);
+    layout.CITY_W = L.CITY_W; layout.OX = L.OX; layout.S = L.S; layout.HZ = L.HZ;
     sky = document.createElement('canvas');
     sky.width = Math.floor(w * dpr); sky.height = Math.floor(h * dpr);
     const s = sky.getContext('2d');
@@ -1186,7 +1503,7 @@
     drawSkyline(s, w, h, horizon, 1);
   }
 
-  function onResize() {
+  function onResize() { withBakedRand(() => {
     bakeSkyline();
     if (!puffs.length) puffs = [bakeCloud(), bakeCloud(), bakeCloud()];
     makeClouds();
@@ -1198,7 +1515,8 @@
     ];
     rain = [];
     layers.forEach((L, depth) => {
-      for (let i = 0; i < L[0]; i++) {
+      const count = Math.round(L[0] * weather.rainDensity);
+      for (let i = 0; i < count; i++) {
         rain.push({
           depth,
           x: Math.random() * (w + 200) - 100,
@@ -1208,7 +1526,134 @@
         });
       }
     });
-  }
+
+    // ── STARS. Only on calmer presets; density scales with weather.starDensity.
+    //    All star positions are stored in DESIGN SPACE so they scale + pan with
+    //    the city the same way the buildings do — pinned to the ground, not
+    //    the viewport.
+    //
+    //    Field stars: {dx: fraction of CITY_W (can go negative for west sky),
+    //                  dy: fraction of horizon-Y (0=top of viewport, 1=horizon)}.
+    //    Rendered each frame as sx = X_DES(dx), sy = dy * horizon.
+    stars = [];
+    if (weather.starDensity > 0.01) {
+      // Fill a design-space region that's wider than the visible viewport on
+      // ultrawide, so wherever the viewer's window lands they see stars all
+      // the way to the frame edges. The sky-y band is the upper 78% of
+      // horizon (never on the water, never on the tallest buildings).
+      const DX_MIN = -1.0, DX_MAX = 1.4;   // covers well past the composition on all sides
+      const DY_MIN = 0.02, DY_MAX = 0.80;
+
+      // Density: ~1 star per (0.008 fraction * 0.02 sky-y-frac) = one per
+      // 0.00016 fraction-area. Over the (2.4 x 0.78) design region that's
+      // roughly ~1100 stars at full clear density, well above the old count.
+      const area = (DX_MAX - DX_MIN) * (DY_MAX - DY_MIN);
+      const nStars = Math.round(1100 * weather.starDensity * area / (2.4 * 0.78));
+      for (let i = 0; i < nStars; i++) {
+        const dx = DX_MIN + Math.random() * (DX_MAX - DX_MIN);
+        const dy = DY_MIN + Math.random() * (DY_MAX - DY_MIN);
+        stars.push({
+          x: X_DES(dx),                    // baked to screen coords: valid until next resize
+          y: dy * horizon,
+          br: 0.25 + Math.pow(Math.random(), 2.2) * 0.75,
+          tw: Math.random() * Math.PI * 2,
+          tSpeed: 0.3 + Math.random() * 1.4,
+          big: Math.random() < 0.06,
+          named: false,
+        });
+      }
+
+      // ── CONSTELLATIONS from real astronomy data.
+      //
+      // Positions come from sky-by-month.json (built by scripts/build-
+      // sky-data.js from the RA/Dec catalog): for each 1st-of-month at 2 AM
+      // local Detroit time, every star has precomputed altitude/azimuth
+      // for observer 42.34N / 82.98W.
+      //
+      // The renderer:
+      //   - picks the current calendar month
+      //   - projects every star (regardless of visibility) via skyToScreen
+      //   - only pushes stars/lines to the draw list if the endpoints are
+      //     within horizontal FOV and above the horizon
+      //
+      // sky data may still be loading on first paint — the fetch below
+      // reruns makeStars() when it lands. Field stars appear immediately;
+      // constellations appear after the ~100ms fetch.
+      window.__constellationLines = [];
+      window.__highlightLines = [];
+      if (window.__SKY_DATA__) {
+        // ?month=NN (01..12) forces a specific month for testing; without
+        // it, use the actual current calendar month.
+        const monthOverride = new URLSearchParams(location.search).get('month');
+        const monthKey = /^(0[1-9]|1[0-2])$/.test(monthOverride)
+          ? monthOverride
+          : String(new Date().getMonth() + 1).padStart(2, '0');
+        const monthData = window.__SKY_DATA__.months[monthKey];
+
+        // ── HIGHLIGHT CONSTELLATIONS. Names in this map get special
+        //    rendering: brighter/bigger star cores, warm gold connecting
+        //    lines, and a soft halo. Each entry can also set `maxAlt` to
+        //    slide the whole constellation DOWN as one unit if any of its
+        //    stars would clip off the top of the canvas.
+        //
+        //    Deliberately unlabeled — the visual gold treatment is the
+        //    only cue.
+        const HIGHLIGHTS = {
+          'Scorpius': { maxAlt: 55 },
+          'Cancer':   { maxAlt: 55 },
+        };
+
+        // altMax we can actually render on the current viewport, given the
+        // vertical pxPerDeg used by skyToScreen. Anything above this drops
+        // off the top of the canvas.
+        const altMaxOnCanvas = horizon /
+          (((w/2 - X_DES(LEFT_ANCHOR_FRAC)) / SKY_HALF_DEG +
+            (X_DES(RIGHT_ANCHOR_FRAC) - w/2) / SKY_HALF_DEG) / 2);
+
+        if (monthData) {
+          for (const cons of monthData.constellations) {
+            const hl = HIGHLIGHTS[cons.name];
+
+            // For highlighted constellations, compute an altitude offset
+            // that slides the whole constellation down until its highest
+            // star clears the canvas top (or the target maxAlt, whichever
+            // is more restrictive).
+            let altShift = 0;
+            if (hl) {
+              const consMaxAlt = Math.max(...cons.stars.map(s => s.altDeg));
+              const target = Math.min(altMaxOnCanvas - 4, hl.maxAlt);
+              if (consMaxAlt > target) altShift = consMaxAlt - target;
+            }
+
+            const px = cons.stars.map(s => {
+              const p = skyToScreen(s.altDeg - altShift, s.azDeg);
+              return { x: p.sx, y: p.sy, visible: p.visible, vmag: s.vmag, name: s.name };
+            });
+            for (const p of px) {
+              if (!p.visible) continue;
+              stars.push({
+                x: p.x, y: p.y,
+                br: vmagToBrightness(p.vmag) * (hl ? 1.25 : 1),
+                tw: Math.random() * Math.PI * 2,
+                tSpeed: 0.15 + Math.random() * 0.35,
+                big: true, named: true,
+                highlight: !!hl,
+              });
+            }
+            // Lines all use the same faint indigo style — highlighted
+            // constellations pop via their star markers, not their lines.
+            for (const [a, b] of cons.lines) {
+              if (!px[a].visible || !px[b].visible) continue;
+              window.__constellationLines.push({
+                x1: px[a].x, y1: px[a].y,
+                x2: px[b].x, y2: px[b].y,
+              });
+            }
+          }
+        }
+      }
+    }
+  }); }
 
   function strike() {
     if (!clouds.length) return;
@@ -1291,6 +1736,90 @@
     ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, w, h);
 
+    // ── SANITY CHECK LINES: mark sky angles -90°, 0°, +90° on canvas.
+    //    Only drawn when the URL query has ?debug=1. Temporary — remove
+    //    once the FOV mapping is confirmed.
+    if (new URLSearchParams(location.search).get('debug') === '1' && weather.starDensity > 0.01) {
+      const mark = (skyDeg, color, label) => {
+        // Simulate a star at azRel = skyDeg, alt = 0 to find the x coord.
+        // Pass az = CAMERA_AZ_DEG + skyDeg so azRel = skyDeg after subtraction.
+        const p = skyToScreen(0, CAMERA_AZ_DEG + skyDeg);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(p.sx, 0); ctx.lineTo(p.sx, horizon); ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.font = '16px monospace';
+        ctx.fillText(label, p.sx + 4, 20);
+      };
+      mark(-90, 'rgba(120,255,120,0.9)', '-90° (Amb west)');
+      mark(  0, 'rgba(255,80,80,0.9)',   '0° (center)');
+      mark(+90, 'rgba(120,180,255,0.9)', '+90° (MacArthur east)');
+    }
+
+    // ── STARS. Behind everything, twinkling gently. Only drawn when the
+    //    active weather preset has non-zero starDensity (clear / wisps).
+    //    Named constellation stars are rendered bigger with a wider halo
+    //    and connected by faint lines so the shapes actually read.
+    if (stars.length) {
+      ctx.globalCompositeOperation = 'source-over';
+
+      // Constellation connecting lines FIRST, so stars draw on top of them.
+      const lines = window.__constellationLines || [];
+      if (lines.length) {
+        // Faint indigo lines for regular constellations — visible but
+        // recessive, so the birthday highlights read as louder against
+        // the same background.
+        ctx.strokeStyle = 'rgba(200,215,255,0.13)';
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        for (const L of lines) {
+          ctx.moveTo(L.x1, L.y1);
+          ctx.lineTo(L.x2, L.y2);
+        }
+        ctx.stroke();
+      }
+
+      for (const st of stars) {
+        const tw = 0.72 + 0.28 * Math.sin(t * st.tSpeed + st.tw);
+        const a = Math.min(1, st.br * tw);
+        if (st.highlight) {
+          // HIGHLIGHTED constellation star: warm gold, larger, with an outer
+          // amber halo so it visibly pops from the field.
+          ctx.fillStyle = 'rgba(255,205,110,' + (a * 0.22) + ')';
+          ctx.beginPath(); ctx.arc(st.x, st.y, 6.5, 0, 7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,215,130,' + (a * 0.5) + ')';
+          ctx.beginPath(); ctx.arc(st.x, st.y, 3.4, 0, 7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,240,200,' + a + ')';
+          ctx.fillRect(st.x - 1.3, st.y - 1.3, 3, 3);
+          // Cross glint, warm
+          ctx.fillStyle = 'rgba(255,220,150,' + (a * 0.4) + ')';
+          ctx.fillRect(st.x - 6, st.y - 0.35, 12, 0.9);
+          ctx.fillRect(st.x - 0.35, st.y - 6, 0.9, 12);
+        } else if (st.named) {
+          // NAMED constellation star: bigger core, larger warm halo, and a
+          // second thinner cross-glint to sell "bright star".
+          ctx.fillStyle = 'rgba(255,250,235,' + (a * 0.18) + ')';
+          ctx.beginPath(); ctx.arc(st.x, st.y, 4.5, 0, 7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,250,235,' + (a * 0.35) + ')';
+          ctx.beginPath(); ctx.arc(st.x, st.y, 2.4, 0, 7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,252,240,' + a + ')';
+          ctx.fillRect(st.x - 1, st.y - 1, 2.4, 2.4);
+          ctx.fillStyle = 'rgba(255,250,235,' + (a * 0.28) + ')';
+          ctx.fillRect(st.x - 4, st.y - 0.3, 8, 0.7);
+          ctx.fillRect(st.x - 0.3, st.y - 4, 0.7, 8);
+        } else if (st.big) {
+          // Occasional bright field star
+          ctx.fillStyle = 'rgba(255,250,235,' + (a * 0.25) + ')';
+          ctx.beginPath(); ctx.arc(st.x, st.y, 2.2, 0, 7); ctx.fill();
+          ctx.fillStyle = 'rgba(255,250,235,' + a + ')';
+          ctx.fillRect(st.x - 0.5, st.y - 0.5, 1.6, 1.6);
+        } else {
+          ctx.fillStyle = 'rgba(232,232,240,' + a + ')';
+          ctx.fillRect(st.x, st.y, 1, 1);
+        }
+      }
+    }
+
     ctx.globalCompositeOperation = 'lighter';           // bolts, behind the clouds
     for (const b of bolts) strokeBolt(b, false);
 
@@ -1314,6 +1843,14 @@
       ctx.globalAlpha = 1;
     }
 
+    // Sky-only mode (?skyonly=1) skips ALL city + water rendering so the
+    // constellations can be verified against reference charts without the
+    // buildings occluding the low-altitude stars. Temporary debug aid.
+    const SKY_ONLY = new URLSearchParams(location.search).get('skyonly') === '1';
+    if (SKY_ONLY) {
+      return;   // nothing else to draw
+    }
+
     ctx.globalCompositeOperation = 'source-over';       // the city occludes the storm
     ctx.drawImage(sky, 0, 0, w, h);
 
@@ -1332,10 +1869,17 @@
     // The river: slice the skyline back row by row, each row offset by a
     // travelling sine. That horizontal smear is what water does to light.
     const SLICE = 3;
+    // Weather-driven wobble: calm water is nearly mirror-still, chaotic water
+    // smears the reflection heavily. Speed also scales — a calm night has
+    // slow rolling ripples instead of the storm's fast chop.
+    const wobMul = weather.wobble;
+    const wobSpeed = 0.4 + 1.2 * wobMul;
+    // Calm water: reflection is sharper (higher alpha).
+    const reflAlphaMul = wobMul < 0.4 ? 1.35 : 1.0;
     for (let y = horizon; y < h; y += SLICE) {
       const d = (y - horizon) / (h - horizon);
-      const wob = Math.sin(y * 0.05 + t * 1.6) * (1.5 + d * 16);
-      ctx.globalAlpha = 0.5 * (1 - d * 0.7);
+      const wob = Math.sin(y * 0.05 + t * wobSpeed) * (1.5 + d * 16) * wobMul;
+      ctx.globalAlpha = Math.min(0.85, 0.5 * (1 - d * 0.7) * reflAlphaMul);
       ctx.drawImage(sky,
         0, Math.floor((2 * horizon - y - SLICE) * dpr), sky.width, Math.floor(SLICE * dpr),
         wob, y, w, SLICE + 1);
@@ -1347,13 +1891,18 @@
     for (const b of bolts) strokeBolt(b, true);          // lightning in the water
     ctx.globalAlpha = 1;
 
-    ctx.strokeStyle = 'rgba(201,162,75,0.05)';           // chop
+    // Chop lines on the water — density and brightness scale with weather.
+    // Calm water has almost no chop; storm water is dense with it.
+    const chopAlpha = 0.05 * (0.5 + weather.chopIntensity * 1.5);
+    const chopStep = weather.chopIntensity < 0.3 ? 14 : 7;    // fewer lines when calm
+    const chopSpeed = weather.chopIntensity < 0.3 ? 4 : 12;
+    ctx.strokeStyle = 'rgba(201,162,75,' + chopAlpha + ')';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let y = horizon + 4; y < h; y += 7) {
+    for (let y = horizon + 4; y < h; y += chopStep) {
       const d = (y - horizon) / (h - horizon);
       const seg = 20 + d * 90;
-      for (let x = (t * 12 + y * 7) % seg - seg; x < w; x += seg + 26) {
+      for (let x = (t * chopSpeed + y * 7) % seg - seg; x < w; x += seg + 26) {
         ctx.moveTo(x, y);
         ctx.lineTo(x + seg * (0.3 + Math.random() * 0.4), y);
       }
@@ -1382,14 +1931,18 @@
       bolts[i].life -= bolts[i].near ? 0.11 : 0.17;
       if (bolts[i].life <= 0) bolts.splice(i, 1);
     }
-    nextBolt -= 1 / 30;
-    if (nextBolt <= 0) {
-      strike();
-      if (Math.random() < 0.35) strike();          // occasional double
-      // Fewer clouds live on a narrow screen, so strikes would be rarer there
-      // for no good reason. Shorten the gap when the viewport is narrow.
-      const narrow = w < 700;
-      nextBolt = (narrow ? 1.6 : 2.2) + Math.random() * (narrow ? 3.4 : 5);
+    // Lightning strike scheduling — only on presets with thunder enabled,
+    // and with the strike interval scaled by weather.thunderRate (rate 1.0
+    // is the original storm cadence; 0.5 stretches the gap ~2x).
+    if (weather.thunderRate > 0) {
+      nextBolt -= 1 / 30;
+      if (nextBolt <= 0) {
+        strike();
+        if (Math.random() < 0.35 * weather.thunderRate) strike();
+        const narrow = w < 700;
+        const base = (narrow ? 1.6 : 2.2) + Math.random() * (narrow ? 3.4 : 5);
+        nextBolt = base / weather.thunderRate;
+      }
     }
   }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
