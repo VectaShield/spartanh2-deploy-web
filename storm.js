@@ -1269,13 +1269,28 @@
   window.__SKY_DATA__ = null;
   if (weather.starDensity > 0.01) {
     fetch('/weather/sky-by-month.json')
-      .then(r => r.ok ? r.json() : null)
+      .then(r => {
+        if (!r.ok) {
+          // Loud failure. Field stars still render without this data, so
+          // the site keeps working — but the constellations silently
+          // disappearing is exactly the class of bug we shipped once
+          // already (build script wasn't copying the file), so surface it.
+          console.warn('[storm.js] sky-by-month.json fetch failed:',
+                       r.status, r.statusText, '- constellations will not render');
+          return null;
+        }
+        return r.json();
+      })
       .then(data => {
+        if (!data) return;
         window.__SKY_DATA__ = data;
         // Re-generate stars now that constellation data is available.
         if (typeof onResize === 'function') onResize();
       })
-      .catch(() => { /* silent: field stars still work without the data */ });
+      .catch(err => {
+        console.warn('[storm.js] sky-by-month.json fetch error:', err,
+                     '- constellations will not render');
+      });
   }
 
   const cv = document.getElementById('bgc');
