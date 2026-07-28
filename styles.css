@@ -104,6 +104,20 @@ body {
     margin-left: 4px;
 }
 
+.wordmark-heading {
+    letter-spacing: 0;
+    line-height: 0;
+    margin: 0.2em 0;
+}
+.wordmark {
+    display: block;
+    margin: 0 auto;
+    width: min(100%, clamp(190px, 62vw, 400px));
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.7));
+}
+
 .tagline {
     text-align: center;
     color: var(--muted);
