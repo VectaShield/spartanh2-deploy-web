@@ -69,6 +69,21 @@
 </IfModule>
 
 # ─────────────────────────────────────────────────────────────
+# Clean URLs — /contact serves /contact.html, /direct serves
+# /direct.html, etc. Internal rewrite (no redirect), so the
+# address bar keeps the clean URL. Only fires when the request
+# isn't an existing file/dir AND the .html counterpart exists,
+# so real assets and unknown paths (→ 404) are untouched.
+# ─────────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+    RewriteRule ^([^.]+?)/?$ /$1.html [L]
+</IfModule>
+
+# ─────────────────────────────────────────────────────────────
 # Custom error pages
 # ─────────────────────────────────────────────────────────────
 ErrorDocument 404 /404.html
