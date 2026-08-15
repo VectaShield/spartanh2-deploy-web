@@ -18,6 +18,12 @@
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok. Editing this file by hand still works.",
   "videos": [
     {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7674319703766076703",
+      "date": "2026-08-15",
+      "views": 127,
+      "note": "Woodward Dream Cruise gets crazy after dark, arrests, crashes…"
+    },
+    {
       "url": "https://www.tiktok.com/@spartan.h2/video/7670109306167020830",
       "date": "2026-08-04",
       "views": 88800,
@@ -38,7 +44,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
       "date": "2026-07-27",
-      "views": 9706,
+      "views": 9708,
       "note": "He's got TWO backpacks!"
     }
   ]
