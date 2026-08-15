@@ -15,10 +15,31 @@
     "copy is mandatory. A missing thumb degrades to a styled dark card.",
     "Push to main; the site deploys automatically in ~40 seconds."
   ],
+  "_auto": "Auto-refreshed every 6 hours by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok. Editing this file by hand still works.",
   "videos": [
-    { "url": "https://www.tiktok.com/@spartan.h2/video/7670109306167020830", "date": "2026-08-04", "views": 88800, "note": "#DetroitNinja goes down on the Gordie Howe Bridge" },
-    { "url": "https://www.tiktok.com/@spartan.h2/video/7667101623184854285", "date": "2026-07-27", "views": 84100, "note": "Stealing Morgan Wallen's girls" },
-    { "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357", "date": "2026-07-27", "views": 9704, "note": "He's got TWO backpacks!" },
-    { "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870", "date": "2026-07-30", "views": 8953, "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride" }
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7670109306167020830",
+      "date": "2026-08-04",
+      "views": 88800,
+      "note": "#DetroitNinja goes down on the Gordie Howe Bridge"
+    },
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870",
+      "date": "2026-07-30",
+      "views": 8953,
+      "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride"
+    },
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7667101623184854285",
+      "date": "2026-07-27",
+      "views": 84100,
+      "note": "Stealing Morgan Wallen's girls"
+    },
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
+      "date": "2026-07-27",
+      "views": 9705,
+      "note": "He's got TWO backpacks!"
+    }
   ]
 }
