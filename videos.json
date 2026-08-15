@@ -1,0 +1,24 @@
+{
+  "_howto": [
+    "HOW TO ADD A VIDEO: copy the TikTok video URL and add an object to the",
+    "'videos' array below: {\"url\": \"<paste>\", \"date\": \"YYYY-MM-DD\",",
+    "\"views\": 88800, \"note\": \"one line about it\"}.",
+    "'views' is a plain number — the site formats it (88800 -> 88.8K) and",
+    "automatically pins the three highest-viewed videos to the top of the",
+    "feed. There is no 'pinned' flag to maintain; update the numbers when",
+    "you feel like it and the pins follow.",
+    "The upload date is encoded in the video ID if you are unsure:",
+    "new Date(Number(BigInt(id) >> 32n) * 1000).",
+    "THUMBNAIL (required): grab thumbnail_url from",
+    "https://www.tiktok.com/oembed?url=<video-url> and save a ~360px wide",
+    "webp at thumbs/<video-id>.webp — TikTok's CDN URLs expire, so a local",
+    "copy is mandatory. A missing thumb degrades to a styled dark card.",
+    "Push to main; the site deploys automatically in ~40 seconds."
+  ],
+  "videos": [
+    { "url": "https://www.tiktok.com/@spartan.h2/video/7670109306167020830", "date": "2026-08-04", "views": 88800, "note": "#DetroitNinja goes down on the Gordie Howe Bridge" },
+    { "url": "https://www.tiktok.com/@spartan.h2/video/7667101623184854285", "date": "2026-07-27", "views": 84100, "note": "Stealing Morgan Wallen's girls" },
+    { "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357", "date": "2026-07-27", "views": 9704, "note": "He's got TWO backpacks!" },
+    { "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870", "date": "2026-07-30", "views": 8953, "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride" }
+  ]
+}
