@@ -35,7 +35,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/SpartanH2.jpg">
     <meta name="twitter:image:alt" content="SpartanH2, motorcycle content creator">
 
-    <link rel="stylesheet" href="styles.css?v=20260815035011">
+    <link rel="stylesheet" href="styles.css?v=20260815042858">
     <link rel="icon" type="image/png" href="favicon-64.png">
     <link rel="preload" href="/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -81,7 +81,16 @@
             "https://x.com/Spartan_H2",
             "https://www.facebook.com/profile.php?id=61591693924495",
             "https://www.snapchat.com/add/Spartan_H2"
-          ]
+          ],
+          "memberOf": { "@id": "https://themotolegion.com/#organization" }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://themotolegion.com/#organization",
+          "name": "The Moto Legion",
+          "url": "https://themotolegion.com/",
+          "description": "The Moto Legion is a southeast Michigan motorcycle content collective. SpartanH2 is a member.",
+          "member": { "@id": "https://spartanh2.com/#person" }
         },
         {
           "@type": "WebSite",
@@ -103,6 +112,16 @@
 
         <h1 class="name wordmark-heading"><img src="SpartanH2-wordmark.svg" alt="SpartanH2" class="wordmark" width="1188" height="200"></h1>
         <p class="tagline">Suit up. Helmet on. Ride hard.</p>
+
+        <!-- Membership credit. Deliberately understated visually, but fully
+             machine-readable: the JSON-LD above carries Person.memberOf ->
+             The Moto Legion Organization, and this link repeats it in the
+             DOM so a crawler that only reads markup still sees the tie. -->
+        <p class="legion-member">
+            Member of
+            <a href="https://themotolegion.com/" target="_blank" rel="noopener external"
+               title="The Moto Legion — southeast Michigan motorcycle collective">The Moto Legion</a>
+        </p>
 
         <section class="links">
             <h2 class="section-title">Support</h2>
@@ -165,14 +184,6 @@
             </div>
         </section>
 
-        <section class="about-caption" aria-label="About SpartanH2">
-            <p>
-                <strong>SpartanH2</strong> is a southeast Michigan motorcycle content creator.
-                POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.
-                <a href="about.html">More about SpartanH2 &rarr;</a>
-            </p>
-        </section>
-
         <!-- Latest TikTok uploads. Hidden until feed.js has data so the
              section never flashes an empty heading; feed.js only fetches
              once the page is idle and the section nears the viewport. -->
@@ -190,6 +201,15 @@
             </p>
         </noscript>
 
+        <section class="about-caption">
+            <h2 class="section-title">The Rider</h2>
+            <p>
+                <strong>SpartanH2</strong> is a southeast Michigan motorcycle content creator.
+                POV rides, group rides, bike nights, and rider culture across YouTube, Instagram, TikTok, Rumble, X, Facebook, Snapchat, and Discord.
+                <a href="about.html">More about SpartanH2 &rarr;</a>
+            </p>
+        </section>
+
         <footer class="footer">
             <a href="https://SpartanH2.com">SpartanH2.com</a>
             <span>© <span id="year"></span> SpartanH2</span>
@@ -197,9 +217,9 @@
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-    <script src="storm.js?v=20260815035011" defer></script>
+    <script src="storm.js?v=20260815042858" defer></script>
     <!-- Last script on the page: the feed is the lowest-priority thing here
          and defers its own network work until after load. -->
-    <script src="feed.js?v=20260815035011" defer></script>
+    <script src="feed.js?v=20260815042858" defer></script>
 </body>
 </html>
