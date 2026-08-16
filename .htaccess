@@ -81,6 +81,18 @@
 </IfModule>
 
 # ─────────────────────────────────────────────────────────────
+# /discord vanity redirect. 302 on purpose: Discord invites can
+# rotate, and a 301 gets cached permanently by browsers so old
+# visitors would keep landing on a dead invite. NOTE: a Hostinger
+# panel redirect for this path may exist and take precedence —
+# if /discord still 301s on live, delete the panel rule.
+# ─────────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^discord/?$ https://discord.gg/fz67hjDnPW [R=302,L]
+</IfModule>
+
+# ─────────────────────────────────────────────────────────────
 # Clean URLs — /contact serves /contact.html, /direct serves
 # /direct.html, etc. Internal rewrite (no redirect), so the
 # address bar keeps the clean URL. Only fires when the request
