@@ -69,6 +69,18 @@
 </IfModule>
 
 # ─────────────────────────────────────────────────────────────
+# Canonical host — www.spartanh2.com 301s to the apex. Without
+# this the site serves identically at both hostnames and search
+# engines see duplicate content; every canonical/og:url/sitemap
+# entry already declares the apex, so 301 (permanent) is correct.
+# ─────────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# ─────────────────────────────────────────────────────────────
 # Clean URLs — /contact serves /contact.html, /direct serves
 # /direct.html, etc. Internal rewrite (no redirect), so the
 # address bar keeps the clean URL. Only fires when the request
