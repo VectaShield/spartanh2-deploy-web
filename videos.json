@@ -18,9 +18,21 @@
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok. Editing this file by hand still works.",
   "videos": [
     {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7674562373486693663",
+      "date": "2026-08-16",
+      "views": 0,
+      "note": "Pt2 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
+    },
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7674561508369550623",
+      "date": "2026-08-16",
+      "views": 7,
+      "note": "Part 1 Free Will Rides Dream Cruise Woodward Dream Cruise get…"
+    },
+    {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674319703766076703",
       "date": "2026-08-15",
-      "views": 4448,
+      "views": 4571,
       "note": "Woodward Dream Cruise gets crazy after dark, arrests, crashes…"
     },
     {
@@ -32,7 +44,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870",
       "date": "2026-07-30",
-      "views": 8981,
+      "views": 8982,
       "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride"
     },
     {
@@ -44,7 +56,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
       "date": "2026-07-27",
-      "views": 9731,
+      "views": 9733,
       "note": "He's got TWO backpacks!"
     }
   ]
