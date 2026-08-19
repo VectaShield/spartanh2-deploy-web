@@ -15,7 +15,10 @@
     "copy is mandatory. A missing thumb degrades to a styled dark card.",
     "Push to main; the site deploys automatically in ~40 seconds."
   ],
-  "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok. Editing this file by hand still works.",
+  "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
+  "_lastRefresh": {
+    "at": "2026-08-19T21:16:00.934Z"
+  },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
@@ -32,7 +35,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674562373486693663",
       "date": "2026-08-16",
-      "views": 2406,
+      "views": 2407,
       "note": "Pt2 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
