@@ -17,19 +17,19 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-08-24T09:07:26.731Z"
+    "at": "2026-08-24T15:58:23.835Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 655,
+      "views": 663,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2201,
+      "views": 2203,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
@@ -77,7 +77,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
       "date": "2026-07-27",
-      "views": 9788,
+      "views": 9789,
       "note": "He's got TWO backpacks!"
     }
   ]
