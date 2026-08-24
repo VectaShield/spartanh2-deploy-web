@@ -26,7 +26,7 @@
     <meta name="twitter:description" content="Partnered creators and brands riding with SpartanH2.">
     <meta name="twitter:image" content="https://spartanh2.com/og-image.png?v=5">
 
-    <link rel="stylesheet" href="styles.css?v=20260824215203">
+    <link rel="stylesheet" href="styles.css?v=20260824220621">
     <link rel="icon" type="image/png" href="favicon-64.png">
     <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16">
     <link rel="preload" href="/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -67,6 +67,7 @@
         //  Fields per entry (all optional except name):
         //    name          : display name (required)
         //    brandColor    : hex used for the name text + top accent stripe
+        //    nameImg       : optional wordmark image rendered instead of the text name (alt stays p.name)
         //    avatar        : image path/URL, OR omit to use SVG initials fallback
         //    tagline       : short one-liner
         //    since         : year they became a partner (number or string)
@@ -80,25 +81,9 @@
         // ═══════════════════════════════════════════════════════════════
         const PARTNERS = [
             {
-                name: 'Freewill Ridez',
-                brandColor: '#DA291C', // 485C red from his merch line's most-used ink
-                avatar: 'freewillridez-220.webp',
-                tagline: 'Group ridez out of Pontiac — 75+ bikes deep.',
-                since: 2026,
-                region: 'US',
-                bike: 'GSX-R 1000',
-                disciplines: ['Street', 'Group Rides'],
-                categories: ['Creator'],
-                socials: [
-                    { label: 'TikTok',   url: 'https://www.tiktok.com/@freewillflow',                 iconId: 'tiktok' },
-                    { label: 'Facebook', url: 'https://www.facebook.com/groups/1289920255732814',    iconId: 'facebook' },
-                ],
-                cta: { label: 'Visit Site', url: 'https://freewillridez.com' },
-                kind: 'creator',
-            },
-            {
                 name: 'zh.who',
-                brandColor: '#c9a24b', // placeholder : confirm real brand color (photo has red + teal hoodie print)
+                brandColor: '#d3122e', // Legion tile --zh-crimson (his site's primary accent)
+                nameImg: 'so-zhwho-wordmark.svg',
                 avatar: 'zh-who-sm.webp?v=3',
                 tagline: 'Detroit biketok, street & strip.',
                 since: 2024,
@@ -111,6 +96,24 @@
                     { label: 'Instagram', url: 'https://www.instagram.com/zh.who/',   iconId: 'instagram' },
                 ],
                 cta: { label: 'Visit Site', url: 'https://zhwho.com' },
+                kind: 'creator',
+            },
+            {
+                name: 'Freewill Ridez',
+                brandColor: '#e0a521', // Legion tile --fwr-gold (his actual accent there)
+                nameImg: 'so-freewillridez-wordmark.webp',
+                avatar: 'freewillridez-220.webp',
+                tagline: 'Group ridez out of Pontiac — 75+ bikes deep.',
+                since: 2026,
+                region: 'US',
+                bike: 'GSX-R 1000',
+                disciplines: ['Street', 'Group Rides'],
+                categories: ['Creator'],
+                socials: [
+                    { label: 'TikTok',   url: 'https://www.tiktok.com/@freewillflow',                 iconId: 'tiktok' },
+                    { label: 'Facebook', url: 'https://www.facebook.com/groups/1289920255732814',    iconId: 'facebook' },
+                ],
+                cta: { label: 'Visit Site', url: 'https://freewillridez.com' },
                 kind: 'creator',
             },
         ];
@@ -223,7 +226,9 @@
                         <div class="partner-avatar-ring">
                             <img class="partner-avatar" src="${avatar}" alt="${esc(p.name)}" loading="lazy">
                         </div>
-                        <h3 class="partner-name" style="color:${color};">${esc(p.name)}</h3>
+                        ${p.nameImg
+                            ? `<h3 class="partner-name"><img class="partner-name-img" src="${esc(p.nameImg)}" alt="${esc(p.name)}" loading="lazy"></h3>`
+                            : `<h3 class="partner-name" style="color:${color};">${esc(p.name)}</h3>`}
                         ${metaLine}
                         <p class="partner-tagline">${esc(p.tagline || '')}</p>
                         ${chipsRow}
@@ -236,6 +241,6 @@
 
         renderPartners();
     </script>
-    <script src="storm.js?v=20260824215203" defer></script>
+    <script src="storm.js?v=20260824220621" defer></script>
 </body>
 </html>
