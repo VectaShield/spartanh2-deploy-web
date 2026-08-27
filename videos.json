@@ -17,43 +17,43 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-08-27T14:20:32.205Z"
+    "at": "2026-08-27T23:49:16.820Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7678568174312377631",
       "date": "2026-08-27",
-      "views": 2143,
+      "views": 5564,
       "note": "ARRESTED at the Cars and Cannolis Harper Cruise in Saint Clai…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 4047,
+      "views": 4099,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2293,
+      "views": 2335,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674563368492993823",
       "date": "2026-08-16",
-      "views": 1522,
+      "views": 1549,
       "note": "Pt3 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674562373486693663",
       "date": "2026-08-16",
-      "views": 2551,
+      "views": 2594,
       "note": "Pt2 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674561508369550623",
       "date": "2026-08-16",
-      "views": 10900,
+      "views": 11000,
       "note": "Part 1 Free Will Rides Dream Cruise Woodward Dream Cruise get…"
     },
     {
@@ -71,19 +71,19 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870",
       "date": "2026-07-30",
-      "views": 9043,
+      "views": 9056,
       "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667101623184854285",
       "date": "2026-07-27",
-      "views": 84300,
+      "views": 84400,
       "note": "Stealing Morgan Wallen's girls"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
       "date": "2026-07-27",
-      "views": 9806,
+      "views": 9815,
       "note": "He's got TWO backpacks!"
     }
   ]
