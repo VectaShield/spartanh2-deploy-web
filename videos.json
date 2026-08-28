@@ -17,37 +17,37 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-08-28T11:29:09.473Z"
+    "at": "2026-08-28T22:25:13.895Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7678568174312377631",
       "date": "2026-08-27",
-      "views": 8293,
+      "views": 27400,
       "note": "ARRESTED at the Cars and Cannolis Harper Cruise in Saint Clai…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 4129,
+      "views": 4169,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2357,
+      "views": 2399,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674563368492993823",
       "date": "2026-08-16",
-      "views": 1560,
+      "views": 1583,
       "note": "Pt3 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674562373486693663",
       "date": "2026-08-16",
-      "views": 2620,
+      "views": 2649,
       "note": "Pt2 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
@@ -71,7 +71,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7668431413955267870",
       "date": "2026-07-30",
-      "views": 9061,
+      "views": 9077,
       "note": "Stealing Morgan Wallen's girls, part 2 — backpack ride"
     },
     {
@@ -83,7 +83,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667130369728089357",
       "date": "2026-07-27",
-      "views": 9821,
+      "views": 9835,
       "note": "He's got TWO backpacks!"
     }
   ]
