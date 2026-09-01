@@ -35,7 +35,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/og-image.png?v=5">
     <meta name="twitter:image:alt" content="SpartanH2 — southeast Michigan motorcycle content creator">
 
-    <link rel="stylesheet" href="styles.css?v=20260831201001">
+    <link rel="stylesheet" href="styles.css?v=20260901013604">
     <link rel="icon" type="image/png" href="favicon-64.png">
     <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16">
     <link rel="preload" href="/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -185,6 +185,19 @@
             </div>
         </section>
 
+        <!-- Next event: a single compact strip, hand-edited when something is
+             coming up (date badge + details + venue, links to the event site).
+             Pattern ported from FreewillRidez.com. Remove after the event. -->
+        <a class="event-tile" href="https://www.importexpo.net" target="_blank" rel="noopener"
+           aria-label="ImportExpo Detroit featuring Bike Section, Saturday September 19, 5 to 10 PM, Huntington Place. The SpartanH2 H2 will be on display. Info and tickets at importexpo.net">
+            <span class="event-date"><span class="event-mon">Sep</span><span class="event-day">19</span></span>
+            <span class="event-info">
+                <span class="event-name">ImportExpo Detroit</span>
+                <span class="event-times">5 PM to 10 PM &middot; the H2 on display &middot; f/ Bike Section</span>
+            </span>
+            <span class="event-where">Huntington Place&nbsp;<span class="event-arrow">&rarr;</span></span>
+        </a>
+
         <!-- Latest TikTok uploads. Hidden until feed.js has data so the
              section never flashes an empty heading; feed.js only fetches
              once the page is idle and the section nears the viewport. -->
@@ -218,9 +231,9 @@
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-    <script src="storm.js?v=20260831201001" defer></script>
+    <script src="storm.js?v=20260901013604" defer></script>
     <!-- Last script on the page: the feed is the lowest-priority thing here
          and defers its own network work until after load. -->
-    <script src="feed.js?v=20260831201001" defer></script>
+    <script src="feed.js?v=20260901013604" defer></script>
 </body>
 </html>
