@@ -17,37 +17,49 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-08-31T20:09:38.709Z"
+    "at": "2026-09-01T05:16:05.017Z"
   },
   "videos": [
     {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7680407256650779935",
+      "date": "2026-09-01",
+      "views": 272,
+      "note": "Fully Suited Up! Watch the H2 time travel to the Group Ride.…"
+    },
+    {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7680347177130020126",
+      "date": "2026-08-31",
+      "views": 105,
+      "note": "See at on the 19th of September at Huntington Place, Detroit.…"
+    },
+    {
       "url": "https://www.tiktok.com/@spartan.h2/video/7678568174312377631",
       "date": "2026-08-27",
-      "views": 127200,
+      "views": 129000,
       "note": "ARRESTED at the Cars and Cannolis Harper Cruise in Saint Clai…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 4313,
+      "views": 4330,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2503,
+      "views": 2512,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674563368492993823",
       "date": "2026-08-16",
-      "views": 1635,
+      "views": 1642,
       "note": "Pt3 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674562373486693663",
       "date": "2026-08-16",
-      "views": 2750,
+      "views": 2762,
       "note": "Pt2 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
@@ -59,7 +71,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674319703766076703",
       "date": "2026-08-15",
-      "views": 14300,
+      "views": 14400,
       "note": "Woodward Dream Cruise gets crazy after dark, arrests, crashes…"
     },
     {
