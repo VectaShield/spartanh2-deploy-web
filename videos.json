@@ -17,25 +17,31 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-09-11T04:46:56.152Z"
+    "at": "2026-09-11T09:47:30.072Z"
   },
   "videos": [
     {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7684134926563757342",
+      "date": "2026-09-11",
+      "views": 140,
+      "note": "This event is free. Start: SPEEDWAY 2980 JOHN R RD TROY, MI 4…"
+    },
+    {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682971179346300190",
       "date": "2026-09-08",
-      "views": 29000,
+      "views": 29100,
       "note": "UPDATE 2 ARREST. Lawsuit incomming. He was arrested at the Ca…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682552567355788575",
       "date": "2026-09-06",
-      "views": 46400,
+      "views": 46600,
       "note": "ARREST UPDATE. Lawsuit incoming. He was arrested at the Cars…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7681459595352558878",
       "date": "2026-09-03",
-      "views": 641,
+      "views": 643,
       "note": "SpartanH2 x EMmeet VIP"
     },
     {
@@ -59,19 +65,19 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 4755,
+      "views": 4756,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2930,
+      "views": 2932,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674563368492993823",
       "date": "2026-08-16",
-      "views": 1873,
+      "views": 1874,
       "note": "Pt3 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
@@ -107,7 +113,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7667101623184854285",
       "date": "2026-07-27",
-      "views": 85500,
+      "views": 85600,
       "note": "Stealing Morgan Wallen's girls"
     },
     {
