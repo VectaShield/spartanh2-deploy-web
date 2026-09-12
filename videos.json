@@ -17,31 +17,37 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-09-12T13:37:46.161Z"
+    "at": "2026-09-12T19:25:11.326Z"
   },
   "videos": [
     {
+      "url": "https://www.tiktok.com/@spartan.h2/video/7684728081977855263",
+      "date": "2026-09-12",
+      "views": 69,
+      "note": "Group ride video coming soon! HUGE TURNOUT 🏴‍☠️ Moto Legion"
+    },
+    {
       "url": "https://www.tiktok.com/@spartan.h2/video/7684134926563757342",
       "date": "2026-09-11",
-      "views": 364,
+      "views": 403,
       "note": "This event is free. Start: SPEEDWAY 2980 JOHN R RD TROY, MI 4…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682971179346300190",
       "date": "2026-09-08",
-      "views": 31500,
+      "views": 31600,
       "note": "UPDATE 2 ARREST. Lawsuit incomming. He was arrested at the Ca…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682552567355788575",
       "date": "2026-09-06",
-      "views": 75500,
+      "views": 82700,
       "note": "ARREST UPDATE. Lawsuit incoming. He was arrested at the Cars…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7681459595352558878",
       "date": "2026-09-03",
-      "views": 687,
+      "views": 700,
       "note": "SpartanH2 x EMmeet VIP"
     },
     {
@@ -53,7 +59,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7680347177130020126",
       "date": "2026-08-31",
-      "views": 622,
+      "views": 631,
       "note": "See at on the 19th of September at Huntington Place, Detroit.…"
     },
     {
@@ -65,13 +71,13 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 4799,
+      "views": 4811,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7674564326690131231",
       "date": "2026-08-16",
-      "views": 2983,
+      "views": 2998,
       "note": "Pt4 Woodward Dream Cruise FreeWillRidez Group ride Woodward D…"
     },
     {
