@@ -17,13 +17,13 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-09-23T23:45:03.941Z"
+    "at": "2026-09-24T10:06:32.003Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7687781505409617182",
       "date": "2026-09-21",
-      "views": 381,
+      "views": 389,
       "note": "🏴‍☠️ Moto Show"
     },
     {
@@ -47,13 +47,13 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682552567355788575",
       "date": "2026-09-06",
-      "views": 130500,
+      "views": 131000,
       "note": "ARREST UPDATE. Lawsuit incoming. He was arrested at the Cars…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7681459595352558878",
       "date": "2026-09-03",
-      "views": 830,
+      "views": 832,
       "note": "SpartanH2 x EMmeet VIP"
     },
     {
@@ -77,7 +77,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7676989391042055454",
       "date": "2026-08-22",
-      "views": 5060,
+      "views": 5066,
       "note": "Crashed Motorcycle at Milan Dragway! Hoping Frank recovers qu…"
     },
     {
