@@ -35,7 +35,7 @@
     <meta name="twitter:image" content="https://spartanh2.com/og-image.png?v=5">
     <meta name="twitter:image:alt" content="SpartanH2 — southeast Michigan motorcycle content creator">
 
-    <link rel="stylesheet" href="styles.css?v=20261014163818">
+    <link rel="stylesheet" href="styles.css?v=20261014165139">
     <link rel="icon" type="image/png" href="favicon-64.png">
     <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16">
     <link rel="preload" href="/fonts/cinzel-latin.woff2" as="font" type="font/woff2" crossorigin>
@@ -185,6 +185,13 @@
             </div>
         </section>
 
+        <!-- Upcoming events: filled by the inline script at the bottom of the
+             page from the Moto Legion shared calendar
+             (https://themotolegion.com/events.json; docs/events-calendar.md in
+             the Main-TheMotoLegion-Website repo). Stays empty when nothing is
+             coming up or the fetch fails. -->
+        <div id="event-strip"></div>
+
         <!-- Latest TikTok uploads. Hidden until feed.js has data so the
              section never flashes an empty heading; feed.js only fetches
              once the page is idle and the section nears the viewport. -->
@@ -218,9 +225,69 @@
     </main>
 
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-    <script src="storm.js?v=20261014163818" defer></script>
+    <!-- The Moto Legion shared events calendar. One JSON file on the hub
+         feeds every site in the formation: this fetches it cross-origin
+         (CORS is open there) with a cache buster that rolls hourly, keeps
+         events naming spartanh2 or the whole Moto Legion that have not
+         passed yet, and renders them as .event-tile strips. On any failure
+         the strip stays empty and silent. -->
+    <script>
+    (function () {
+        'use strict';
+
+        var EVENTS_URL = 'https://themotolegion.com/events.json?v=' + Math.floor(Date.now() / 3600000);
+        var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function todayLocal() {
+            var d = new Date();
+            return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+        }
+
+        function forThisSite(e, today) {
+            return typeof e.date === 'string' && e.date >= today && (e.who || []).some(function (w) {
+                return w === 'spartanh2' || w === 'themotolegion';
+            });
+        }
+
+        function el(tag, cls, parent) {
+            var n = document.createElement(tag);
+            if (cls) n.className = cls;
+            if (parent) parent.appendChild(n);
+            return n;
+        }
+
+        function tile(e) {
+            var p = e.date.split('-');
+            var a = el('a', 'event-tile');
+            a.href = e.url;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            a.setAttribute('aria-label', e.aria || (e.name + ', ' + e.date + ', ' + e.times + ', ' + e.where));
+            var date = el('span', 'event-date', a);
+            el('span', 'event-mon', date).textContent = MONTHS[+p[1] - 1] || '';
+            el('span', 'event-day', date).textContent = +p[2];
+            var info = el('span', 'event-info', a);
+            el('span', 'event-name', info).textContent = e.name;
+            el('span', 'event-times', info).textContent = e.times;
+            var where = el('span', 'event-where', a);
+            where.textContent = e.where + ' ';
+            el('span', 'event-arrow', where).textContent = '→';
+            return a;
+        }
+
+        var strip = document.getElementById('event-strip');
+        if (!strip || !window.fetch) return;
+        fetch(EVENTS_URL).then(function (r) { return r.json(); }).then(function (d) {
+            var today = todayLocal();
+            (d.events || []).filter(function (e) { return forThisSite(e, today); })
+                .sort(function (x, y) { return x.date < y.date ? -1 : x.date > y.date ? 1 : 0; })
+                .forEach(function (e) { strip.appendChild(tile(e)); });
+        }).catch(function () { /* no strip is the correct failure posture */ });
+    }());
+    </script>
+    <script src="storm.js?v=20261014165139" defer></script>
     <!-- Last script on the page: the feed is the lowest-priority thing here
          and defers its own network work until after load. -->
-    <script src="feed.js?v=20261014163818" defer></script>
+    <script src="feed.js?v=20261014165139" defer></script>
 </body>
 </html>
