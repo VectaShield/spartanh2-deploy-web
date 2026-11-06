@@ -17,13 +17,13 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-11-05T18:48:00.446Z"
+    "at": "2026-11-06T20:55:50.021Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7704472146277354783",
       "date": "2026-11-05",
-      "views": 7945,
+      "views": 11000,
       "note": "https://discord.gg/MotoLegion The Broken Riders is dead if yo…"
     },
     {
@@ -41,13 +41,13 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7695220229445618975",
       "date": "2026-10-11",
-      "views": 945,
+      "views": 974,
       "note": "EMmeet Group Ride OCTOBER 11TH 3 PM Kickstand up 3:30 PM MICH…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7687781505409617182",
       "date": "2026-09-21",
-      "views": 975,
+      "views": 1004,
       "note": "🏴‍☠️ Moto Show"
     },
     {
@@ -65,19 +65,19 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682971179346300190",
       "date": "2026-09-08",
-      "views": 37800,
+      "views": 37900,
       "note": "UPDATE 2 ARREST. Lawsuit incomming. He was arrested at the Ca…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7682552567355788575",
       "date": "2026-09-06",
-      "views": 156700,
+      "views": 156800,
       "note": "ARREST UPDATE. Lawsuit incoming. He was arrested at the Cars…"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7681459595352558878",
       "date": "2026-09-03",
-      "views": 1149,
+      "views": 1178,
       "note": "SpartanH2 x EMmeet VIP"
     },
     {
