@@ -17,13 +17,13 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-11-10T17:54:42.806Z"
+    "at": "2026-11-11T06:35:54.247Z"
   },
   "videos": [
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7704472146277354783",
       "date": "2026-11-05",
-      "views": 11100,
+      "views": 11200,
       "note": "https://discord.gg/MotoLegion The Broken Riders is dead if yo…"
     },
     {
@@ -53,13 +53,13 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7684728081977855263",
       "date": "2026-09-12",
-      "views": 366,
+      "views": 367,
       "note": "Group ride video coming soon! HUGE TURNOUT 🏴‍☠️ Moto Legion"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7684134926563757342",
       "date": "2026-09-11",
-      "views": 492,
+      "views": 494,
       "note": "This event is free. Start: SPEEDWAY 2980 JOHN R RD TROY, MI 4…"
     },
     {
@@ -83,7 +83,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7680407256650779935",
       "date": "2026-09-01",
-      "views": 421,
+      "views": 422,
       "note": "Fully Suited Up! Watch the H2 time travel to the Group Ride.…"
     },
     {
