@@ -17,7 +17,7 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-11-22T21:51:44.973Z"
+    "at": "2026-11-24T00:58:21.129Z"
   },
   "videos": [
     {
@@ -47,7 +47,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7687781505409617182",
       "date": "2026-09-21",
-      "views": 1083,
+      "views": 1084,
       "note": "🏴‍☠️ Moto Show"
     },
     {
@@ -83,7 +83,7 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7680407256650779935",
       "date": "2026-09-01",
-      "views": 429,
+      "views": 430,
       "note": "Fully Suited Up! Watch the H2 time travel to the Group Ride.…"
     },
     {
