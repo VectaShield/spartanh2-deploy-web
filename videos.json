@@ -17,7 +17,7 @@
   ],
   "_auto": "Auto-refreshed hourly by scripts/refresh-videos.mjs. Hand-edited \"note\" text is preserved by video id; \"views\" is re-pulled from TikTok (monotonic: never decreases). New/removed videos ship immediately; view-count-only changes are written at most every 6 hours to limit deploy churn. _lastRefresh records the last successful write.",
   "_lastRefresh": {
-    "at": "2026-11-25T04:16:22.544Z"
+    "at": "2026-11-25T23:40:05.821Z"
   },
   "videos": [
     {
@@ -47,19 +47,19 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7687781505409617182",
       "date": "2026-09-21",
-      "views": 1085,
+      "views": 1086,
       "note": "🏴‍☠️ Moto Show"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7684728081977855263",
       "date": "2026-09-12",
-      "views": 372,
+      "views": 373,
       "note": "Group ride video coming soon! HUGE TURNOUT 🏴‍☠️ Moto Legion"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7684134926563757342",
       "date": "2026-09-11",
-      "views": 496,
+      "views": 497,
       "note": "This event is free. Start: SPEEDWAY 2980 JOHN R RD TROY, MI 4…"
     },
     {
@@ -77,13 +77,13 @@
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7681459595352558878",
       "date": "2026-09-03",
-      "views": 1242,
+      "views": 1243,
       "note": "SpartanH2 x EMmeet VIP"
     },
     {
       "url": "https://www.tiktok.com/@spartan.h2/video/7680407256650779935",
       "date": "2026-09-01",
-      "views": 430,
+      "views": 431,
       "note": "Fully Suited Up! Watch the H2 time travel to the Group Ride.…"
     },
     {
